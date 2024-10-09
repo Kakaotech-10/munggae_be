@@ -17,6 +17,9 @@ spring:
   jackson:
     serialization:
       fail-on-empty-beans: false  # 빈 객체 직렬화 시 에러 방지
+  sql:
+    init:
+      mode: always
 
 logging:
   level:
