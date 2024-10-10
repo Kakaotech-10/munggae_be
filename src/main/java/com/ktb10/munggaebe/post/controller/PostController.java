@@ -2,6 +2,7 @@ package com.ktb10.munggaebe.post.controller;
 
 import com.ktb10.munggaebe.post.domain.Post;
 import com.ktb10.munggaebe.post.dto.PostDto;
+import com.ktb10.munggaebe.post.dto.PostServiceDto;
 import com.ktb10.munggaebe.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -45,5 +46,23 @@ public class PostController {
         Post post = postService.getPost(postId);
 
         return ResponseEntity.ok(new PostDto.Res(post));
+    }
+
+    @PutMapping("/posts/{postId}")
+    public ResponseEntity<PostDto.Res> updatePost(@PathVariable final long postId,
+                                                  @RequestBody final PostDto.UpdateReq request,
+                                                  @RequestParam final long memberId) {
+        PostServiceDto.UpdateReq updateReq = toServiceDto(postId, request);
+        Post updatedPost = postService.updatePost(updateReq, memberId);
+
+        return ResponseEntity.ok(new PostDto.Res(updatedPost));
+    }
+
+    private static PostServiceDto.UpdateReq toServiceDto(long postId, PostDto.UpdateReq request) {
+        return PostServiceDto.UpdateReq.builder()
+                .postId(postId)
+                .title(request.getTitle())
+                .content(request.getContent())
+                .build();
     }
 }

@@ -32,6 +32,19 @@ public class PostDto {
     }
 
     @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class UpdateReq {
+        private String title;
+        private String content;
+
+        @Builder
+        public UpdateReq(String title, String content) {
+            this.title = title;
+            this.content = content;
+        }
+    }
+
+    @Getter
     public static class Res {
         private Long id;
         private String title;
