@@ -6,9 +6,6 @@ import com.ktb10.munggaebe.post.dto.PostServiceDto;
 import com.ktb10.munggaebe.post.service.PostService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,8 +23,7 @@ public class PostController {
     public ResponseEntity<Page<PostDto.Res>> getPosts(@RequestParam(required = false, defaultValue = DEFAULT_PAGE_NO) final int pageNo,
                                        @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) final int pageSize) {
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
-        Page<Post> posts = postService.getPosts(pageable);
+        Page<Post> posts = postService.getPosts(pageNo, pageSize);
 
         return ResponseEntity.ok(posts.map(PostDto.Res::new));
     }
