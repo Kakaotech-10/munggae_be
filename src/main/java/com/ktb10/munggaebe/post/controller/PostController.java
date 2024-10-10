@@ -58,6 +58,14 @@ public class PostController {
         return ResponseEntity.ok(new PostDto.Res(updatedPost));
     }
 
+    @DeleteMapping("/posts/{postId}")
+    public ResponseEntity<Void> deletePost(@PathVariable final long postId, @RequestParam final long memberId) {
+
+        postService.deletePost(postId, memberId);
+
+        return ResponseEntity.noContent().build();
+    }
+
     private static PostServiceDto.UpdateReq toServiceDto(long postId, PostDto.UpdateReq request) {
         return PostServiceDto.UpdateReq.builder()
                 .postId(postId)

@@ -34,11 +34,11 @@ public class PostService {
     @Transactional
     public Post createPost(Post post, long memberId) {
 
-        Member findMember = memberRepository.findById(memberId)
+        Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NoSuchElementException("id에 해당하는 맴버를 찾을 수 없습니다."));
 
         Post postWithMember = Post.builder()
-                .member(findMember)
+                .member(member)
                 .title(post.getTitle())
                 .content(post.getContent())
                 .build();
@@ -59,12 +59,23 @@ public class PostService {
         return post;
     }
 
+    @Transactional
+    public void deletePost(long postId, long memberId) {
+
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("id에 해당하는 게시물을 찾을 수 없습니다."));
+
+        validateAuth(memberId, post.getMember().getId());
+
+        postRepository.deleteById(postId);
+    }
+
     private void validateAuth(long memberId, long postMemberId) {
         Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new NoSuchElementException("id에 해당하는 맴버를 찾을 수 없습니다."));
 
         if (member.getRole() == MemberRole.STUDENT && memberId != postMemberId) {
-            throw new IllegalStateException("해당 맴버는 해당 게시물을 수정할 수 없습니다.");
+            throw new IllegalStateException("해당 맴버는 해당 게시물을 수정, 삭제할 수 없습니다.");
         }
     }
 }
