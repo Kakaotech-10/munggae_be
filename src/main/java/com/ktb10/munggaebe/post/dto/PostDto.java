@@ -2,11 +2,34 @@ package com.ktb10.munggaebe.post.dto;
 
 import com.ktb10.munggaebe.member.dto.MemberDto;
 import com.ktb10.munggaebe.post.domain.Post;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 public class PostDto {
+
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class CreateReq {
+        private String title;
+        private String content;
+
+        @Builder
+        public CreateReq(String title, String content) {
+            this.title = title;
+            this.content = content;
+        }
+
+        public Post toEntity() {
+            return Post.builder()
+                    .title(this.title)
+                    .content(this.content)
+                    .build();
+        }
+    }
 
     @Getter
     public static class Res {

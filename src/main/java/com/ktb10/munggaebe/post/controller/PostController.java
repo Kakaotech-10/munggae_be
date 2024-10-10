@@ -31,6 +31,14 @@ public class PostController {
         return ResponseEntity.ok(posts.map(PostDto.Res::new));
     }
 
+    @PostMapping("/posts")
+    public ResponseEntity<PostDto.Res> createPost(@RequestBody final PostDto.CreateReq request, @RequestParam final long memberId) {
+
+        Post createdPost = postService.createPost(request.toEntity(), memberId);
+
+        return ResponseEntity.ok(new PostDto.Res(createdPost));
+    }
+
     @GetMapping("/posts/{postId}")
     public ResponseEntity<PostDto.Res> getPost(@PathVariable final long postId) {
 
