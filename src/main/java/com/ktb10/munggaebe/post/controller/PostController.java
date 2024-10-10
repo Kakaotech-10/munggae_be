@@ -21,9 +21,12 @@ public class PostController {
 
     private final PostService postService;
 
+    private static final String DEFAULT_PAGE_NO = "0";
+    private static final String DEFAULT_PAGE_SIZE = "10";
+
     @GetMapping("/posts")
-    public ResponseEntity<Page<PostDto.Res>> getPosts(@RequestParam(required = false, defaultValue = "0") final int pageNo,
-                                       @RequestParam(required = false, defaultValue = "10") final int pageSize) {
+    public ResponseEntity<Page<PostDto.Res>> getPosts(@RequestParam(required = false, defaultValue = DEFAULT_PAGE_NO) final int pageNo,
+                                       @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) final int pageSize) {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
         Page<Post> posts = postService.getPosts(pageable);
