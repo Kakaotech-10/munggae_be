@@ -23,8 +23,9 @@ spring:
 
 logging:
   level:
-    org:
-      hibernate:
-        SQL: debug  # Hibernate SQL 로깅을 디버그 레벨로 설정
-        type:
-          descriptor: trace  # 쿼리 바인딩 값을 보기 위해 설정
+    org.hibernate.orm.jdbc.bind: trace
+#    org:
+#      hibernate:
+#        SQL: debug  # Hibernate SQL 로깅을 디버그 레벨로 설정
+#        type:
+#          descriptor: trace  # 쿼리 바인딩 값을 보기 위해 설정
