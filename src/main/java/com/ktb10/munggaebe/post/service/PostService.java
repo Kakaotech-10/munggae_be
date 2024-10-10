@@ -7,6 +7,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.util.NoSuchElementException;
+
 @Service
 @RequiredArgsConstructor
 public class PostService {
@@ -15,5 +17,10 @@ public class PostService {
 
     public Page<Post> getPosts(Pageable pageable) {
         return postRepository.findAll(pageable);
+    }
+
+    public Post getPost(long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new NoSuchElementException("id에 해당하는 게시물을 찾을 수 없습니다."));
     }
 }
