@@ -23,22 +23,22 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
 
-    public Page<Post> getPosts(Pageable pageable) {
+    public Page<Post> getPosts(final Pageable pageable) {
         return postRepository.findAll(pageable);
     }
 
-    public Post getPost(long postId) {
+    public Post getPost(final long postId) {
         return postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
     }
 
     @Transactional
-    public Post createPost(Post post, long memberId) {
+    public Post createPost(final Post post, final long memberId) {
 
-        Member member = memberRepository.findById(memberId)
+        final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
-        Post postWithMember = Post.builder()
+        final Post postWithMember = Post.builder()
                 .member(member)
                 .title(post.getTitle())
                 .content(post.getContent())
@@ -48,10 +48,10 @@ public class PostService {
     }
 
     @Transactional
-    public Post updatePost(PostServiceDto.UpdateReq updateReq, long memberId) {
+    public Post updatePost(final PostServiceDto.UpdateReq updateReq, final long memberId) {
 
-        long postId = updateReq.getPostId();
-        Post post = postRepository.findById(postId)
+        final long postId = updateReq.getPostId();
+        final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
         validateAuth(memberId, post.getMember().getId());
@@ -62,9 +62,9 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePost(long postId, long memberId) {
+    public void deletePost(final long postId, final long memberId) {
 
-        Post post = postRepository.findById(postId)
+        final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
         validateAuth(memberId, post.getMember().getId());
@@ -72,8 +72,8 @@ public class PostService {
         postRepository.deleteById(postId);
     }
 
-    private void validateAuth(long memberId, long postMemberId) {
-        Member member = memberRepository.findById(memberId)
+    private void validateAuth(final long memberId, final long postMemberId) {
+        final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
         if (member.getRole() == MemberRole.STUDENT && memberId != postMemberId) {
