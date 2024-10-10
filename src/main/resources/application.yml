@@ -13,13 +13,13 @@ spring:
       hibernate:
         format_sql: true  # SQL 쿼리 로그 포맷팅
         dialect: org.hibernate.dialect.MySQL8Dialect
+  sql:
+    init:
+      mode: always
 
   jackson:
     serialization:
       fail-on-empty-beans: false  # 빈 객체 직렬화 시 에러 방지
-  sql:
-    init:
-      mode: always
 
 logging:
   level:

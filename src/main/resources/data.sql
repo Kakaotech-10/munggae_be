@@ -1,5 +1,43 @@
+CREATE TABLE IF NOT EXISTS member (
+    member_id BIGINT NOT NULL AUTO_INCREMENT,
+    role VARCHAR(50) NOT NULL,
+    course VARCHAR(50) NOT NULL,
+    email VARCHAR(255),
+    member_name VARCHAR(50) NOT NULL,
+    member_name_english VARCHAR(50) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (member_id)
+);
+
+CREATE TABLE IF NOT EXISTS post (
+    post_id BIGINT NOT NULL AUTO_INCREMENT,
+    member_id BIGINT NOT NULL,
+    post_title VARCHAR(255) NOT NULL,
+    post_content TEXT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (post_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS comment (
+    comment_id BIGINT NOT NULL AUTO_INCREMENT,
+    post_id BIGINT NOT NULL,
+    member_id BIGINT NOT NULL,
+    parent_comment_id BIGINT,
+    comment_content TEXT NOT NULL,
+    depth INT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (comment_id),
+    FOREIGN KEY (post_id) REFERENCES post(post_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE,
+    FOREIGN KEY (parent_comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE
+);
+
 -- Member 데이터 삽입
-INSERT INTO member (member_id, role, course, email, member_name, member_name_english, created_at, updated_at) VALUES
+INSERT IGNORE INTO member (member_id, role, course, email, member_name, member_name_english, created_at, updated_at) VALUES
 (1, 'STUDENT', 'Course 1', 'STUDENT1@example.com', '홍길동', 'Hong Gil-dong', NOW(), NOW()),
 (2, 'STUDENT', 'Course 2', 'STUDENT2@example.com', '김철수', 'Kim Cheol-su', NOW(), NOW()),
 (3, 'STUDENT', 'Course 3', 'STUDENT3@example.com', '이영희', 'Lee Young-hee', NOW(), NOW()),
@@ -22,7 +60,7 @@ INSERT INTO member (member_id, role, course, email, member_name, member_name_eng
 (20, 'STUDENT', 'Course 3', 'STUDENT20@example.com', '송혜교', 'Song Hye-kyo', NOW(), NOW());
 
 -- Post 데이터 삽입
-INSERT INTO post (post_id, member_id, post_title, post_content, created_at, updated_at) VALUES
+INSERT IGNORE INTO post (post_id, member_id, post_title, post_content, created_at, updated_at) VALUES
 (1, 1, 'First Post', 'This is the content of the first post', NOW(), NOW()),
 (2, 2, 'Second Post', 'This is the content of the second post', NOW(), NOW()),
 (3, 3, 'Third Post', 'This is the content of the third post', NOW(), NOW()),
@@ -33,19 +71,19 @@ INSERT INTO post (post_id, member_id, post_title, post_content, created_at, upda
 (8, 8, 'Eighth Post', 'This is the content of the eighth post', NOW(), NOW()),
 (9, 9, 'Ninth Post', 'This is the content of the ninth post', NOW(), NOW()),
 (10, 10, 'Tenth Post', 'This is the content of the tenth post', NOW(), NOW()),
-(11, 11, 'Eleventh Post', 'This is the content of the eleventh post', NOW(), NOW()),
-(12, 12, 'Twelfth Post', 'This is the content of the twelfth post', NOW(), NOW()),
-(13, 13, 'Thirteenth Post', 'This is the content of the thirteenth post', NOW(), NOW()),
-(14, 14, 'Fourteenth Post', 'This is the content of the fourteenth post', NOW(), NOW()),
-(15, 15, 'Fifteenth Post', 'This is the content of the fifteenth post', NOW(), NOW()),
-(16, 16, 'Sixteenth Post', 'This is the content of the sixteenth post', NOW(), NOW()),
-(17, 17, 'Seventeenth Post', 'This is the content of the seventeenth post', NOW(), NOW()),
-(18, 18, 'Eighteenth Post', 'This is the content of the eighteenth post', NOW(), NOW()),
-(19, 19, 'Nineteenth Post', 'This is the content of the nineteenth post', NOW(), NOW()),
-(20, 20, 'Twentieth Post', 'This is the content of the twentieth post', NOW(), NOW());
+(11, 11, 'Eleventh Post', 'This is the content of the eleventh post', DATE_ADD(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 1 HOUR)),
+(12, 12, 'Twelfth Post', 'This is the content of the twelfth post', DATE_ADD(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 1 HOUR)),
+(13, 13, 'Thirteenth Post', 'This is the content of the thirteenth post', DATE_ADD(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 2 HOUR)),
+(14, 14, 'Fourteenth Post', 'This is the content of the fourteenth post', DATE_ADD(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 2 HOUR)),
+(15, 15, 'Fifteenth Post', 'This is the content of the fifteenth post', DATE_ADD(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 2 HOUR)),
+(16, 16, 'Sixteenth Post', 'This is the content of the sixteenth post', DATE_ADD(NOW(), INTERVAL 2 HOUR), DATE_ADD(NOW(), INTERVAL 2 HOUR)),
+(17, 17, 'Seventeenth Post', 'This is the content of the seventeenth post', DATE_ADD(NOW(), INTERVAL 2 HOUR), DATE_ADD(NOW(), INTERVAL 2 HOUR)),
+(18, 18, 'Eighteenth Post', 'This is the content of the eighteenth post', DATE_ADD(NOW(), INTERVAL 3 HOUR), DATE_ADD(NOW(), INTERVAL 3 HOUR)),
+(19, 19, 'Nineteenth Post', 'This is the content of the nineteenth post', DATE_ADD(NOW(), INTERVAL 4 HOUR), DATE_ADD(NOW(), INTERVAL 4 HOUR)),
+(20, 20, 'Twentieth Post', 'This is the content of the twentieth post', DATE_ADD(NOW(), INTERVAL 5 HOUR), DATE_ADD(NOW(), INTERVAL 5 HOUR));
 
 -- Comment 데이터 삽입
-INSERT INTO comment (comment_id, post_id, member_id, parent_comment_id, comment_content, depth, created_at, updated_at) VALUES
+INSERT IGNORE INTO comment (comment_id, post_id, member_id, parent_comment_id, comment_content, depth, created_at, updated_at) VALUES
 (1, 1, 2, NULL, 'This is the first comment', 0, NOW(), NOW()),
 (2, 1, 3, NULL, 'This is the second comment', 0, NOW(), NOW()),
 (3, 2, 4, NULL, 'This is the third comment', 0, NOW(), NOW()),
