@@ -6,10 +6,7 @@ import com.ktb10.munggaebe.post.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequiredArgsConstructor
@@ -29,5 +26,13 @@ public class CommentController {
         Page<Comment> comments = commentService.getRootComments(postId, pageNo, pageSize);
 
         return ResponseEntity.ok(comments.map(CommentDto.Res::new));
+    }
+
+    @GetMapping("/comments/{commentId}")
+    public ResponseEntity<CommentDto.ResWithReplies> getRootCommentWithReplies(@PathVariable final long commentId) {
+
+        Comment comment = commentService.getRootComment(commentId);
+
+        return ResponseEntity.ok(new CommentDto.ResWithReplies(comment));
     }
 }

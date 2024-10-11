@@ -1,6 +1,7 @@
 package com.ktb10.munggaebe.post.service;
 
 import com.ktb10.munggaebe.post.domain.Comment;
+import com.ktb10.munggaebe.post.exception.CommentNotFoundException;
 import com.ktb10.munggaebe.post.repository.CommentRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,5 +24,10 @@ public class CommentService {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt"));
 
         return commentRepository.findByPostId(postId, pageable);
+    }
+
+    public Comment getRootComment(long commentId) {
+        return commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
     }
 }

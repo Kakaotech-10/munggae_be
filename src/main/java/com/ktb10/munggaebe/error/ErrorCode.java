@@ -13,7 +13,8 @@ public enum ErrorCode {
     MEMBER_PERMISSION_DENIED_EXCEPTION("MEM_002","해당 맴버는 권한이 없습니다.", 403),
 
     //post
-    POST_NOT_FOUND("POS_001", "해당하는 게시물을 찾을 수 없습니다.", 404)
+    POST_NOT_FOUND("POS_001", "해당하는 게시물을 찾을 수 없습니다.", 404),
+    COMMENT_NOT_FOUND("POS_002", "해당하는 댓글을 찾을 수 없습니다.", 404)
     ;
 
     private final String code;

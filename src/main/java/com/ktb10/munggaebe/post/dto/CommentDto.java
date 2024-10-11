@@ -48,7 +48,7 @@ public class CommentDto {
         public ResWithReplies(Comment comment) {
             this.id = comment.getId();
             this.postId = comment.getPost().getId();
-            this.parentId = comment.getParent().getId();
+            this.parentId = comment.getParent() == null ? null : comment.getParent().getId();
             this.depth = comment.getDepth();
             this.content = comment.getContent();
             this.createdAt = comment.getCreatedAt();
