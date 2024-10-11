@@ -9,6 +9,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
@@ -33,7 +35,8 @@ public class PostController {
 
         Post createdPost = postService.createPost(request.toEntity(), memberId);
 
-        return ResponseEntity.ok(new PostDto.Res(createdPost));
+        return ResponseEntity.created(URI.create("/posts/" + createdPost.getId()))
+                .body(new PostDto.Res(createdPost));
     }
 
     @GetMapping("/posts/{postId}")
