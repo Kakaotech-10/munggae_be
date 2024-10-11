@@ -2,13 +2,31 @@ package com.ktb10.munggaebe.post.dto;
 
 import com.ktb10.munggaebe.member.dto.MemberDto;
 import com.ktb10.munggaebe.post.domain.Comment;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class CommentDto {
+
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class CreateReq {
+        private String content;
+
+        public CreateReq(String content) {
+            this.content = content;
+        }
+
+        public Comment toEntity() {
+            return Comment.builder()
+                    .content(this.content)
+                    .build();
+        }
+    }
 
     @Getter
     public static class Res {

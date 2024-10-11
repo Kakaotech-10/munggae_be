@@ -35,7 +35,7 @@ public class PostController {
 
         Post createdPost = postService.createPost(request.toEntity(), memberId);
 
-        return ResponseEntity.created(URI.create("/posts/" + createdPost.getId()))
+        return ResponseEntity.created(URI.create("/api/v1/posts/" + createdPost.getId()))
                 .body(new PostDto.Res(createdPost));
     }
 

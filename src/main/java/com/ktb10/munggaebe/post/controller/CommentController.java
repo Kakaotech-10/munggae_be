@@ -8,6 +8,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
@@ -26,6 +28,17 @@ public class CommentController {
         Page<Comment> comments = commentService.getRootComments(postId, pageNo, pageSize);
 
         return ResponseEntity.ok(comments.map(CommentDto.Res::new));
+    }
+
+    @PostMapping("/comments")
+    public ResponseEntity<CommentDto.Res> createRootComment(@RequestBody final CommentDto.CreateReq request,
+                                                            @RequestParam final long postId,
+                                                            @RequestParam final long memberId) {
+
+        Comment comment = commentService.createRootComment(request.toEntity(), postId, memberId);
+
+        return ResponseEntity.created(URI.create("/api/v1/comments/" + comment.getId()))
+                .body(new CommentDto.Res(comment));
     }
 
     @GetMapping("/comments/{commentId}")
