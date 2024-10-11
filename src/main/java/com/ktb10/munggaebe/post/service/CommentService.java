@@ -32,7 +32,7 @@ public class CommentService {
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt"));
 
-        return commentRepository.findByPostId(postId, pageable);
+        return commentRepository.findByPostIdAndDepth(postId, 0, pageable);
     }
 
     public Comment getRootComment(long commentId) {
