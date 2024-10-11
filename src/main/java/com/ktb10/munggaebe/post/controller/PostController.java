@@ -16,12 +16,12 @@ public class PostController {
 
     private final PostService postService;
 
-    private static final String DEFAULT_PAGE_NO = "0";
-    private static final String DEFAULT_PAGE_SIZE = "10";
+    private static final String DEFAULT_POST_PAGE_NO = "0";
+    private static final String DEFAULT_POST_PAGE_SIZE = "10";
 
     @GetMapping("/posts")
-    public ResponseEntity<Page<PostDto.Res>> getPosts(@RequestParam(required = false, defaultValue = DEFAULT_PAGE_NO) final int pageNo,
-                                       @RequestParam(required = false, defaultValue = DEFAULT_PAGE_SIZE) final int pageSize) {
+    public ResponseEntity<Page<PostDto.Res>> getPosts(@RequestParam(required = false, defaultValue = DEFAULT_POST_PAGE_NO) final int pageNo,
+                                       @RequestParam(required = false, defaultValue = DEFAULT_POST_PAGE_SIZE) final int pageSize) {
 
         Page<Post> posts = postService.getPosts(pageNo, pageSize);
 
