@@ -31,28 +31,28 @@ public class CommentService {
 
     private static final int ROOT_COMMENT_DEPTH = 0;
 
-    public Page<Comment> getRootComments(long postId, int pageNo, int pageSize) {
+    public Page<Comment> getRootComments(final long postId, final int pageNo, final int pageSize) {
 
-        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt"));
+        final Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt"));
 
         return commentRepository.findByPostIdAndDepth(postId, 0, pageable);
     }
 
-    public Comment getRootComment(long commentId) {
+    public Comment getRootComment(final long commentId) {
         return commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
     }
 
     @Transactional
-    public Comment createRootComment(Comment entity, long postId, long memberId) {
+    public Comment createRootComment(final Comment entity, final long postId, final long memberId) {
 
-        Post post = postRepository.findById(postId)
+        final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
-        Member member = memberRepository.findById(memberId)
+        final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
-        Comment comment = Comment.builder()
+        final Comment comment = Comment.builder()
                 .post(post)
                 .member(member)
                 .parent(null)
@@ -64,10 +64,10 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment updateComment(CommentServiceDto.UpdateReq updateReq, long memberId) {
+    public Comment updateComment(final CommentServiceDto.UpdateReq updateReq, final long memberId) {
 
-        Long commentId = updateReq.getCommentId();
-        Comment comment = commentRepository.findById(commentId)
+        final Long commentId = updateReq.getCommentId();
+        final Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
 
         validateAuth(memberId, comment.getMember().getId());
@@ -78,7 +78,7 @@ public class CommentService {
     }
 
     private void validateAuth(final long memberId, final long commentMemberId) {
-        Member member = memberRepository.findById(memberId)
+        final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
 
         if (member.getRole() == MemberRole.STUDENT && commentMemberId != memberId) {
