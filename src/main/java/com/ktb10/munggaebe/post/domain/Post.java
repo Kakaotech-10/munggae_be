@@ -10,6 +10,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "post")
@@ -24,6 +26,9 @@ public class Post {
     @ManyToOne
     @JoinColumn(name = "member_id", nullable = false, updatable = false)
     private Member member;
+
+    @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
+    private List<Comment> replies = new ArrayList<>();
 
     @Column(name = "post_title", nullable = false)
     private String title;
