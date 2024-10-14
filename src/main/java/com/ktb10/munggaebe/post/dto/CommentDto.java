@@ -12,6 +12,8 @@ import java.util.stream.Collectors;
 
 public class CommentDto {
 
+    private static final String DELETED_CONTENT = "삭제된 댓글입니다.";
+
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class CreateReq {
@@ -44,6 +46,7 @@ public class CommentDto {
         private Long postId;
         private Long parentId;
         private Integer depth;
+        private boolean isDeleted;
         private String content;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
@@ -54,7 +57,8 @@ public class CommentDto {
             this.postId = comment.getPost().getId();
             this.parentId = comment.getParent() == null ? null : comment.getParent().getId();
             this.depth = comment.getDepth();
-            this.content = comment.getContent();
+            this.isDeleted = comment.isDeleted();
+            this.content = comment.isDeleted() ? DELETED_CONTENT : comment.getContent();
             this.createdAt = comment.getCreatedAt();
             this.updatedAt = comment.getUpdatedAt();
             this.member = new MemberDto.Res(comment.getMember());
@@ -67,6 +71,7 @@ public class CommentDto {
         private Long postId;
         private Long parentId;
         private Integer depth;
+        private boolean isDeleted;
         private String content;
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
@@ -78,7 +83,8 @@ public class CommentDto {
             this.postId = comment.getPost().getId();
             this.parentId = comment.getParent() == null ? null : comment.getParent().getId();
             this.depth = comment.getDepth();
-            this.content = comment.getContent();
+            this.isDeleted = comment.isDeleted();
+            this.content = comment.isDeleted() ? DELETED_CONTENT : comment.getContent();
             this.createdAt = comment.getCreatedAt();
             this.updatedAt = comment.getUpdatedAt();
             this.member = new MemberDto.Res(comment.getMember());
