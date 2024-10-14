@@ -25,7 +25,7 @@ public class PostController {
     public ResponseEntity<Page<PostDto.Res>> getPosts(@RequestParam(required = false, defaultValue = DEFAULT_POST_PAGE_NO) final int pageNo,
                                        @RequestParam(required = false, defaultValue = DEFAULT_POST_PAGE_SIZE) final int pageSize) {
 
-        Page<Post> posts = postService.getPosts(pageNo, pageSize);
+        final Page<Post> posts = postService.getPosts(pageNo, pageSize);
 
         return ResponseEntity.ok(posts.map(PostDto.Res::new));
     }
@@ -33,7 +33,7 @@ public class PostController {
     @PostMapping("/posts")
     public ResponseEntity<PostDto.Res> createPost(@RequestBody final PostDto.CreateReq request, @RequestParam final long memberId) {
 
-        Post createdPost = postService.createPost(request.toEntity(), memberId);
+        final Post createdPost = postService.createPost(request.toEntity(), memberId);
 
         return ResponseEntity.created(URI.create("/api/v1/posts/" + createdPost.getId()))
                 .body(new PostDto.Res(createdPost));
@@ -42,7 +42,7 @@ public class PostController {
     @GetMapping("/posts/{postId}")
     public ResponseEntity<PostDto.Res> getPost(@PathVariable final long postId) {
 
-        Post post = postService.getPost(postId);
+        final Post post = postService.getPost(postId);
 
         return ResponseEntity.ok(new PostDto.Res(post));
     }
@@ -51,8 +51,8 @@ public class PostController {
     public ResponseEntity<PostDto.Res> updatePost(@PathVariable final long postId,
                                                   @RequestBody final PostDto.UpdateReq request,
                                                   @RequestParam final long memberId) {
-        PostServiceDto.UpdateReq updateReq = toServiceDto(postId, request);
-        Post updatedPost = postService.updatePost(updateReq, memberId);
+        final PostServiceDto.UpdateReq updateReq = toServiceDto(postId, request);
+        final Post updatedPost = postService.updatePost(updateReq, memberId);
 
         return ResponseEntity.ok(new PostDto.Res(updatedPost));
     }

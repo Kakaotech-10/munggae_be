@@ -26,7 +26,7 @@ public class CommentController {
                                          @RequestParam(required = false, defaultValue = DEFAULT_COMMENT_PAGE_NO) final int pageNo,
                                          @RequestParam(required = false, defaultValue = DEFAULT_COMMENT_AGE_SIZE) final int pageSize) {
 
-        Page<Comment> comments = commentService.getRootComments(postId, pageNo, pageSize);
+        final Page<Comment> comments = commentService.getRootComments(postId, pageNo, pageSize);
 
         return ResponseEntity.ok(comments.map(CommentDto.Res::new));
     }
@@ -36,7 +36,7 @@ public class CommentController {
                                                             @RequestParam final long postId,
                                                             @RequestParam final long memberId) {
 
-        Comment comment = commentService.createRootComment(request.toEntity(), postId, memberId);
+        final Comment comment = commentService.createRootComment(request.toEntity(), postId, memberId);
 
         return ResponseEntity.created(URI.create("/api/v1/comments/" + comment.getId()))
                 .body(new CommentDto.Res(comment));
@@ -45,7 +45,7 @@ public class CommentController {
     @GetMapping("/comments/{commentId}")
     public ResponseEntity<CommentDto.ResWithReplies> getRootCommentWithReplies(@PathVariable final long commentId) {
 
-        Comment comment = commentService.getRootComment(commentId);
+        final Comment comment = commentService.getRootComment(commentId);
 
         return ResponseEntity.ok(new CommentDto.ResWithReplies(comment));
     }
@@ -55,7 +55,7 @@ public class CommentController {
                                                              @RequestBody final CommentDto.CreateReq request,
                                                              @RequestParam final long memberId) {
 
-        Comment comment = commentService.createReplyComment(request.toEntity(), commentId, memberId);
+        final Comment comment = commentService.createReplyComment(request.toEntity(), commentId, memberId);
 
         return ResponseEntity.created(URI.create("/api/v1/comments/" + comment.getId()))
                 .body(new CommentDto.Res(comment));
@@ -66,8 +66,8 @@ public class CommentController {
                                                         @RequestBody final CommentDto.UpdateReq request,
                                                         @RequestParam final long memberId) {
 
-        CommentServiceDto.UpdateReq updateReq = toServiceDto(commentId, request);
-        Comment comment = commentService.updateComment(updateReq, memberId);
+        final CommentServiceDto.UpdateReq updateReq = toServiceDto(commentId, request);
+        final Comment comment = commentService.updateComment(updateReq, memberId);
 
         return ResponseEntity.ok(new CommentDto.Res(comment));
     }
