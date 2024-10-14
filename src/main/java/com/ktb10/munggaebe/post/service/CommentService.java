@@ -77,6 +77,17 @@ public class CommentService {
         return comment;
     }
 
+    @Transactional
+    public void deleteComment(final long commentId, final long memberId) {
+
+        final Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
+
+        validateAuth(memberId, comment.getMember().getId());
+
+        comment.deleteComment();
+    }
+
     private void validateAuth(final long memberId, final long commentMemberId) {
         final Member member = memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));

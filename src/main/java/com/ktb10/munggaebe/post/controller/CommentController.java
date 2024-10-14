@@ -61,7 +61,16 @@ public class CommentController {
         return ResponseEntity.ok(new CommentDto.Res(comment));
     }
 
-    private static CommentServiceDto.UpdateReq toServiceDto(long commentId, CommentDto.UpdateReq request) {
+    @DeleteMapping("/comments/{commentId}")
+    public ResponseEntity<Void> deleteComment(@PathVariable final long commentId,
+                                              @RequestParam final long memberId) {
+
+        commentService.deleteComment(commentId, memberId);
+
+        return ResponseEntity.noContent().build();
+    }
+
+    private static CommentServiceDto.UpdateReq toServiceDto(final long commentId, final CommentDto.UpdateReq request) {
         return CommentServiceDto.UpdateReq.builder()
                 .commentId(commentId)
                 .content(request.getContent())

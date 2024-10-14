@@ -41,6 +41,9 @@ public class Comment {
     @Column(name = "depth", nullable = false)
     private Integer depth;
 
+    @Column(name = "is_deleted", nullable = false)
+    private boolean isDeleted;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -59,9 +62,14 @@ public class Comment {
         this.parent = parent;
         this.content = content;
         this.depth = depth;
+        this.isDeleted = false;
     }
 
     public void updateComment(String content) {
         this.content = content;
+    }
+
+    public void deleteComment() {
+        this.isDeleted = true;
     }
 }
