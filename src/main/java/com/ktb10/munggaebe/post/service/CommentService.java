@@ -1,10 +1,13 @@
 package com.ktb10.munggaebe.post.service;
 
 import com.ktb10.munggaebe.member.domain.Member;
+import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
+import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.post.domain.Comment;
 import com.ktb10.munggaebe.post.domain.Post;
+import com.ktb10.munggaebe.post.dto.CommentServiceDto;
 import com.ktb10.munggaebe.post.exception.CommentNotFoundException;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.CommentRepository;
@@ -58,5 +61,28 @@ public class CommentService {
                 .build();
 
         return commentRepository.save(comment);
+    }
+
+    @Transactional
+    public Comment updateComment(CommentServiceDto.UpdateReq updateReq, long memberId) {
+
+        Long commentId = updateReq.getCommentId();
+        Comment comment = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
+
+        validateAuth(memberId, comment.getMember().getId());
+
+        comment.updateComment(updateReq.getContent());
+
+        return comment;
+    }
+
+    private void validateAuth(final long memberId, final long commentMemberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
+        if (member.getRole() == MemberRole.STUDENT && commentMemberId != memberId) {
+            throw new MemberPermissionDeniedException(memberId, member.getRole());
+        }
     }
 }

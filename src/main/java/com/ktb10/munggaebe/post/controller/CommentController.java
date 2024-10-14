@@ -2,6 +2,7 @@ package com.ktb10.munggaebe.post.controller;
 
 import com.ktb10.munggaebe.post.domain.Comment;
 import com.ktb10.munggaebe.post.dto.CommentDto;
+import com.ktb10.munggaebe.post.dto.CommentServiceDto;
 import com.ktb10.munggaebe.post.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -48,4 +49,23 @@ public class CommentController {
 
         return ResponseEntity.ok(new CommentDto.ResWithReplies(comment));
     }
+
+    @PutMapping("/comments/{commentId}")
+    public ResponseEntity<CommentDto.Res> updateComment(@PathVariable final long commentId,
+                                                        @RequestBody final CommentDto.UpdateReq request,
+                                                        @RequestParam final long memberId) {
+
+        CommentServiceDto.UpdateReq updateReq = toServiceDto(commentId, request);
+        Comment comment = commentService.updateComment(updateReq, memberId);
+
+        return ResponseEntity.ok(new CommentDto.Res(comment));
+    }
+
+    private static CommentServiceDto.UpdateReq toServiceDto(long commentId, CommentDto.UpdateReq request) {
+        return CommentServiceDto.UpdateReq.builder()
+                .commentId(commentId)
+                .content(request.getContent())
+                .build();
+    }
+
 }

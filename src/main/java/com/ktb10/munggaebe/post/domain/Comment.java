@@ -60,4 +60,8 @@ public class Comment {
         this.content = content;
         this.depth = depth;
     }
+
+    public void updateComment(String content) {
+        this.content = content;
+    }
 }

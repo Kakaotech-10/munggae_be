@@ -29,6 +29,16 @@ public class CommentDto {
     }
 
     @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class UpdateReq {
+        private String content;
+
+        public UpdateReq(String content) {
+            this.content = content;
+        }
+    }
+
+    @Getter
     public static class Res {
         private Long id;
         private Long postId;
