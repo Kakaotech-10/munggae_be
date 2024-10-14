@@ -50,6 +50,17 @@ public class CommentController {
         return ResponseEntity.ok(new CommentDto.ResWithReplies(comment));
     }
 
+    @PostMapping("/comments/{commentId}")
+    public ResponseEntity<CommentDto.Res> createReplyComment(@PathVariable final long commentId,
+                                                             @RequestBody final CommentDto.CreateReq request,
+                                                             @RequestParam final long memberId) {
+
+        Comment comment = commentService.createReplyComment(request.toEntity(), commentId, memberId);
+
+        return ResponseEntity.created(URI.create("/api/v1/comments/" + comment.getId()))
+                .body(new CommentDto.Res(comment));
+    }
+
     @PutMapping("/comments/{commentId}")
     public ResponseEntity<CommentDto.Res> updateComment(@PathVariable final long commentId,
                                                         @RequestBody final CommentDto.UpdateReq request,

@@ -30,6 +30,7 @@ public class CommentService {
     private final MemberRepository memberRepository;
 
     private static final int ROOT_COMMENT_DEPTH = 0;
+    private static final int REPLY_DEPTH = 1;
 
     public Page<Comment> getRootComments(final long postId, final int pageNo, final int pageSize) {
 
@@ -62,6 +63,35 @@ public class CommentService {
 
         return commentRepository.save(comment);
     }
+
+    @Transactional
+    public Comment createReplyComment(final Comment entity, final long commentId, final long memberId) {
+
+        //commentId 없는 값일 때 예외 확인
+        //memberId 없는 값일 때 예외 확인
+        //정상 흐름 확인 - 부모 Comment 조회 시, 같이 잘 나오는지
+        final Comment parent = commentRepository.findById(commentId)
+                .orElseThrow(() -> new CommentNotFoundException(commentId));
+
+        final Long postId = parent.getPost().getId();
+        final Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(postId));
+
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
+        Comment comment = Comment.builder()
+                .post(post)
+                .member(member)
+                .parent(parent)
+                .content(entity.getContent())
+                .depth(REPLY_DEPTH)
+                .build();
+
+        return commentRepository.save(comment);
+    }
+
+
 
     @Transactional
     public Comment updateComment(final CommentServiceDto.UpdateReq updateReq, final long memberId) {
