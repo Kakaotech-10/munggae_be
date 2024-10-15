@@ -67,9 +67,6 @@ public class CommentService {
     @Transactional
     public Comment createReplyComment(final Comment entity, final long commentId, final long memberId) {
 
-        //commentId 없는 값일 때 예외 확인
-        //memberId 없는 값일 때 예외 확인
-        //정상 흐름 확인 - 부모 Comment 조회 시, 같이 잘 나오는지
         final Comment parent = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
 
