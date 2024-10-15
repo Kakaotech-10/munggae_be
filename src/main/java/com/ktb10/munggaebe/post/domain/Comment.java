@@ -56,7 +56,8 @@ public class Comment {
     List<Comment> replies = new ArrayList<>();
 
     @Builder
-    public Comment(Post post, Member member, Comment parent, String content, Integer depth) {
+    public Comment(Long id, Post post, Member member, Comment parent, String content, Integer depth) {
+        this.id = id;
         this.post = post;
         this.member = member;
         this.parent = parent;

@@ -7,7 +7,6 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.CreatedDate;
 
 import java.time.LocalDateTime;
 
@@ -45,7 +44,8 @@ public class Member {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Member(MemberRole role, String course, String email, String name, String nameEnglish) {
+    public Member(Long id, MemberRole role, String course, String email, String name, String nameEnglish) {
+        this.id = id;
         this.role = role;
         this.course = course;
         this.email = email;
