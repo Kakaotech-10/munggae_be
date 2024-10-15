@@ -29,3 +29,7 @@ logging:
 #        SQL: debug  # Hibernate SQL 로깅을 디버그 레벨로 설정
 #        type:
 #          descriptor: trace  # 쿼리 바인딩 값을 보기 위해 설정
+
+springdoc:
+  default-consumes-media-type: application/json;charset=UTF-8
+  default-produces-media-type: application/json;charset=UTF-8
