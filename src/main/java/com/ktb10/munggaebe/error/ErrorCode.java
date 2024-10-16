@@ -14,7 +14,10 @@ public enum ErrorCode {
 
     //post
     POST_NOT_FOUND("POS_001", "해당하는 게시물을 찾을 수 없습니다.", 404),
-    COMMENT_NOT_FOUND("POS_002", "해당하는 댓글을 찾을 수 없습니다.", 404)
+    COMMENT_NOT_FOUND("POS_002", "해당하는 댓글을 찾을 수 없습니다.", 404),
+
+    //OAuth
+    OAUTH_LOGIN_ERROR("OAU_001", "로그인 과정에서 인증 오류가 발생하였습니다.", 500)
     ;
 
     private final String code;
