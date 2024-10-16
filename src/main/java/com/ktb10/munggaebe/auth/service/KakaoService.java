@@ -3,10 +3,13 @@ package com.ktb10.munggaebe.auth.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.auth.dto.AuthTokens;
 import com.ktb10.munggaebe.auth.dto.LoginResponse;
 import com.ktb10.munggaebe.auth.exception.OAuthResponseJsonProcessingException;
 import com.ktb10.munggaebe.auth.feign.KakaoAuthClient;
 import com.ktb10.munggaebe.auth.feign.KakaoMemberApiClient;
+import com.ktb10.munggaebe.auth.jwt.TokenManager;
+import com.ktb10.munggaebe.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +25,8 @@ public class KakaoService {
 
     private final KakaoAuthClient kakaoAuthClient;
     private final KakaoMemberApiClient kakaoMemberApiClient;
+    private final TokenManager tokenManager;
+    private final MemberService memberService;
 
     @Value("${kakao.key.client-id}")
     private String clientId;
@@ -97,7 +102,13 @@ public class KakaoService {
     }
 
     private LoginResponse loginWithInfo(HashMap<String, Object> memberInfo) {
-        return null;
+        Long kakaoId = Long.valueOf(memberInfo.get("id").toString());
+        String nickName = memberInfo.get("nickname").toString();
+
+        memberService.joinKakao(kakaoId, nickName);
+
+        AuthTokens token = tokenManager.generate(kakaoId.toString());
+        return new LoginResponse(kakaoId, nickName, token);
     }
 
 }
