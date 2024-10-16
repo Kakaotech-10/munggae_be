@@ -33,3 +33,9 @@ logging:
 springdoc:
   default-consumes-media-type: application/json;charset=UTF-8
   default-produces-media-type: application/json;charset=UTF-8
+
+
+kakao:
+  key:
+    client-id: 43c3276a70b38834e826316a1e73238f
+  redirect-uri: http://localhost:3000/api/v1/auth/login/oauth2/callback/kakao
