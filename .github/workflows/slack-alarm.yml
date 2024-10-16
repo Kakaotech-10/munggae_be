@@ -18,5 +18,5 @@ jobs:
         PR_URL: ${{ github.event.pull_request.html_url }}
       run: |
         curl -X POST -H 'Content-type: application/json' --data '{
-          "text": "*New Backend PR!*\n>*Title*: ${PR_TITLE}\n>*User*: ${PR_USER}\n>*URL*: ${PR_URL}\n>*Description*: ${PR_BODY}"
+          "text": "*New Pull Request Created!*\n>*Title*: '$PR_TITLE'\n>*User*: '$PR_USER'\n>*URL*: '$PR_URL'\n>*Description*: '$PR_BODY''
         }' $SLACK_WEBHOOK_URL
