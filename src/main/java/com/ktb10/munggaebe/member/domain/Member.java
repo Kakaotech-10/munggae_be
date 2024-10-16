@@ -27,13 +27,14 @@ public class Member {
     @Column(name = "course", nullable = false)
     private String course;
 
-    private String email;
-
     @Column(name = "member_name", nullable = false)
     private String name;
 
     @Column(name = "member_name_english", nullable = false)
     private String nameEnglish;
+
+    @Column(name = "kakao_id", nullable = false)
+    private Long kakaoId;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
@@ -44,12 +45,12 @@ public class Member {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Member(Long id, MemberRole role, String course, String email, String name, String nameEnglish) {
+    public Member(Long id, MemberRole role, String course, String name, String nameEnglish, Long kakaoId) {
         this.id = id;
         this.role = role;
         this.course = course;
-        this.email = email;
         this.name = name;
         this.nameEnglish = nameEnglish;
+        this.kakaoId = kakaoId;
     }
 }

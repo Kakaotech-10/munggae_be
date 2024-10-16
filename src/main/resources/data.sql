@@ -2,9 +2,9 @@ CREATE TABLE IF NOT EXISTS member (
     member_id BIGINT NOT NULL AUTO_INCREMENT,
     role VARCHAR(50) NOT NULL,
     course VARCHAR(50) NOT NULL,
-    email VARCHAR(255),
     member_name VARCHAR(50) NOT NULL,
     member_name_english VARCHAR(50) NOT NULL,
+    kakao_id BIGINT NOT NULL,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (member_id)
@@ -37,27 +37,27 @@ CREATE TABLE IF NOT EXISTS comment (
 );
 
 -- Member 데이터 삽입
-INSERT IGNORE INTO member (member_id, role, course, email, member_name, member_name_english, created_at, updated_at) VALUES
-(1, 'STUDENT', 'Course 1', 'STUDENT1@example.com', '홍길동', 'Hong Gil-dong', NOW(), NOW()),
-(2, 'STUDENT', 'Course 2', 'STUDENT2@example.com', '김철수', 'Kim Cheol-su', NOW(), NOW()),
-(3, 'STUDENT', 'Course 3', 'STUDENT3@example.com', '이영희', 'Lee Young-hee', NOW(), NOW()),
-(4, 'MANAGER', 'Course 1', 'MANAGER1@example.com', '박영수', 'Park Young-su', NOW(), NOW()),
-(5, 'STUDENT', 'Course 2', 'STUDENT5@example.com', '최지우', 'Choi Ji-woo', NOW(), NOW()),
-(6, 'STUDENT', 'Course 1', 'STUDENT6@example.com', '정수민', 'Jung Su-min', NOW(), NOW()),
-(7, 'STUDENT', 'Course 3', 'STUDENT7@example.com', '신동엽', 'Shin Dong-yeop', NOW(), NOW()),
-(8, 'STUDENT', 'Course 1', 'STUDENT8@example.com', '유재석', 'Yoo Jae-suk', NOW(), NOW()),
-(9, 'STUDENT', 'Course 2', 'STUDENT9@example.com', '하하', 'Haha', NOW(), NOW()),
-(10, 'STUDENT', 'Course 3', 'STUDENT10@example.com', '김종국', 'Kim Jong-kook', NOW(), NOW()),
-(11, 'STUDENT', 'Course 1', 'STUDENT11@example.com', '강호동', 'Kang Ho-dong', NOW(), NOW()),
-(12, 'STUDENT', 'Course 2', 'STUDENT12@example.com', '이수근', 'Lee Soo-geun', NOW(), NOW()),
-(13, 'STUDENT', 'Course 3', 'STUDENT13@example.com', '조세호', 'Jo Se-ho', NOW(), NOW()),
-(14, 'MANAGER', 'Course 1', 'MANAGER2@example.com', '유희열', 'Yoo Hee-yeol', NOW(), NOW()),
-(15, 'STUDENT', 'Course 2', 'STUDENT15@example.com', '안영미', 'Ahn Young-mi', NOW(), NOW()),
-(16, 'STUDENT', 'Course 1', 'STUDENT16@example.com', '김태호', 'Kim Tae-ho', NOW(), NOW()),
-(17, 'STUDENT', 'Course 3', 'STUDENT17@example.com', '나영석', 'Na Young-seok', NOW(), NOW()),
-(18, 'STUDENT', 'Course 1', 'STUDENT18@example.com', '이승기', 'Lee Seung-gi', NOW(), NOW()),
-(19, 'STUDENT', 'Course 2', 'STUDENT19@example.com', '차은우', 'Cha Eun-woo', NOW(), NOW()),
-(20, 'STUDENT', 'Course 3', 'STUDENT20@example.com', '송혜교', 'Song Hye-kyo', NOW(), NOW());
+INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_english, kakao_id, created_at, updated_at) VALUES
+(1, 'STUDENT', 'Course 1', '홍길동', 'Hong Gil-dong', 1234567891, NOW(), NOW()),
+(2, 'STUDENT', 'Course 2', '김철수', 'Kim Cheol-su', 1234567892, NOW(), NOW()),
+(3, 'STUDENT', 'Course 3', '이영희', 'Lee Young-hee', 1234567893, NOW(), NOW()),
+(4, 'MANAGER', 'Course 1', '박영수', 'Park Young-su', 1234567894, NOW(), NOW()),
+(5, 'STUDENT', 'Course 2', '최지우', 'Choi Ji-woo', 1234567895, NOW(), NOW()),
+(6, 'STUDENT', 'Course 1', '정수민', 'Jung Su-min', 1234567896, NOW(), NOW()),
+(7, 'STUDENT', 'Course 3', '신동엽', 'Shin Dong-yeop', 1234567897, NOW(), NOW()),
+(8, 'STUDENT', 'Course 1', '유재석', 'Yoo Jae-suk', 1234567898, NOW(), NOW()),
+(9, 'STUDENT', 'Course 2', '하하', 'Haha', 1234567899, NOW(), NOW()),
+(10, 'STUDENT', 'Course 3', '김종국', 'Kim Jong-kook', 1234567900, NOW(), NOW()),
+(11, 'STUDENT', 'Course 1', '강호동', 'Kang Ho-dong', 1234567901, NOW(), NOW()),
+(12, 'STUDENT', 'Course 2', '이수근', 'Lee Soo-geun', 1234567902, NOW(), NOW()),
+(13, 'STUDENT', 'Course 3', '조세호', 'Jo Se-ho', 1234567903, NOW(), NOW()),
+(14, 'MANAGER', 'Course 1', '유희열', 'Yoo Hee-yeol', 1234567904, NOW(), NOW()),
+(15, 'STUDENT', 'Course 2', '안영미', 'Ahn Young-mi', 1234567905, NOW(), NOW()),
+(16, 'STUDENT', 'Course 1', '김태호', 'Kim Tae-ho', 1234567906, NOW(), NOW()),
+(17, 'STUDENT', 'Course 3', '나영석', 'Na Young-seok', 1234567907, NOW(), NOW()),
+(18, 'STUDENT', 'Course 1', '이승기', 'Lee Seung-gi', 1234567908, NOW(), NOW()),
+(19, 'STUDENT', 'Course 2', '차은우', 'Cha Eun-woo', 1234567909, NOW(), NOW()),
+(20, 'STUDENT', 'Course 3', '송혜교', 'Song Hye-kyo', 1234567910, NOW(), NOW());
 
 -- Post 데이터 삽입
 INSERT IGNORE INTO post (post_id, member_id, post_title, post_content, created_at, updated_at) VALUES

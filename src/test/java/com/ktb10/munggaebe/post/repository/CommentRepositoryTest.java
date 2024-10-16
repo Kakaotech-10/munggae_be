@@ -32,7 +32,7 @@ class CommentRepositoryTest {
     @DisplayName("postId와 depth로 댓글 페이지 조회 - depth 0")
     void findByPostIdAndDepth_ShouldReturnPagedComments_WhenCommentsExist_RootComment() {
         // given
-        Member member = memberRepository.save(Member.builder().name("testMember").nameEnglish("testEngName").course("fullstack").email("test@test.com").role(MemberRole.STUDENT).build());
+        Member member = memberRepository.save(Member.builder().name("testMember").nameEnglish("testEngName").course("fullstack").role(MemberRole.STUDENT).build());
         Post post = postRepository.save(Post.builder().title("Test Post").content("This is a test post").member(member).build());
 
         Comment comment1 = Comment.builder().post(post).member(member).content("Root comment 1").depth(0).build();
@@ -58,7 +58,7 @@ class CommentRepositoryTest {
     @DisplayName("postId와 depth로 댓글 페이지 조회 - depth 1")
     void findByPostIdAndDepth_ShouldReturnPagedComments_WhenCommentsExist_ReplyComoment() {
         // given
-        Member member = memberRepository.save(Member.builder().name("testMember").nameEnglish("testEngName").course("fullstack").email("test@test.com").role(MemberRole.STUDENT).build());
+        Member member = memberRepository.save(Member.builder().name("testMember").nameEnglish("testEngName").course("fullstack").role(MemberRole.STUDENT).build());
         Post post = postRepository.save(Post.builder().title("Test Post").content("This is a test post").member(member).build());
 
         Comment comment1 = Comment.builder().post(post).member(member).content("Root comment 1").depth(0).build();
