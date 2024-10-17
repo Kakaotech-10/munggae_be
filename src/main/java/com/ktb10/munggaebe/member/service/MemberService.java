@@ -3,6 +3,7 @@ package com.ktb10.munggaebe.member.service;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ public class MemberService {
     private final MemberRepository memberRepository;
 
 
+    @Transactional
     public void joinKakao(Long kakaoId, String nickName) {
 
         if (memberRepository.findByKakaoId(kakaoId).isEmpty()) {
