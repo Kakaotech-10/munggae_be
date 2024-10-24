@@ -18,7 +18,7 @@ public class TokenManager {
     private final JwtTokenProvider jwtTokenProvider;
 
     private static final String BEARER_TYPE = "Bearer";
-    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000;	           //1hour
+    private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;	           //1hour
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;    //14days
 
     public AccessTokenResponse generateAccessToken(String uid, Collection<? extends GrantedAuthority> authorities) {
