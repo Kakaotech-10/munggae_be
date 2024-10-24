@@ -9,6 +9,7 @@ import com.ktb10.munggaebe.auth.exception.OAuthResponseJsonProcessingException;
 import com.ktb10.munggaebe.auth.feign.KakaoAuthClient;
 import com.ktb10.munggaebe.auth.feign.KakaoMemberApiClient;
 import com.ktb10.munggaebe.auth.jwt.TokenManager;
+import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.service.MemberService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -105,9 +106,9 @@ public class KakaoService {
         Long kakaoId = Long.valueOf(memberInfo.get("id").toString());
         String nickName = memberInfo.get("nickname").toString();
 
-        memberService.joinKakao(kakaoId, nickName);
+        Member member = memberService.joinKakao(kakaoId, nickName);
 
-        AuthTokens token = tokenManager.generate(kakaoId.toString());
+        AuthTokens token = tokenManager.generate(kakaoId.toString(), member.getAuthorities());
         return new LoginResponse(kakaoId, nickName, token);
     }
 

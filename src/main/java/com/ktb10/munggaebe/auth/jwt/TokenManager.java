@@ -2,8 +2,10 @@ package com.ktb10.munggaebe.auth.jwt;
 
 import com.ktb10.munggaebe.auth.dto.AuthTokens;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
+import java.util.Collection;
 import java.util.Date;
 
 @Component
@@ -16,12 +18,12 @@ public class TokenManager {
     private static final long ACCESS_TOKEN_EXPIRE_TIME = 1000 * 60 * 60;	           //1hour
     private static final long REFRESH_TOKEN_EXPIRE_TIME = 1000 * 60 * 60 * 24 * 14;    //14days
 
-    public AuthTokens generate(String uid) {
+    public AuthTokens generate(String uid, Collection<? extends GrantedAuthority> authorities) {
         long now = (new Date()).getTime();
         Date accessTokenExpiredAt = new Date(now + ACCESS_TOKEN_EXPIRE_TIME);
         Date refreshTokenExpiredAt = new Date(now + REFRESH_TOKEN_EXPIRE_TIME);
 
-        String accessToken = jwtTokenProvider.accessTokenGenerate(uid, accessTokenExpiredAt);
+        String accessToken = jwtTokenProvider.accessTokenGenerate(uid, authorities, accessTokenExpiredAt);
         String refreshToken = jwtTokenProvider.refreshTokenGenerate(refreshTokenExpiredAt);
 
         return AuthTokens.of(accessToken, refreshToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME / 1000L);

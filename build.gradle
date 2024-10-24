@@ -55,6 +55,12 @@ dependencies {
 
 	//open feign
 	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	//Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	//OAuth2 Client
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
 tasks.named('test') {
