@@ -3,18 +3,23 @@ package com.ktb10.munggaebe.auth.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ktb10.munggaebe.auth.dto.AuthTokens;
-import com.ktb10.munggaebe.auth.dto.LoginResponse;
+import com.ktb10.munggaebe.auth.dto.AccessTokenResponse;
+import com.ktb10.munggaebe.auth.dto.RefreshTokenResponse;
 import com.ktb10.munggaebe.auth.exception.OAuthResponseJsonProcessingException;
 import com.ktb10.munggaebe.auth.feign.KakaoAuthClient;
 import com.ktb10.munggaebe.auth.feign.KakaoMemberApiClient;
+import com.ktb10.munggaebe.auth.jwt.JwtTokenProvider;
 import com.ktb10.munggaebe.auth.jwt.TokenManager;
+import com.ktb10.munggaebe.auth.service.dto.LoginDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.service.MemberService;
+import io.jsonwebtoken.Claims;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
@@ -28,6 +33,7 @@ public class KakaoService {
     private final KakaoMemberApiClient kakaoMemberApiClient;
     private final TokenManager tokenManager;
     private final MemberService memberService;
+    private final JwtTokenProvider jwtTokenProvider;
 
     @Value("${kakao.key.client-id}")
     private String clientId;
@@ -35,7 +41,7 @@ public class KakaoService {
     @Value("${kakao.redirect-uri}")
     private String redirectUri;
 
-    public LoginResponse login(String code) {
+    public LoginDto login(String code) {
 
         log.info("getAccessToken start");
         String accessToken = getAccessToken(code);
@@ -102,14 +108,36 @@ public class KakaoService {
         return memberInfo;
     }
 
-    private LoginResponse loginWithInfo(HashMap<String, Object> memberInfo) {
+    private LoginDto loginWithInfo(HashMap<String, Object> memberInfo) {
         Long kakaoId = Long.valueOf(memberInfo.get("id").toString());
         String nickName = memberInfo.get("nickname").toString();
 
         Member member = memberService.joinKakao(kakaoId, nickName);
 
-        AuthTokens token = tokenManager.generate(kakaoId.toString(), member.getAuthorities());
-        return new LoginResponse(kakaoId, nickName, token);
+        AccessTokenResponse accessTokenResponse = tokenManager.generateAccessToken(kakaoId.toString(), member.getAuthorities());
+        RefreshTokenResponse refreshTokenResponse = tokenManager.generateRefreshToken();
+
+        return new LoginDto(kakaoId, nickName, accessTokenResponse, refreshTokenResponse);
     }
 
+    public AccessTokenResponse regenerateAccessToken(String refreshToken, HttpServletRequest request) {
+
+        String accessToken = tokenManager.resolveToken(request);
+
+        if (accessToken == null) {
+            throw new RuntimeException("잘못된 access token입니다.");
+        }
+
+        if (jwtTokenProvider.validateToken(refreshToken)) {
+
+            Claims claims = jwtTokenProvider.parseClaims(accessToken);
+            String kakaoId = claims.getSubject();
+
+            UserDetails userDetails = memberService.loadUserByUsername(kakaoId);
+
+            return tokenManager.generateAccessToken(kakaoId, userDetails.getAuthorities());
+        }
+
+        throw new RuntimeException("refresh token이 유효하지 않습니다.");
+    }
 }

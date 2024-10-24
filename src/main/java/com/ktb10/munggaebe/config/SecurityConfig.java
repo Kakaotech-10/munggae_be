@@ -29,6 +29,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth ->
                         auth
                                 .requestMatchers("/api/v1/auth/login/oauth2/callback/kakao").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/comments/**", "/api/v1/posts/**").permitAll()
                                 .requestMatchers(HttpMethod.PUT,"/api/v1/comments/**", "/api/v1/posts/**").hasRole("MANAGER")
                                 .requestMatchers(HttpMethod.DELETE,"/api/v1/comments/**", "/api/v1/posts/**").hasRole("MANAGER")

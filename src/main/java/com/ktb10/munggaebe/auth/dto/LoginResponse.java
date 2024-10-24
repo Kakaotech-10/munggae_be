@@ -6,9 +6,9 @@ import lombok.Getter;
 public class LoginResponse {
     private Long id;
     private String nickname;
-    private AuthTokens token;
+    private AccessTokenResponse token;
 
-    public LoginResponse(Long id, String nickname, AuthTokens token) {
+    public LoginResponse(Long id, String nickname, AccessTokenResponse token) {
         this.id = id;
         this.nickname = nickname;
         this.token = token;
