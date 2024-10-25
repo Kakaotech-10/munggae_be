@@ -1,8 +1,10 @@
 package com.ktb10.munggaebe.auth.dto;
 
 import lombok.Getter;
+import lombok.ToString;
 
 @Getter
+@ToString
 public class AccessTokenResponse {
 
     private String accessToken;

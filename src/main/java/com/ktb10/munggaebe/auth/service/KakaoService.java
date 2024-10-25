@@ -50,6 +50,7 @@ public class KakaoService {
         log.info("getMemberInfo start");
         HashMap<String, Object> userInfo = getMemberInfo(accessToken);
 
+        log.info("loginWithInfo start");
         return loginWithInfo(userInfo);
     }
 
@@ -86,7 +87,7 @@ public class KakaoService {
         log.info("kakao response = {}", response);
 
         String responseBody = response.getBody();
-        log.info("kakao responseBody = {}", responseBody);
+//        log.info("kakao responseBody = {}", responseBody);
 
         ObjectMapper objectMapper = new ObjectMapper();
         JsonNode jsonNode;
@@ -116,6 +117,8 @@ public class KakaoService {
 
         AccessTokenResponse accessTokenResponse = tokenManager.generateAccessToken(kakaoId.toString(), member.getAuthorities());
         RefreshTokenResponse refreshTokenResponse = tokenManager.generateRefreshToken();
+        log.info("발급된 AccessToken = {}", accessTokenResponse);
+        log.info("발급된 RefreshToken = {}", refreshTokenResponse);
 
         return new LoginDto(kakaoId, nickName, accessTokenResponse, refreshTokenResponse);
     }
@@ -130,10 +133,12 @@ public class KakaoService {
 
         if (jwtTokenProvider.validateToken(refreshToken)) {
 
+            log.info("validate refreshToken = {}", refreshToken);
             Claims claims = jwtTokenProvider.parseClaims(accessToken);
             String kakaoId = claims.getSubject();
 
             UserDetails userDetails = memberService.loadUserByUsername(kakaoId);
+            log.info("userDetails = {}",userDetails);
 
             return tokenManager.generateAccessToken(kakaoId, userDetails.getAuthorities());
         }

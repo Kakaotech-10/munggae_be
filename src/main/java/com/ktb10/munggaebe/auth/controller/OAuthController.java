@@ -57,6 +57,7 @@ public class OAuthController {
 
         log.info("regenerateAccessToken start");
         final AccessTokenResponse regeneratedAccessToken = kakaoService.regenerateAccessToken(refreshToken, request);
+        log.info("regenerateAccessToken = {}", regeneratedAccessToken);
 
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(regeneratedAccessToken);
