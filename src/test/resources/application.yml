@@ -12,3 +12,14 @@ spring:
     hibernate:
       ddl-auto: create-drop
     database-platform: org.hibernate.dialect.H2Dialect
+
+kakao:
+  key:
+    #    client-id: 43c3276a70b38834e826316a1e73238f
+    client-id: 0bd0b44d1c546670862fe8976d4b4905
+  #  redirect-uri: http://localhost:3000/api/v1/auth/login/oauth2/callback/kakao
+  redirect-uri: http://localhost:8080/api/v1/auth/login/oauth2/callback/kakao
+
+custom:
+  jwt:
+    secretKey: e84a2015a611cc64abc74b0b1b88a4de8d7921f145e0f6ff579dd96f7b816cc8e84a2015a611cc64abc74b0b1b88a4de8d7921f1

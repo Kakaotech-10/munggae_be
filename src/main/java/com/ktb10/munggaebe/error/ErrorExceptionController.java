@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.error;
 
+import com.ktb10.munggaebe.auth.exception.OAuthResponseJsonProcessingException;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.post.exception.CommentNotFoundException;
@@ -43,6 +44,15 @@ public class ErrorExceptionController {
     @ExceptionHandler(CommentNotFoundException.class)
     public ResponseEntity<ErrorResponse> handleCommentNotFoundException(CommentNotFoundException e) {
         final ErrorCode errorCode = ErrorCode.COMMENT_NOT_FOUND;
+        log.warn(e.getMessage(), e);
+
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(ErrorResponse.from(errorCode));
+    }
+
+    @ExceptionHandler(OAuthResponseJsonProcessingException.class)
+    public ResponseEntity<ErrorResponse> handleOAuthResponseJsonProcessingException(OAuthResponseJsonProcessingException e) {
+        final ErrorCode errorCode = ErrorCode.OAUTH_LOGIN_ERROR;
         log.warn(e.getMessage(), e);
 
         return ResponseEntity.status(errorCode.getStatus())
