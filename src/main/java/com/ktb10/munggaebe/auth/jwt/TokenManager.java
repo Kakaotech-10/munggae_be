@@ -46,8 +46,4 @@ public class TokenManager {
         }
         return null;
     }
-
-    public boolean isValidRefreshToken(String refreshToken) {
-        return false;
-    }
 }
