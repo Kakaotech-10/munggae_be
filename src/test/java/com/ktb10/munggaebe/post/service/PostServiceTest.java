@@ -9,7 +9,6 @@ import com.ktb10.munggaebe.post.domain.Post;
 import com.ktb10.munggaebe.post.dto.PostServiceDto;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.PostRepository;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -47,11 +46,6 @@ class PostServiceTest {
     void setup() {
         Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
         setupSecurityContextWithRole(member, "STUDENT");
-    }
-
-    @AfterEach
-    void afterEach() {
-        SecurityContextHolder.clearContext();
     }
 
     private void setupSecurityContextWithRole(Member member, String role) {

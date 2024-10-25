@@ -12,19 +12,24 @@ import com.ktb10.munggaebe.post.exception.CommentNotFoundException;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.CommentRepository;
 import com.ktb10.munggaebe.post.repository.PostRepository;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.Collections;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
 class CommentServiceTest {
@@ -40,6 +45,19 @@ class CommentServiceTest {
 
     @InjectMocks
     private CommentService commentService;
+
+    private void setupSecurityContextWithRole(Long userId, String role) {
+        Member member = Member.builder().id(userId).role(MemberRole.valueOf(role)).build();
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                member, null, Collections.singleton(() -> "ROLE_" + role)
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
+
+    @BeforeEach
+    void setupSecurityContextWithStudent() {
+        setupSecurityContextWithRole(1L, "STUDENT");
+    }
 
     @Test
     @DisplayName("댓글이 존재하는 경우 root 댓글을 성공적으로 반환한다.")
@@ -171,9 +189,7 @@ class CommentServiceTest {
     void updateComment_ShouldUpdateComment_WhenAuthorized() {
         // given
         long commentId = 1L;
-        long memberId = 2L;
-
-        Member member = Member.builder().id(memberId).build();
+        Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
         Comment comment = Comment.builder()
                 .id(commentId)
                 .member(member)
@@ -183,13 +199,13 @@ class CommentServiceTest {
         CommentServiceDto.UpdateReq updateReq = new CommentServiceDto.UpdateReq(commentId, "Updated content");
 
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         // when
-        commentService.updateComment(updateReq, memberId);
+        Comment result = commentService.updateComment(updateReq);
 
         // then
-        assertThat(comment.getContent()).isEqualTo("Updated content");
+        assertThat(result.getContent()).isEqualTo("Updated content");
+        verify(commentRepository).findById(commentId);
     }
 
     @Test
@@ -197,60 +213,59 @@ class CommentServiceTest {
     void updateComment_ShouldThrowException_WhenCommentNotFound() {
         // given
         long commentId = 1L;
-        long memberId = 2L;
         CommentServiceDto.UpdateReq updateReq = new CommentServiceDto.UpdateReq(commentId, "Updated content");
 
         given(commentRepository.findById(commentId)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> commentService.updateComment(updateReq, memberId))
+        assertThatThrownBy(() -> commentService.updateComment(updateReq))
                 .isInstanceOf(CommentNotFoundException.class);
     }
 
     @Test
-    @DisplayName("권한이 없는 경우 예외가 발생한다.")
+    @DisplayName("학생이 자신이 작성하지 않은 댓글을 수정하려고 할 때 예외가 발생한다.")
     void updateComment_ShouldThrowException_WhenUnauthorized() {
         // given
         long commentId = 1L;
-        long memberId = 2L;
-
+        Member otherMember = Member.builder().id(2L).role(MemberRole.STUDENT).build();
         Comment comment = Comment.builder()
                 .id(commentId)
-                .member(Member.builder().id(3L).build())
+                .member(otherMember)
+                .content("Original content")
                 .build();
 
         CommentServiceDto.UpdateReq updateReq = new CommentServiceDto.UpdateReq(commentId, "Updated content");
 
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(Member.builder().id(memberId).role(MemberRole.STUDENT).build()));
 
         // when & then
-        assertThatThrownBy(() -> commentService.updateComment(updateReq, memberId))
+        assertThatThrownBy(() -> commentService.updateComment(updateReq))
                 .isInstanceOf(MemberPermissionDeniedException.class);
     }
 
     @Test
-    @DisplayName("매니저가 수정하는 경우 성공적으로 수정된다.")
-    void updateComment_ShouldThrowException_WhenRoleManager() {
+    @DisplayName("매니저가 다른 사용자의 댓글을 수정할 수 있다.")
+    void updateComment_ShouldUpdateComment_WhenRoleManager() {
         // given
         long commentId = 1L;
-        long memberId = 3L;
+        setupSecurityContextWithRole(2L, "MANAGER");
 
+        Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
         Comment comment = Comment.builder()
                 .id(commentId)
-                .member(Member.builder().id(2L).build())
+                .member(member)
+                .content("Original content")
                 .build();
 
         CommentServiceDto.UpdateReq updateReq = new CommentServiceDto.UpdateReq(commentId, "Updated content");
 
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(Member.builder().id(memberId).role(MemberRole.MANAGER).build()));
 
         // when
-        commentService.updateComment(updateReq, memberId);
+        Comment result = commentService.updateComment(updateReq);
 
         // then
-        assertThat(comment.getContent()).isEqualTo("Updated content");
+        assertThat(result.getContent()).isEqualTo("Updated content");
     }
 
     @Test
@@ -258,23 +273,21 @@ class CommentServiceTest {
     void deleteComment_ShouldDeleteComment_WhenAuthorized() {
         // given
         long commentId = 1L;
-        long memberId = 2L;
 
-        Member member = Member.builder().id(memberId).build();
-
+        Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
         Comment comment = Comment.builder()
                 .id(commentId)
                 .member(member)
                 .build();
 
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         // when
-        commentService.deleteComment(commentId, memberId);
+        commentService.deleteComment(commentId);
 
         // then
         assertThat(comment.isDeleted()).isTrue();
+        verify(commentRepository).findById(commentId);
     }
 
     @Test
@@ -282,57 +295,53 @@ class CommentServiceTest {
     void deleteComment_ShouldThrowException_WhenCommentNotFound() {
         // given
         long commentId = 1L;
-        long memberId = 2L;
 
         given(commentRepository.findById(commentId)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> commentService.deleteComment(commentId, memberId))
+        assertThatThrownBy(() -> commentService.deleteComment(commentId))
                 .isInstanceOf(CommentNotFoundException.class);
     }
 
     @Test
-    @DisplayName("작성자가 아닌 학색이 삭제하는 경우 예외가 발생한다.")
+    @DisplayName("학생이 자신이 작성하지 않은 댓글을 삭제하려고 할 때 예외가 발생한다.")
     void deleteComment_ShouldThrowException_WhenUnauthorized() {
         // given
         long commentId = 1L;
-        long memberId = 3L;
 
-        Member member = Member.builder().id(2L).build();
-
+        Member otherMember = Member.builder().id(2L).role(MemberRole.STUDENT).build();
         Comment comment = Comment.builder()
                 .id(commentId)
-                .member(member)
+                .member(otherMember)
                 .build();
 
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(Member.builder().id(3L).role(MemberRole.STUDENT).build()));
 
         // when & then
-        assertThatThrownBy(() -> commentService.deleteComment(commentId, memberId))
+        assertThatThrownBy(() -> commentService.deleteComment(commentId))
                 .isInstanceOf(MemberPermissionDeniedException.class);
     }
 
     @Test
-    @DisplayName("매니저가 삭제하는 경우 성공적으로 삭제된다.")
+    @DisplayName("매니저가 다른 사용자의 댓글을 삭제할 수 있다.")
     void deleteComment_ShouldDeleteComment_WhenRoleManager() {
         // given
         long commentId = 1L;
-        long memberId = 3L;
+        setupSecurityContextWithRole(2L, "MANAGER");
 
-        Member member = Member.builder().id(2L).build();
+        Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
         Comment comment = Comment.builder()
                 .id(commentId)
                 .member(member)
                 .build();
 
         given(commentRepository.findById(commentId)).willReturn(Optional.of(comment));
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(Member.builder().id(3L).role(MemberRole.MANAGER).build()));
 
         // when
-        commentService.deleteComment(commentId, memberId);
+        commentService.deleteComment(commentId);
 
         // then
         assertThat(comment.isDeleted()).isTrue();
+        verify(commentRepository).findById(commentId);
     }
 }
