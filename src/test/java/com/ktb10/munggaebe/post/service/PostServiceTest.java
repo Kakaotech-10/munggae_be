@@ -9,6 +9,8 @@ import com.ktb10.munggaebe.post.domain.Post;
 import com.ktb10.munggaebe.post.dto.PostServiceDto;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.PostRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,7 +18,10 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.context.SecurityContextHolder;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +42,24 @@ class PostServiceTest {
 
     @Mock
     private MemberRepository memberRepository;
+
+    @BeforeEach
+    void setup() {
+        Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
+        setupSecurityContextWithRole(member, "STUDENT");
+    }
+
+    @AfterEach
+    void afterEach() {
+        SecurityContextHolder.clearContext();
+    }
+
+    private void setupSecurityContextWithRole(Member member, String role) {
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(
+                member, null, Collections.singleton(() -> "ROLE_" + role)
+        );
+        SecurityContextHolder.getContext().setAuthentication(authentication);
+    }
 
     @Test
     @DisplayName("게시물 목록을 성공적으로 가져온다")
@@ -125,17 +148,13 @@ class PostServiceTest {
     void updatePost_ShouldUpdatePost_WhenAuthorized() {
         // given
         long postId = 1L;
-        long memberId = 1L;
-
-        Member member = Member.builder().id(memberId).build();
-        Post post = Post.builder().id(postId).member(member).build();
+        Post post = Post.builder().id(postId).member(Member.builder().id(1L).role(MemberRole.STUDENT).build()).build();
         PostServiceDto.UpdateReq updateReq = new PostServiceDto.UpdateReq(postId, "Updated Title", "Updated Content");
 
         given(postRepository.findById(postId)).willReturn(Optional.of(post));
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
 
         // when
-        Post result = postService.updatePost(updateReq, memberId);
+        Post result = postService.updatePost(updateReq);
 
         // then
         assertThat(result).isNotNull();
@@ -153,7 +172,7 @@ class PostServiceTest {
         given(postRepository.findById(postId)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> postService.updatePost(updateReq, 1L))
+        assertThatThrownBy(() -> postService.updatePost(updateReq))
                 .isInstanceOf(PostNotFoundException.class);
     }
 
@@ -162,40 +181,31 @@ class PostServiceTest {
     void updatePost_ShouldThrowException_WhenUnauthorized() {
         // given
         long postId = 1L;
-        long memberId = 1L;
-        long differentMemberId = 2L;
-
-        Member member = Member.builder().id(differentMemberId).role(MemberRole.STUDENT).build();
-        Post post = Post.builder().id(postId).member(Member.builder().id(memberId).build()).build();
+        Post post = Post.builder().id(postId).member(Member.builder().id(2L).role(MemberRole.STUDENT).build()).build();
         PostServiceDto.UpdateReq updateReq = new PostServiceDto.UpdateReq(postId, "Updated Title", "Updated Content");
 
         given(postRepository.findById(postId)).willReturn(Optional.of(post));
-        given(memberRepository.findById(differentMemberId)).willReturn(Optional.of(member));
-
 
         // when & then
-        assertThatThrownBy(() -> postService.updatePost(updateReq, differentMemberId))
+        assertThatThrownBy(() -> postService.updatePost(updateReq))
                 .isInstanceOf(MemberPermissionDeniedException.class);
     }
 
     @Test
-    @DisplayName("게시물을 수정할 때 매니저이면, 성공적으로 수정한다")
+    @DisplayName("게시물을 수정할 때 매니저이면 성공적으로 수정한다")
     void updatePost_ShouldUpdatePost_WhenRoleManager() {
         // given
         long postId = 1L;
-        long memberId = 1L;
-        long differentMemberId = 2L;
-
-        Member member = Member.builder().id(differentMemberId).role(MemberRole.MANAGER).build();
-        Post post = Post.builder().id(postId).member(Member.builder().id(memberId).build()).build();
+        long managerId = 2L;
+        Member manager = Member.builder().id(managerId).role(MemberRole.MANAGER).build();
+        Post post = Post.builder().id(postId).member(Member.builder().id(1L).build()).build();
         PostServiceDto.UpdateReq updateReq = new PostServiceDto.UpdateReq(postId, "Updated Title", "Updated Content");
 
         given(postRepository.findById(postId)).willReturn(Optional.of(post));
-        given(memberRepository.findById(differentMemberId)).willReturn(Optional.of(member));
-
+        setupSecurityContextWithRole(manager, "MANAGER");
 
         // when
-        Post result = postService.updatePost(updateReq, differentMemberId);
+        Post result = postService.updatePost(updateReq);
 
         // then
         assertThat(result).isNotNull();
@@ -208,16 +218,15 @@ class PostServiceTest {
     void deletePost_ShouldDeletePost_WhenAuthorized() {
         // given
         long postId = 1L;
-        long memberId = 1L;
 
-        Member member = Member.builder().id(memberId).build();
+        Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
         Post post = Post.builder().id(postId).member(member).build();
 
         given(postRepository.findById(postId)).willReturn(Optional.of(post));
-        given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+        setupSecurityContextWithRole(member, "STUDENT");
 
         // when
-        postService.deletePost(postId, memberId);
+        postService.deletePost(postId);
 
         // then
         verify(postRepository).deleteById(postId);
@@ -231,7 +240,7 @@ class PostServiceTest {
         given(postRepository.findById(postId)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> postService.deletePost(postId, 1L))
+        assertThatThrownBy(() -> postService.deletePost(postId))
                 .isInstanceOf(PostNotFoundException.class);
     }
 
@@ -240,17 +249,14 @@ class PostServiceTest {
     void deletePost_ShouldThrowException_WhenUnauthorized() {
         // given
         long postId = 1L;
-        long memberId = 1L;
-        long differentMemberId = 2L;
-
-        Member member = Member.builder().id(differentMemberId).role(MemberRole.STUDENT).build();
-        Post post = Post.builder().id(postId).member(Member.builder().id(memberId).build()).build();
+        Member student = Member.builder().id(2L).role(MemberRole.STUDENT).build();
+        Post post = Post.builder().id(postId).member(Member.builder().id(1L).build()).build();
 
         given(postRepository.findById(postId)).willReturn(Optional.of(post));
-        given(memberRepository.findById(differentMemberId)).willReturn(Optional.of(member));
+        setupSecurityContextWithRole(student, "STUDENT");
 
         // when & then
-        assertThatThrownBy(() -> postService.deletePost(postId, differentMemberId))
+        assertThatThrownBy(() -> postService.deletePost(postId))
                 .isInstanceOf(MemberPermissionDeniedException.class);
     }
 
@@ -259,17 +265,14 @@ class PostServiceTest {
     void deletePost_ShouldDeletePost_WhenRoleManager() {
         // given
         long postId = 1L;
-        long memberId = 1L;
-        long differentMemberId = 2L;
-
-        Member member = Member.builder().id(differentMemberId).role(MemberRole.MANAGER).build();
-        Post post = Post.builder().id(postId).member(Member.builder().id(memberId).build()).build();
+        Member manager = Member.builder().id(2L).role(MemberRole.MANAGER).build();
+        Post post = Post.builder().id(postId).member(Member.builder().id(1L).build()).build();
 
         given(postRepository.findById(postId)).willReturn(Optional.of(post));
-        given(memberRepository.findById(differentMemberId)).willReturn(Optional.of(member));
+        setupSecurityContextWithRole(manager, "MANAGER");
 
         // when
-        postService.deletePost(postId, differentMemberId);
+        postService.deletePost(postId);
 
         // then
         verify(postRepository).deleteById(postId);

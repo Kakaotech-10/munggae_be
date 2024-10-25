@@ -39,10 +39,10 @@ springdoc:
 
 kakao:
   key:
-    client-id: 43c3276a70b38834e826316a1e73238f
-#    client-id: 0bd0b44d1c546670862fe8976d4b4905
-  redirect-uri: http://localhost:3000/api/v1/auth/login/oauth2/callback/kakao
-#  redirect-uri: http://localhost:8080/api/v1/auth/login/oauth2/callback/kakao
+#    client-id: 43c3276a70b38834e826316a1e73238f
+    client-id: 0bd0b44d1c546670862fe8976d4b4905
+#  redirect-uri: http://localhost:3000/api/v1/auth/login/oauth2/callback/kakao
+  redirect-uri: http://localhost:8080/api/v1/auth/login/oauth2/callback/kakao
 
 custom:
   jwt:

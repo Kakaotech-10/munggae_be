@@ -9,7 +9,9 @@ import com.ktb10.munggaebe.post.domain.Post;
 import com.ktb10.munggaebe.post.dto.PostServiceDto;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.PostRepository;
+import com.ktb10.munggaebe.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -17,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -51,13 +54,13 @@ public class PostService {
     }
 
     @Transactional
-    public Post updatePost(final PostServiceDto.UpdateReq updateReq, final long memberId) {
+    public Post updatePost(final PostServiceDto.UpdateReq updateReq) {
 
         final long postId = updateReq.getPostId();
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
-        validateAuth(memberId, post.getMember().getId());
+        validateAuthorization(post);
 
         post.updatePost(updateReq.getTitle(), updateReq.getContent());
 
@@ -65,22 +68,20 @@ public class PostService {
     }
 
     @Transactional
-    public void deletePost(final long postId, final long memberId) {
+    public void deletePost(final long postId) {
 
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
-        validateAuth(memberId, post.getMember().getId());
-
+        validateAuthorization(post);
+        
         postRepository.deleteById(postId);
     }
 
-    private void validateAuth(final long memberId, final long postMemberId) {
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
-
-        if (member.getRole() == MemberRole.STUDENT && memberId != postMemberId) {
-            throw new MemberPermissionDeniedException(memberId, member.getRole());
+    private void validateAuthorization(Post post) {
+        Long currentUserId = SecurityUtil.getCurrentUserId();
+        if (SecurityUtil.hasRole("STUDENT") && !post.getMember().getId().equals(currentUserId)) {
+            throw new MemberPermissionDeniedException(currentUserId, MemberRole.STUDENT);
         }
     }
 }

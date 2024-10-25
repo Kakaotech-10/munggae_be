@@ -61,10 +61,9 @@ public class PostController {
     @Operation(summary = "게시글 수정", description = "주어진 ID를 기준으로 게시글을 수정합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 수정 성공")
     public ResponseEntity<PostDto.PostRes> updatePost(@PathVariable final long postId,
-                                                      @RequestBody final PostDto.PostUpdateReq request,
-                                                      @RequestParam final long memberId) {
+                                                      @RequestBody final PostDto.PostUpdateReq request) {
         final PostServiceDto.UpdateReq updateReq = toServiceDto(postId, request);
-        final Post updatedPost = postService.updatePost(updateReq, memberId);
+        final Post updatedPost = postService.updatePost(updateReq);
 
         return ResponseEntity.ok(new PostDto.PostRes(updatedPost));
     }
@@ -72,9 +71,9 @@ public class PostController {
     @DeleteMapping("/posts/{postId}")
     @Operation(summary = "게시글 삭제", description = "주어진 ID를 기준으로 게시글을 삭제합니다.")
     @ApiResponse(responseCode = "204", description = "게시글 삭제 성공")
-    public ResponseEntity<Void> deletePost(@PathVariable final long postId, @RequestParam final long memberId) {
+    public ResponseEntity<Void> deletePost(@PathVariable final long postId) {
 
-        postService.deletePost(postId, memberId);
+        postService.deletePost(postId);
 
         return ResponseEntity.noContent().build();
     }
