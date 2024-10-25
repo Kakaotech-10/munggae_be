@@ -28,11 +28,11 @@ public class OAuthController {
     private final KakaoService kakaoService;
 
     @GetMapping("/login/oauth2/callback/kakao")
-    public ResponseEntity<LoginResponse> kakaoLogin(@RequestParam String code, HttpServletResponse response) {
+    public ResponseEntity<LoginResponse> kakaoLogin(@RequestParam final String code, final HttpServletResponse response) {
         log.info("kakaoLogin start");
-        LoginDto dto = kakaoService.login(code);
+        final LoginDto dto = kakaoService.login(code);
 
-        RefreshTokenResponse refreshTokenResponse = dto.getRefreshToken();
+        final RefreshTokenResponse refreshTokenResponse = dto.getRefreshToken();
         if (refreshTokenResponse != null) {
             log.info("refreshToken on cookie");
             final ResponseCookie cookie = ResponseCookie.from(COOKIE_TOKEN, refreshTokenResponse.getRefreshToken())
@@ -52,7 +52,7 @@ public class OAuthController {
     @PostMapping("/refresh")
     public ResponseEntity<AccessTokenResponse> regenerateAccessToken(
             @CookieValue(COOKIE_TOKEN) final String refreshToken,
-            HttpServletRequest request
+            final HttpServletRequest request
     ) {
 
         log.info("regenerateAccessToken start");
