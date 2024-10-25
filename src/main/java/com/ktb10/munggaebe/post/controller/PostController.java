@@ -39,9 +39,9 @@ public class PostController {
     @PostMapping("/posts")
     @Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다.")
     @ApiResponse(responseCode = "201", description = "게시글 작성 성공")
-    public ResponseEntity<PostDto.PostRes> createPost(@RequestBody final PostDto.PostCreateReq request, @RequestParam final long memberId) {
+    public ResponseEntity<PostDto.PostRes> createPost(@RequestBody final PostDto.PostCreateReq request) {
 
-        final Post createdPost = postService.createPost(request.toEntity(), memberId);
+        final Post createdPost = postService.createPost(request.toEntity());
 
         return ResponseEntity.created(URI.create("/api/v1/posts/" + createdPost.getId()))
                 .body(new PostDto.PostRes(createdPost));

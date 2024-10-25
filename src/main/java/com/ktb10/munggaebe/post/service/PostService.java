@@ -39,10 +39,12 @@ public class PostService {
     }
 
     @Transactional
-    public Post createPost(final Post post, final long memberId) {
+    public Post createPost(final Post post) {
 
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        Long currentMemberId = SecurityUtil.getCurrentUserId();
+
+        final Member member = memberRepository.findById(currentMemberId)
+                .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
         final Post postWithMember = Post.builder()
                 .member(member)
@@ -79,9 +81,9 @@ public class PostService {
     }
 
     private void validateAuthorization(Post post) {
-        Long currentUserId = SecurityUtil.getCurrentUserId();
-        if (SecurityUtil.hasRole("STUDENT") && !post.getMember().getId().equals(currentUserId)) {
-            throw new MemberPermissionDeniedException(currentUserId, MemberRole.STUDENT);
+        Long currentMemberId = SecurityUtil.getCurrentUserId();
+        if (SecurityUtil.hasRole("STUDENT") && !post.getMember().getId().equals(currentMemberId)) {
+            throw new MemberPermissionDeniedException(currentMemberId, MemberRole.STUDENT);
         }
     }
 }

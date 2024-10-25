@@ -113,7 +113,7 @@ class PostServiceTest {
         given(postRepository.save(any(Post.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        Post result = postService.createPost(post, memberId);
+        Post result = postService.createPost(post);
 
         // then
         assertThat(result).isNotNull();
@@ -127,13 +127,12 @@ class PostServiceTest {
     @DisplayName("게시물을 생성할 때 회원을 찾을 수 없으면 예외를 발생시킨다")
     void createPost_ShouldThrowException_WhenMemberNotFound() {
         // given
-        long memberId = 1L;
         Post post = Post.builder().title("Title").content("Content").build();
 
-        given(memberRepository.findById(memberId)).willReturn(Optional.empty());
+        given(memberRepository.findById(1L)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> postService.createPost(post, memberId))
+        assertThatThrownBy(() -> postService.createPost(post))
                 .isInstanceOf(MemberNotFoundException.class);
     }
 
