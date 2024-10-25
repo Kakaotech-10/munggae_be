@@ -30,7 +30,7 @@ public class TokenManager {
 
         String accessToken = jwtTokenProvider.accessTokenGenerate(uid, authorities, accessTokenExpiredAt);
 
-        return AccessTokenResponse.of(accessToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME);
+        return AccessTokenResponse.of(accessToken, BEARER_TYPE, ACCESS_TOKEN_EXPIRE_TIME / 1000L);
     }
 
     public RefreshTokenResponse generateRefreshToken() {
@@ -39,7 +39,7 @@ public class TokenManager {
 
         String refreshToken = jwtTokenProvider.refreshTokenGenerate(refreshTokenExpiredAt);
 
-        return RefreshTokenResponse.of(refreshToken, REFRESH_TOKEN_EXPIRE_TIME);
+        return RefreshTokenResponse.of(refreshToken, REFRESH_TOKEN_EXPIRE_TIME / 1000L);
     }
 
     public String resolveToken(HttpServletRequest request) {

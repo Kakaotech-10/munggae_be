@@ -5,6 +5,8 @@ import com.ktb10.munggaebe.auth.dto.LoginResponse;
 import com.ktb10.munggaebe.auth.dto.RefreshTokenResponse;
 import com.ktb10.munggaebe.auth.service.KakaoService;
 import com.ktb10.munggaebe.auth.service.dto.LoginDto;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +30,8 @@ public class OAuthController {
     private final KakaoService kakaoService;
 
     @GetMapping("/login/oauth2/callback/kakao")
+    @Operation(summary = "카카오 로그인", description = "카카오 로그인 인증 코드를 받아서 로그인 처리 후 토큰을 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "로그인 또는 회원가입 성공")
     public ResponseEntity<LoginResponse> kakaoLogin(@RequestParam final String code, final HttpServletResponse response) {
         log.info("kakaoLogin start");
         final LoginDto dto = kakaoService.login(code);
@@ -50,6 +54,8 @@ public class OAuthController {
     }
 
     @PostMapping("/refresh")
+    @Operation(summary = "엑세스 토큰 재발급", description = "리프레시 토큰을 이용해 새로운 엑세스 토큰을 재발급합니다.")
+    @ApiResponse(responseCode = "201", description = "액세스 토큰 재발급 성공")
     public ResponseEntity<AccessTokenResponse> regenerateAccessToken(
             @CookieValue(COOKIE_TOKEN) final String refreshToken,
             final HttpServletRequest request

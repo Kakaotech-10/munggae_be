@@ -28,6 +28,7 @@ public class SecurityConfig {
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
                         auth
+                                .requestMatchers("/swagger-ui/**",  "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/api/v1/auth/login/oauth2/callback/kakao").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/comments/**", "/api/v1/posts/**").permitAll()
