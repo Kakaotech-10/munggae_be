@@ -1,6 +1,8 @@
 package com.ktb10.munggaebe.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.auth.filter.JwtAuthenticationFilter;
+import com.ktb10.munggaebe.auth.filter.JwtExceptionFilter;
 import com.ktb10.munggaebe.auth.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +23,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final ObjectMapper objectMapper;
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
@@ -36,7 +39,8 @@ public class SecurityConfig {
                                 .requestMatchers(HttpMethod.GET, "/api/v1/comments/**", "/api/v1/posts/**").permitAll()
                                 .anyRequest().authenticated()
                 )
-                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(new JwtExceptionFilter(objectMapper), JwtAuthenticationFilter.class);
 
         return httpSecurity.build();
     }
