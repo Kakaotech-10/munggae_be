@@ -143,6 +143,7 @@ public class KakaoService {
             return tokenManager.generateAccessToken(kakaoId, userDetails.getAuthorities());
         }
 
+        log.info("refreshToken inValid = {}", refreshToken);
         throw new RuntimeException("refresh token이 유효하지 않습니다.");
     }
 }
