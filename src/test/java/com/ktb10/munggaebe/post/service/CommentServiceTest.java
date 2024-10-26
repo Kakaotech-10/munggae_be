@@ -97,7 +97,7 @@ class CommentServiceTest {
     void createRootComment_ShouldCreateComment_WhenValidInput() {
         // given
         long postId = 1L;
-        long memberId = 2L;
+        long memberId = 1L;
         Comment entity = Comment.builder().content("New root comment").build();
         Post post = Post.builder().id(postId).build();
         Member member = Member.builder().id(memberId).build();
@@ -107,7 +107,7 @@ class CommentServiceTest {
         given(commentRepository.save(any(Comment.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        Comment result = commentService.createRootComment(entity, postId, memberId);
+        Comment result = commentService.createRootComment(entity, postId);
 
         // then
         assertThat(result).isNotNull();
@@ -119,13 +119,13 @@ class CommentServiceTest {
     void createRootComment_ShouldThrowException_WhenPostNotFound() {
         // given
         long postId = 1L;
-        long memberId = 2L;
+        long memberId = 1L;
         Comment entity = Comment.builder().content("New root comment").build();
 
         given(postRepository.findById(postId)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> commentService.createRootComment(entity, postId, memberId))
+        assertThatThrownBy(() -> commentService.createRootComment(entity, postId))
                 .isInstanceOf(PostNotFoundException.class);
     }
 
@@ -134,13 +134,13 @@ class CommentServiceTest {
     void createRootComment_ShouldThrowException_WhenMemberNotFound() {
         // given
         long postId = 1L;
-        long memberId = 2L;
+        long memberId = 1L;
         Comment entity = Comment.builder().content("New root comment").build();
         given(postRepository.findById(postId)).willReturn(Optional.of(Post.builder().id(postId).build()));
         given(memberRepository.findById(memberId)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> commentService.createRootComment(entity, postId, memberId))
+        assertThatThrownBy(() -> commentService.createRootComment(entity, postId))
                 .isInstanceOf(MemberNotFoundException.class);
     }
 
@@ -149,7 +149,7 @@ class CommentServiceTest {
     void createReplyComment_ShouldCreateComment_WhenValidInput() {
         // given
         long commentId = 1L;
-        long memberId = 2L;
+        long memberId = 1L;
 
         Post post = Post.builder().id(1L).build();
         Comment parentComment = Comment.builder().id(commentId).post(post).build();
@@ -162,7 +162,7 @@ class CommentServiceTest {
         given(commentRepository.save(any(Comment.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        Comment result = commentService.createReplyComment(entity, commentId, memberId);
+        Comment result = commentService.createReplyComment(entity, commentId);
 
         // then
         assertThat(result).isNotNull();
@@ -174,13 +174,13 @@ class CommentServiceTest {
     void createReplyComment_ShouldThrowException_WhenParentCommentNotFound() {
         // given
         long commentId = 1L;
-        long memberId = 2L;
+        long memberId = 1L;
         Comment entity = Comment.builder().content("New reply comment").build();
 
         given(commentRepository.findById(commentId)).willReturn(Optional.empty());
 
         // when & then
-        assertThatThrownBy(() -> commentService.createReplyComment(entity, commentId, memberId))
+        assertThatThrownBy(() -> commentService.createReplyComment(entity, commentId))
                 .isInstanceOf(CommentNotFoundException.class);
     }
 

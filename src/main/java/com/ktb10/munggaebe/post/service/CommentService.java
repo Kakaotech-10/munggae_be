@@ -46,13 +46,15 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment createRootComment(final Comment entity, final long postId, final long memberId) {
+    public Comment createRootComment(final Comment entity, final long postId) {
+
+        Long currentMemberId = SecurityUtil.getCurrentUserId();
 
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        final Member member = memberRepository.findById(currentMemberId)
+                .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
         final Comment comment = Comment.builder()
                 .post(post)
@@ -66,7 +68,9 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment createReplyComment(final Comment entity, final long commentId, final long memberId) {
+    public Comment createReplyComment(final Comment entity, final long commentId) {
+
+        Long currentMemberId = SecurityUtil.getCurrentUserId();
 
         final Comment parent = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
@@ -75,8 +79,8 @@ public class CommentService {
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        final Member member = memberRepository.findById(currentMemberId)
+                .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
         Comment comment = Comment.builder()
                 .post(post)

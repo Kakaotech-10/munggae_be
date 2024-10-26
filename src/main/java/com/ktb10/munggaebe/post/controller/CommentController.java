@@ -41,10 +41,9 @@ public class CommentController {
     @Operation(summary = "루트 댓글 생성", description = "새로운 루트 댓글을 생성합니다.")
     @ApiResponse(responseCode = "201", description = "댓글 작성 성공")
     public ResponseEntity<CommentDto.CommentRes> createRootComment(@RequestBody final CommentDto.CommentCreateReq request,
-                                                                   @RequestParam final long postId,
-                                                                   @RequestParam final long memberId) {
+                                                                   @RequestParam final long postId) {
 
-        final Comment comment = commentService.createRootComment(request.toEntity(), postId, memberId);
+        final Comment comment = commentService.createRootComment(request.toEntity(), postId);
 
         return ResponseEntity.created(URI.create("/api/v1/comments/" + comment.getId()))
                 .body(new CommentDto.CommentRes(comment));
@@ -64,10 +63,9 @@ public class CommentController {
     @Operation(summary = "대댓글 생성", description = "주어진 댓글에 대댓글을 생성합니다.")
     @ApiResponse(responseCode = "201", description = "댓글 작성 성공")
     public ResponseEntity<CommentDto.CommentRes> createReplyComment(@PathVariable final long commentId,
-                                                                    @RequestBody final CommentDto.CommentCreateReq request,
-                                                                    @RequestParam final long memberId) {
+                                                                    @RequestBody final CommentDto.CommentCreateReq request) {
 
-        final Comment comment = commentService.createReplyComment(request.toEntity(), commentId, memberId);
+        final Comment comment = commentService.createReplyComment(request.toEntity(), commentId);
 
         return ResponseEntity.created(URI.create("/api/v1/comments/" + comment.getId()))
                 .body(new CommentDto.CommentRes(comment));
