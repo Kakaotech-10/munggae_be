@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 public class JwtErrorException extends RuntimeException {
 
-    ErrorCode errorCode;
+    private ErrorCode errorCode;
 
     public JwtErrorException(ErrorCode errorCode) {
         super(errorCode.getMessage());
