@@ -32,7 +32,6 @@ pipeline {
             }
         }
         */
-    }
 
         stage('Build Docker Images') {
             parallel {
