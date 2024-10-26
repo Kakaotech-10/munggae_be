@@ -15,27 +15,24 @@ pipeline {
                 checkout scm
             }
         }
-
-        stage('Parallel Build') {
-            parallel {
-                stage('Build Spring') {
-                    steps {
-                        script {
-                            sh 'cd spring-project && ./gradlew clean build -x test'
-                        }
-                    }
+        
+        stage('Build Spring') {
+            steps {
+                script {
+                    sh 'cd munggae_be && ./gradlew clean build -x test'
                 }
-                /*
-                stage('Build FastAPI') {
-                    steps {
-                        script {
-                            sh 'pip install -r requirements.txt'
-                        }
-                    }
-                }
-                */
             }
         }
+        /*
+        stage('Build FastAPI') {
+            steps {
+                script {
+                    sh 'pip install -r requirements.txt'
+                }
+            }
+        }
+        */
+    }
 
         stage('Build Docker Images') {
             parallel {
