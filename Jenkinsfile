@@ -19,7 +19,7 @@ pipeline {
         stage('Build Spring') {
             steps {
                 script {
-                    sh 'cd munggae_be && ./gradlew clean build -x test'
+                    sh './gradlew clean build -x test'
                 }
             }
         }
