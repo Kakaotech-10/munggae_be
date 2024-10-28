@@ -64,16 +64,6 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
 }
 
-jib {
-    to {
-        image = "ella00/munggae-be-spring:latest"
-        auth {
-            username = System.getenv('DOCKERHUB_USERNAME')
-            password = System.getenv('DOCKERHUB_PASSWORD')
-        }
-    }
-}
-
 tasks.named('test') {
 	useJUnitPlatform()
 }
