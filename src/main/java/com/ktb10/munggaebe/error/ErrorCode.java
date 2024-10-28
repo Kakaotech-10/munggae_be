@@ -17,7 +17,15 @@ public enum ErrorCode {
     COMMENT_NOT_FOUND("POS_002", "해당하는 댓글을 찾을 수 없습니다.", 404),
 
     //OAuth
-    OAUTH_LOGIN_ERROR("OAU_001", "로그인 과정에서 인증 오류가 발생하였습니다.", 500)
+    OAUTH_LOGIN_ERROR("OAU_001", "로그인 과정에서 인증 오류가 발생하였습니다.", 500),
+
+    //JWT
+    JWT_INVALID_SIGNATURE("JWT_001", "유효하지 않은 JWT 서명입니다.", 401),
+    JWT_MALFORMED_TOKEN("JWT_002", "잘못된 형식의 JWT 토큰입니다.", 400),
+    JWT_EXPIRED_TOKEN("JWT_003", "만료된 JWT 토큰입니다.", 401),
+    JWT_UNSUPPORTED_TOKEN("JWT_004", "지원되지 않는 JWT 토큰입니다.", 400),
+    JWT_ILLEGAL_TOKEN("JWT_005", "허용되지 않는 JWT 토큰입니다.", 400),
+    JWT_SECURITY_EXCEPTION("JWT_006", "보안 예외가 발생했습니다.", 403);
     ;
 
     private final String code;

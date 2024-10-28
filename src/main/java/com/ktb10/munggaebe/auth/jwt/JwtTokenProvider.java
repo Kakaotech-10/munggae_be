@@ -1,9 +1,12 @@
 package com.ktb10.munggaebe.auth.jwt;
 
+import com.ktb10.munggaebe.auth.exception.JwtErrorException;
+import com.ktb10.munggaebe.error.ErrorCode;
 import com.ktb10.munggaebe.member.service.MemberService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -51,16 +54,19 @@ public class JwtTokenProvider {
                     .build()
                     .parseClaimsJws(token);
             return true;
-        } catch (SecurityException | MalformedJwtException e) {
-            log.info("Invalid JWT Token", e);
+        } catch (SignatureException e) {
+            throw new JwtErrorException(ErrorCode.JWT_INVALID_SIGNATURE);
+        } catch (SecurityException e) {
+            throw new JwtErrorException(ErrorCode.JWT_SECURITY_EXCEPTION);
+        } catch (MalformedJwtException e) {
+            throw new JwtErrorException(ErrorCode.JWT_MALFORMED_TOKEN);
         } catch (ExpiredJwtException e) {
-            log.info("Expired JWT Token", e);
+            throw new JwtErrorException(ErrorCode.JWT_EXPIRED_TOKEN);
         } catch (UnsupportedJwtException e) {
-            log.info("Unsupported JWT Token", e);
+            throw new JwtErrorException(ErrorCode.JWT_UNSUPPORTED_TOKEN);
         } catch (IllegalArgumentException e) {
-            log.info("JWT claims string is empty.", e);
+            throw new JwtErrorException(ErrorCode.JWT_ILLEGAL_TOKEN);
         }
-        return false;
     }
 
     public Authentication getAuthentication(String accessToken) {

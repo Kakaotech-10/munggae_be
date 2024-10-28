@@ -10,7 +10,7 @@ public class LoginResponse {
     @Schema(description = "사용자 카카오 ID", example = "1")
     private Long id;
 
-    @Schema(description = "사용자 닉네임", example = "YohanKim")
+    @Schema(description = "사용자 닉네임", example = "김요한")
     private String nickname;
 
     @Schema(description = "엑세스 토큰 정보")

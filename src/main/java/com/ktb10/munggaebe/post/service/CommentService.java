@@ -12,6 +12,7 @@ import com.ktb10.munggaebe.post.exception.CommentNotFoundException;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.CommentRepository;
 import com.ktb10.munggaebe.post.repository.PostRepository;
+import com.ktb10.munggaebe.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -45,13 +46,15 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment createRootComment(final Comment entity, final long postId, final long memberId) {
+    public Comment createRootComment(final Comment entity, final long postId) {
+
+        Long currentMemberId = SecurityUtil.getCurrentUserId();
 
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        final Member member = memberRepository.findById(currentMemberId)
+                .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
         final Comment comment = Comment.builder()
                 .post(post)
@@ -65,7 +68,9 @@ public class CommentService {
     }
 
     @Transactional
-    public Comment createReplyComment(final Comment entity, final long commentId, final long memberId) {
+    public Comment createReplyComment(final Comment entity, final long commentId) {
+
+        Long currentMemberId = SecurityUtil.getCurrentUserId();
 
         final Comment parent = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
@@ -74,8 +79,8 @@ public class CommentService {
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        final Member member = memberRepository.findById(currentMemberId)
+                .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
         Comment comment = Comment.builder()
                 .post(post)
@@ -91,13 +96,13 @@ public class CommentService {
 
 
     @Transactional
-    public Comment updateComment(final CommentServiceDto.UpdateReq updateReq, final long memberId) {
+    public Comment updateComment(final CommentServiceDto.UpdateReq updateReq) {
 
         final Long commentId = updateReq.getCommentId();
         final Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
 
-        validateAuth(memberId, comment.getMember().getId());
+        validateAuthorization(comment);
 
         comment.updateComment(updateReq.getContent());
 
@@ -105,22 +110,20 @@ public class CommentService {
     }
 
     @Transactional
-    public void deleteComment(final long commentId, final long memberId) {
+    public void deleteComment(final long commentId) {
 
         final Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
 
-        validateAuth(memberId, comment.getMember().getId());
+        validateAuthorization(comment);
 
         comment.deleteComment();
     }
 
-    private void validateAuth(final long memberId, final long commentMemberId) {
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
-
-        if (member.getRole() == MemberRole.STUDENT && commentMemberId != memberId) {
-            throw new MemberPermissionDeniedException(memberId, member.getRole());
+    private void validateAuthorization(Comment comment) {
+        Long currentUserId = SecurityUtil.getCurrentUserId();
+        if (SecurityUtil.hasRole("STUDENT") && !comment.getMember().getId().equals(currentUserId)) {
+            throw new MemberPermissionDeniedException(currentUserId, MemberRole.STUDENT);
         }
     }
 }

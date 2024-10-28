@@ -39,9 +39,9 @@ public class PostController {
     @PostMapping("/posts")
     @Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다.")
     @ApiResponse(responseCode = "201", description = "게시글 작성 성공")
-    public ResponseEntity<PostDto.PostRes> createPost(@RequestBody final PostDto.PostCreateReq request, @RequestParam final long memberId) {
+    public ResponseEntity<PostDto.PostRes> createPost(@RequestBody final PostDto.PostCreateReq request) {
 
-        final Post createdPost = postService.createPost(request.toEntity(), memberId);
+        final Post createdPost = postService.createPost(request.toEntity());
 
         return ResponseEntity.created(URI.create("/api/v1/posts/" + createdPost.getId()))
                 .body(new PostDto.PostRes(createdPost));
@@ -61,10 +61,9 @@ public class PostController {
     @Operation(summary = "게시글 수정", description = "주어진 ID를 기준으로 게시글을 수정합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 수정 성공")
     public ResponseEntity<PostDto.PostRes> updatePost(@PathVariable final long postId,
-                                                      @RequestBody final PostDto.PostUpdateReq request,
-                                                      @RequestParam final long memberId) {
+                                                      @RequestBody final PostDto.PostUpdateReq request) {
         final PostServiceDto.UpdateReq updateReq = toServiceDto(postId, request);
-        final Post updatedPost = postService.updatePost(updateReq, memberId);
+        final Post updatedPost = postService.updatePost(updateReq);
 
         return ResponseEntity.ok(new PostDto.PostRes(updatedPost));
     }
@@ -72,9 +71,9 @@ public class PostController {
     @DeleteMapping("/posts/{postId}")
     @Operation(summary = "게시글 삭제", description = "주어진 ID를 기준으로 게시글을 삭제합니다.")
     @ApiResponse(responseCode = "204", description = "게시글 삭제 성공")
-    public ResponseEntity<Void> deletePost(@PathVariable final long postId, @RequestParam final long memberId) {
+    public ResponseEntity<Void> deletePost(@PathVariable final long postId) {
 
-        postService.deletePost(postId, memberId);
+        postService.deletePost(postId);
 
         return ResponseEntity.noContent().build();
     }
