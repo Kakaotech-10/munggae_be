@@ -1,6 +1,6 @@
 package com.ktb10.munggaebe.post.dto;
 
-import com.ktb10.munggaebe.member.dto.MemberDto;
+import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;

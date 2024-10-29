@@ -78,7 +78,7 @@ public class PostController {
         return ResponseEntity.noContent().build();
     }
 
-    private static PostServiceDto.UpdateReq toServiceDto(long postId, PostDto.PostUpdateReq request) {
+    private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {
         return PostServiceDto.UpdateReq.builder()
                 .postId(postId)
                 .title(request.getTitle())

@@ -29,8 +29,9 @@ public class Member implements UserDetails {
     @Column(name = "role", nullable = false)
     private MemberRole role;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "course", nullable = false)
-    private String course;
+    private MemberCourse course;
 
     @Column(name = "member_name", nullable = false)
     private String name;
@@ -50,7 +51,7 @@ public class Member implements UserDetails {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Member(Long id, MemberRole role, String course, String name, String nameEnglish, Long kakaoId) {
+    public Member(Long id, MemberRole role, MemberCourse course, String name, String nameEnglish, Long kakaoId) {
         this.id = id;
         this.role = role;
         this.course = course;
@@ -92,5 +93,11 @@ public class Member implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public void updateMember(String name, String nameEnglish, MemberCourse course) {
+        this.name = name;
+        this.nameEnglish = nameEnglish;
+        this.course = course;
     }
 }

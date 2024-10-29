@@ -1,8 +1,13 @@
 package com.ktb10.munggaebe.member.service;
 
 import com.ktb10.munggaebe.member.domain.Member;
+import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
+import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
+import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
+import com.ktb10.munggaebe.member.service.dto.MemberServiceDto;
+import com.ktb10.munggaebe.utils.SecurityUtil;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +36,7 @@ public class MemberService implements UserDetailsService {
             log.info("kakaoId로 찾을 수 없는 맴버 회원가입");
             Member member = Member.builder()
                     .role(MemberRole.STUDENT)
-                    .course("default course")
+                    .course(MemberCourse.DEFAULT)
                     .kakaoId(kakaoId)
                     .name(nickName)
                     .nameEnglish("default English name")
@@ -46,5 +51,26 @@ public class MemberService implements UserDetailsService {
     public UserDetails loadUserByUsername(String kakaoId) throws UsernameNotFoundException {
         return memberRepository.findByKakaoId(Long.parseLong(kakaoId))
                 .orElseThrow(() -> new UsernameNotFoundException("kakao id에 해당하는 유저를 찾을 수 없습니다."));
+    }
+
+    @Transactional
+    public Member updateMember(final MemberServiceDto.UpdateReq updateReq) {
+
+        final Long memberId = updateReq.getMemberId();
+        final Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+
+        validateAuthorization(memberId);
+
+        member.updateMember(updateReq.getName(), updateReq.getNameEnglish(), updateReq.getCourse());
+
+        return member;
+    }
+
+    private void validateAuthorization(final long memberId) {
+        final Long currentUserId = SecurityUtil.getCurrentUserId();
+        if (currentUserId != memberId) {
+            throw new MemberPermissionDeniedException(currentUserId);
+        }
     }
 }
