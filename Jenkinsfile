@@ -1,15 +1,15 @@
 pipeline {
-    agent none  // 전체 파이프라인에 대해 기본 에이전트를 지정하지 않음
+    agent none 
 
     environment {
-        DOCKER_CREDENTIALS_ID = credentials('dockerhub-credentials')
+        DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
         SPRING_IMAGE_REPO = 'ella00/munggae-be-spring'
         FASTAPI_IMAGE_REPO = 'ella00/munggae-be-fastapi'
     }
 
     stages {
         stage('Checkout') {
-            agent { label 'java-docker' }  // Checkout 단계에 java-docker 에이전트 사용
+            agent { label 'java-docker' }
             steps {
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], 
                           extensions: [[$class: 'CleanBeforeCheckout']], 
@@ -23,76 +23,51 @@ pipeline {
                     agent { label 'java-docker' }
                     steps {
                         script {
-                                sh './gradlew build -x test'
-                                sh 'ls build/libs'
+                            sh './gradlew build -x test'
+                            sh 'ls build/libs'
+                            stash includes: 'build/libs/*.jar', name: 'spring-jar'
                         }
                     }
                 }
-                /*
-                stage('Build FastAPI') {
-                    steps {
-                        script {
-                            node('java-docker') {
-                                sh 'pip install -r requirements.txt'
-                            }
-                        }
-                    }
-                }
-                */
+                // Build FastAPI 단계는 생략
             }
         }
-
+        /*
         stage('Build Docker Images') {
             parallel {
                 stage('Build Spring Docker Image') {
                     agent { label 'dind-agent' }
                     steps {
+                        unstash 'spring-jar'
                         script {
-                                sh 'ls build/libs'
-                                sh 'docker build -t $SPRING_IMAGE_REPO:latest -f Dockerfile.spring .'
+                            sh 'ls build/libs'
+                            sh 'docker build -t $SPRING_IMAGE_REPO:latest -f Dockerfile.spring .'
                         }
                     }
                 }
-                /*
-                stage('Build FastAPI Docker Image') {
-                    steps {
-                        script {
-                            node('dind-agent') {
-                                sh 'docker build -t $FASTAPI_IMAGE_REPO:latest -f Dockerfile.fastapi .'
-                            }
-                        }
-                    }
-                }
-                */
+                // Build FastAPI Docker Image 단계는 생략
             }
         }
+        */
 
         stage('Push Docker Images') {
             parallel {
                 stage('Push Spring Docker Image') {
                     agent { label 'dind-agent' }
                     steps {
-                        script {
-                                docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                                    sh 'docker push $SPRING_IMAGE_REPO:latest'
+                        unstash 'spring-jar'
+                        withCredentials([usernamePassword(credentialsId: DOCKER_CREDENTIALS_ID, usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) 
+                        {
+                            script {
+                                sh 'ls build/libs'
+                                sh 'docker login -u $DOCKER_USERNAME -p $DOCKER_PASSWORD'
+                                sh 'docker build -t $SPRING_IMAGE_REPO:latest -f Dockerfile.spring .'
+                                sh 'docker push $SPRING_IMAGE_REPO:latest'
                             }
                         }
                     }
                 }
-                /*
-                stage('Push FastAPI Docker Image') {
-                    steps {
-                        script {
-                            node('dind-agent') {
-                                // Docker Hub에 로그인하고 FastAPI 이미지 푸시
-                                docker.withRegistry('https://index.docker.io/v1/', DOCKER_CREDENTIALS_ID) {
-                                    sh 'docker push $FASTAPI_IMAGE_REPO:latest'
-                                }
-                            }
-                        }
-                    }
-                }
-                */
+                // Push FastAPI Docker Image 단계는 생략
             }
         }
     }
