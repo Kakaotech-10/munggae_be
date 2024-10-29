@@ -24,6 +24,7 @@ pipeline {
                     steps {
                         script {
                                 sh './gradlew build -x test'
+                                sh 'ls build/libs'
                         }
                     }
                 }
@@ -47,6 +48,7 @@ pipeline {
                     agent { label 'dind-agent' }
                     steps {
                         script {
+                                sh 'ls build/libs'
                                 sh 'docker build -t $SPRING_IMAGE_REPO:latest -f Dockerfile.spring .'
                         }
                     }
