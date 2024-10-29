@@ -38,26 +38,26 @@ CREATE TABLE IF NOT EXISTS comment (
 
 -- Member 데이터 삽입
 INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_english, kakao_id, created_at, updated_at) VALUES
-(1, 'STUDENT', 'Course 1', '홍길동', 'Hong Gil-dong', 1234567891, NOW(), NOW()),
-(2, 'STUDENT', 'Course 2', '김철수', 'Kim Cheol-su', 1234567892, NOW(), NOW()),
-(3, 'STUDENT', 'Course 3', '이영희', 'Lee Young-hee', 1234567893, NOW(), NOW()),
-(4, 'MANAGER', 'Course 1', '박영수', 'Park Young-su', 1234567894, NOW(), NOW()),
-(5, 'STUDENT', 'Course 2', '최지우', 'Choi Ji-woo', 1234567895, NOW(), NOW()),
-(6, 'STUDENT', 'Course 1', '정수민', 'Jung Su-min', 1234567896, NOW(), NOW()),
-(7, 'STUDENT', 'Course 3', '신동엽', 'Shin Dong-yeop', 1234567897, NOW(), NOW()),
-(8, 'STUDENT', 'Course 1', '유재석', 'Yoo Jae-suk', 1234567898, NOW(), NOW()),
-(9, 'STUDENT', 'Course 2', '하하', 'Haha', 1234567899, NOW(), NOW()),
-(10, 'STUDENT', 'Course 3', '김종국', 'Kim Jong-kook', 1234567900, NOW(), NOW()),
-(11, 'STUDENT', 'Course 1', '강호동', 'Kang Ho-dong', 1234567901, NOW(), NOW()),
-(12, 'STUDENT', 'Course 2', '이수근', 'Lee Soo-geun', 1234567902, NOW(), NOW()),
-(13, 'STUDENT', 'Course 3', '조세호', 'Jo Se-ho', 1234567903, NOW(), NOW()),
-(14, 'MANAGER', 'Course 1', '유희열', 'Yoo Hee-yeol', 1234567904, NOW(), NOW()),
-(15, 'STUDENT', 'Course 2', '안영미', 'Ahn Young-mi', 1234567905, NOW(), NOW()),
-(16, 'STUDENT', 'Course 1', '김태호', 'Kim Tae-ho', 1234567906, NOW(), NOW()),
-(17, 'STUDENT', 'Course 3', '나영석', 'Na Young-seok', 1234567907, NOW(), NOW()),
-(18, 'STUDENT', 'Course 1', '이승기', 'Lee Seung-gi', 1234567908, NOW(), NOW()),
-(19, 'STUDENT', 'Course 2', '차은우', 'Cha Eun-woo', 1234567909, NOW(), NOW()),
-(20, 'STUDENT', 'Course 3', '송혜교', 'Song Hye-kyo', 1234567910, NOW(), NOW());
+(1, 'STUDENT', 'FULLSTACK', '홍길동', 'Hong Gil-dong', 1234567891, NOW(), NOW()),
+(2, 'STUDENT', 'CLOUD', '김철수', 'Kim Cheol-su', 1234567892, NOW(), NOW()),
+(3, 'STUDENT', 'AI', '이영희', 'Lee Young-hee', 1234567893, NOW(), NOW()),
+(4, 'MANAGER', 'FULLSTACK', '박영수', 'Park Young-su', 1234567894, NOW(), NOW()),
+(5, 'STUDENT', 'CLOUD', '최지우', 'Choi Ji-woo', 1234567895, NOW(), NOW()),
+(6, 'STUDENT', 'AI', '정수민', 'Jung Su-min', 1234567896, NOW(), NOW()),
+(7, 'STUDENT', 'FULLSTACK', '신동엽', 'Shin Dong-yeop', 1234567897, NOW(), NOW()),
+(8, 'STUDENT', 'CLOUD', '유재석', 'Yoo Jae-suk', 1234567898, NOW(), NOW()),
+(9, 'STUDENT', 'AI', '하하', 'Haha', 1234567899, NOW(), NOW()),
+(10, 'STUDENT', 'FULLSTACK', '김종국', 'Kim Jong-kook', 1234567900, NOW(), NOW()),
+(11, 'STUDENT', 'CLOUD', '강호동', 'Kang Ho-dong', 1234567901, NOW(), NOW()),
+(12, 'STUDENT', 'AI', '이수근', 'Lee Soo-geun', 1234567902, NOW(), NOW()),
+(13, 'STUDENT', 'FULLSTACK', '조세호', 'Jo Se-ho', 1234567903, NOW(), NOW()),
+(14, 'MANAGER', 'CLOUD', '유희열', 'Yoo Hee-yeol', 1234567904, NOW(), NOW()),
+(15, 'STUDENT', 'AI', '안영미', 'Ahn Young-mi', 1234567905, NOW(), NOW()),
+(16, 'STUDENT', 'FULLSTACK', '김태호', 'Kim Tae-ho', 1234567906, NOW(), NOW()),
+(17, 'STUDENT', 'CLOUD', '나영석', 'Na Young-seok', 1234567907, NOW(), NOW()),
+(18, 'STUDENT', 'AI', '이승기', 'Lee Seung-gi', 1234567908, NOW(), NOW()),
+(19, 'STUDENT', 'FULLSTACK', '차은우', 'Cha Eun-woo', 1234567909, NOW(), NOW()),
+(20, 'STUDENT', 'AI', '송혜교', 'Song Hye-kyo', 1234567910, NOW(), NOW());
 
 -- Post 데이터 삽입
 INSERT IGNORE INTO post (post_id, member_id, post_title, post_content, created_at, updated_at) VALUES
