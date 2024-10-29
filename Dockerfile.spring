@@ -2,8 +2,6 @@ FROM openjdk:21-jdk
 
 WORKDIR /app
 
-ARG JAR_FILE=build/libs/munggae-be-0.0.1-SNAPSHOT.jar
-COPY ${JAR_FILE} app.jar
-COPY src/main/resources/application.yml /app
+COPY build/libs/munggaebe-0.0.1-SNAPSHOT.jar app.jar
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
