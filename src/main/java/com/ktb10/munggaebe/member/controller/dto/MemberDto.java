@@ -1,11 +1,36 @@
 package com.ktb10.munggaebe.member.dto;
 
 import com.ktb10.munggaebe.member.domain.Member;
+import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 public class MemberDto {
+
+    @Schema(description = "맴버 수정 요청")
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public class MemberUpdateReq {
+        @Schema(description = "수정된 맴버 이름", example = "김요한")
+        private String name;
+
+        @Schema(description = "수정된 맴버 영어 이름", example = "Yohan Kim")
+        private String nameEnglish;
+
+        @Schema(description = "수정된 맴버 과정", example = "FULLSTACK or CLOUD or AI")
+        private MemberCourse course;
+
+        @Builder
+        public MemberUpdateReq(String name, String nameEnglish, MemberCourse course) {
+            this.name = name;
+            this.nameEnglish = nameEnglish;
+            this.course = course;
+        }
+    }
 
     @Schema(description = "맴버 응답")
     @Getter
@@ -17,7 +42,7 @@ public class MemberDto {
         private MemberRole role;
 
         @Schema(description = "회원의 과정", example = "풀스택")
-        private String course;
+        private MemberCourse course;
 
         @Schema(description = "회원 이름", example = "홍길동")
         private String name;

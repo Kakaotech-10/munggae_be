@@ -1,6 +1,7 @@
 package com.ktb10.munggaebe.post.repository;
 
 import com.ktb10.munggaebe.member.domain.Member;
+import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.post.domain.Comment;
@@ -32,7 +33,7 @@ class CommentRepositoryTest {
     @DisplayName("postId와 depth로 댓글 페이지 조회 - depth 0")
     void findByPostIdAndDepth_ShouldReturnPagedComments_WhenCommentsExist_RootComment() {
         // given
-        Member member = memberRepository.save(Member.builder().name("testMember").nameEnglish("testEngName").course("fullstack")
+        Member member = memberRepository.save(Member.builder().name("testMember").nameEnglish("testEngName").course(MemberCourse.FULLSTACK)
                 .role(MemberRole.STUDENT).kakaoId(1234567890L).build());
         Post post = postRepository.save(Post.builder().title("Test Post").content("This is a test post").member(member).build());
 
@@ -59,7 +60,7 @@ class CommentRepositoryTest {
     @DisplayName("postId와 depth로 댓글 페이지 조회 - depth 1")
     void findByPostIdAndDepth_ShouldReturnPagedComments_WhenCommentsExist_ReplyComoment() {
         // given
-        Member member = memberRepository.save(Member.builder().name("testMember").nameEnglish("testEngName").course("fullstack")
+        Member member = memberRepository.save(Member.builder().name("testMember").nameEnglish("testEngName").course(MemberCourse.FULLSTACK)
                 .role(MemberRole.STUDENT).kakaoId(1234567890L).build());
         Post post = postRepository.save(Post.builder().title("Test Post").content("This is a test post").member(member).build());
 
