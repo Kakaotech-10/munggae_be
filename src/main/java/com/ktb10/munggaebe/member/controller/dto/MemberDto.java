@@ -1,4 +1,4 @@
-package com.ktb10.munggaebe.member.dto;
+package com.ktb10.munggaebe.member.controller.dto;
 
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
@@ -14,7 +14,7 @@ public class MemberDto {
     @Schema(description = "맴버 수정 요청")
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public class MemberUpdateReq {
+    public static class MemberUpdateReq {
         @Schema(description = "수정된 맴버 이름", example = "김요한")
         private String name;
 

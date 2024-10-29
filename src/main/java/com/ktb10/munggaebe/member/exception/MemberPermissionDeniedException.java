@@ -14,4 +14,9 @@ public class MemberPermissionDeniedException extends RuntimeException {
         this.id = id;
         this.role = role;
     }
+
+    public MemberPermissionDeniedException(long id) {
+        super("해당 Member는 권한이 없습니다. id : " + id);
+        this.id = id;
+    }
 }
