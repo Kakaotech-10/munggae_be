@@ -9,7 +9,7 @@ import java.util.List;
 @Getter
 public class CourseRes {
 
-    @Schema(description = "맴버 과정 종류")
+    @Schema(description = "맴버 과정 종류", example = "[\"풀스택\", \"클라우드\", \"인공지능\"]")
     private List<String> courses;
 
     public CourseRes(List<String> courses) {
