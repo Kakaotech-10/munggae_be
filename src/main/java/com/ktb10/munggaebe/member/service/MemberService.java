@@ -8,18 +8,21 @@ import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.member.service.dto.MemberServiceDto;
 import com.ktb10.munggaebe.utils.SecurityUtil;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Optional;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class MemberService implements UserDetailsService {
 
@@ -72,5 +75,11 @@ public class MemberService implements UserDetailsService {
         if (currentUserId != memberId) {
             throw new MemberPermissionDeniedException(currentUserId);
         }
+    }
+
+    public List<String> getCourses() {
+        return Arrays.stream(MemberCourse.values())
+                .map(MemberCourse::getName)
+                .toList();
     }
 }
