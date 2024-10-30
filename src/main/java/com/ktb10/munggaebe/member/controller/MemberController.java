@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.member.controller;
 
+import com.ktb10.munggaebe.member.controller.dto.CourseRes;
 import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.service.MemberService;
@@ -11,6 +12,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1")
@@ -18,6 +21,15 @@ import org.springframework.web.bind.annotation.*;
 public class MemberController {
 
     private final MemberService memberService;
+
+    @GetMapping("/members/course")
+    public ResponseEntity<CourseRes> getMemberCourse() {
+
+        final List<String> courses = memberService.getCourses();
+
+        return ResponseEntity.ok(new CourseRes(courses));
+    }
+
 
     @PatchMapping("/members/{memberId}")
     @Operation(summary = "맴버 수정", description = "맴버 이름, 영어이름, 과정을 수정합니다.")
