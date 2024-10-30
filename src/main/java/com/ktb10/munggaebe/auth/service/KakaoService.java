@@ -120,7 +120,7 @@ public class KakaoService {
         log.info("발급된 AccessToken = {}", accessTokenResponse);
         log.info("발급된 RefreshToken = {}", refreshTokenResponse);
 
-        return new LoginDto(kakaoId, nickName, accessTokenResponse, refreshTokenResponse);
+        return new LoginDto(member.getId(), kakaoId, nickName, accessTokenResponse, refreshTokenResponse);
     }
 
     public AccessTokenResponse regenerateAccessToken(String refreshToken, HttpServletRequest request) {
