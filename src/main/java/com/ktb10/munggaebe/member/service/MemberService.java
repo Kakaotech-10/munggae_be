@@ -79,6 +79,7 @@ public class MemberService implements UserDetailsService {
 
     public List<String> getCourses() {
         return Arrays.stream(MemberCourse.values())
+                .filter(course -> !course.equals(MemberCourse.DEFAULT))
                 .map(MemberCourse::getName)
                 .toList();
     }
