@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.member.service.dto;
 
+import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,6 +20,18 @@ public class MemberServiceDto {
             this.name = name;
             this.nameEnglish = nameEnglish;
             this.course = course;
+        }
+    }
+
+    @Getter
+    public static class JoinOrLoginKakaoRes {
+        private boolean isMemberJoin;
+        private Member member;
+
+        @Builder
+        public JoinOrLoginKakaoRes(boolean isMemberJoin, Member member) {
+            this.isMemberJoin = isMemberJoin;
+            this.member = member;
         }
     }
 }

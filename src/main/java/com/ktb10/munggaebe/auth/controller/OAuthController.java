@@ -50,7 +50,7 @@ public class OAuthController {
             response.addHeader(SET_COOKIE, cookie.toString());
         }
 
-        return ResponseEntity.ok(new LoginResponse(dto.getMemberId(), dto.getKakaoId(), dto.getNickname(), dto.getAccessToken()));
+        return ResponseEntity.ok(new LoginResponse(dto));
     }
 
     @PostMapping("/refresh")
