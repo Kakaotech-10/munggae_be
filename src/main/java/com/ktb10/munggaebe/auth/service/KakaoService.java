@@ -131,6 +131,8 @@ public class KakaoService {
             throw new RuntimeException("잘못된 access token입니다.");
         }
 
+        log.info("refreshToken = {}", refreshToken);
+        log.info("refreshToken valid 검사");
         if (jwtTokenProvider.validateToken(refreshToken)) {
 
             log.info("validate refreshToken = {}", refreshToken);
