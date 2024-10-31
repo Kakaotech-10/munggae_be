@@ -23,7 +23,7 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/members/course")
-    public ResponseEntity<CourseRes> getMemberCourse() {
+    public ResponseEntity<CourseRes> getMemberCourses() {
 
         final List<String> courses = memberService.getCourses();
 
