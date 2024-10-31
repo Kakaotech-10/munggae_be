@@ -23,6 +23,8 @@ public class MemberController {
     private final MemberService memberService;
 
     @GetMapping("/members/{memberId}")
+    @Operation(summary = "단일 맴버 id로 조회", description = "맴버 id, 이름, 영어이름, 과정, 권한을 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "단일 맴버 정보 반환 성공")
     public ResponseEntity<MemberDto.MemberRes> getMember(@PathVariable Long memberId) {
 
         Member member = memberService.findMemberById(memberId);
@@ -31,6 +33,8 @@ public class MemberController {
     }
 
     @GetMapping("/members/course")
+    @Operation(summary = "과정 종류 반환", description = "과정에 어떤 종류들이 있는지 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "과정 종류 반환 성공")
     public ResponseEntity<CourseRes> getMemberCourses() {
 
         final List<String> courses = memberService.getCourses();
