@@ -13,6 +13,7 @@ import com.ktb10.munggaebe.auth.jwt.TokenManager;
 import com.ktb10.munggaebe.auth.service.dto.LoginDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.service.MemberService;
+import com.ktb10.munggaebe.member.service.dto.MemberServiceDto;
 import io.jsonwebtoken.Claims;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -113,14 +114,24 @@ public class KakaoService {
         Long kakaoId = Long.valueOf(memberInfo.get("id").toString());
         String nickName = memberInfo.get("nickname").toString();
 
-        Member member = memberService.joinKakao(kakaoId, nickName);
+        MemberServiceDto.JoinOrLoginKakaoRes joinOrLoginKakaoRes = memberService.loginOrJoinKakao(kakaoId, nickName);
+        boolean isMemberJoin = joinOrLoginKakaoRes.isMemberJoin();
+        Member member = joinOrLoginKakaoRes.getMember();
+        log.info("isMemberJoin = {}", isMemberJoin);
 
         AccessTokenResponse accessTokenResponse = tokenManager.generateAccessToken(kakaoId.toString(), member.getAuthorities());
         RefreshTokenResponse refreshTokenResponse = tokenManager.generateRefreshToken();
         log.info("발급된 AccessToken = {}", accessTokenResponse);
         log.info("발급된 RefreshToken = {}", refreshTokenResponse);
 
-        return new LoginDto(member.getId(), kakaoId, nickName, accessTokenResponse, refreshTokenResponse);
+        return LoginDto.builder()
+                .memberId(member.getId())
+                .kakaoId(kakaoId)
+                .nickname(nickName)
+                .isMemberJoin(isMemberJoin)
+                .accessToken(accessTokenResponse)
+                .refreshToken(refreshTokenResponse)
+                .build();
     }
 
     public AccessTokenResponse regenerateAccessToken(String refreshToken, HttpServletRequest request) {

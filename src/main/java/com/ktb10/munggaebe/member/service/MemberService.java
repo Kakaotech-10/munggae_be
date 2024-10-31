@@ -30,9 +30,9 @@ public class MemberService implements UserDetailsService {
 
 
     @Transactional
-    public Member joinKakao(Long kakaoId, String nickName) {
+    public MemberServiceDto.JoinOrLoginKakaoRes loginOrJoinKakao(Long kakaoId, String nickName) {
 
-        log.info("joinKakao start");
+        log.info("loginOrJoinKakao start");
         Optional<Member> findMember = memberRepository.findByKakaoId(kakaoId);
 
         if (findMember.isEmpty()) {
@@ -44,10 +44,20 @@ public class MemberService implements UserDetailsService {
                     .name(nickName)
                     .nameEnglish("default English name")
                     .build();
-            return memberRepository.save(member);
+
+            Member savedMember = memberRepository.save(member);
+
+            return MemberServiceDto.JoinOrLoginKakaoRes.builder()
+                    .isMemberJoin(true)
+                    .member(savedMember)
+                    .build();
         }
+
         log.info("kakaoId로 찾을 수 있는 맴버 로그인");
-        return findMember.get();
+        return MemberServiceDto.JoinOrLoginKakaoRes.builder()
+                .isMemberJoin(false)
+                .member(findMember.get())
+                .build();
     }
 
     @Override
