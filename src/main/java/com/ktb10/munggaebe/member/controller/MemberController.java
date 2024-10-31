@@ -22,6 +22,14 @@ public class MemberController {
 
     private final MemberService memberService;
 
+    @GetMapping("/members/{memberId}")
+    public ResponseEntity<MemberDto.MemberRes> getMember(@PathVariable Long memberId) {
+
+        Member member = memberService.findMemberById(memberId);
+
+        return ResponseEntity.ok(new MemberDto.MemberRes(member));
+    }
+
     @GetMapping("/members/course")
     public ResponseEntity<CourseRes> getMemberCourses() {
 
