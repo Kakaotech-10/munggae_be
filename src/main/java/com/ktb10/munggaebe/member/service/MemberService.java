@@ -93,4 +93,9 @@ public class MemberService implements UserDetailsService {
                 .map(MemberCourse::getName)
                 .toList();
     }
+
+    public Member findMemberById(Long memberId) {
+        return memberRepository.findById(memberId)
+                .orElseThrow(() -> new MemberNotFoundException(memberId));
+    }
 }
