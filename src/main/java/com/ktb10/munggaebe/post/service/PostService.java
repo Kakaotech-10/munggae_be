@@ -1,5 +1,7 @@
 package com.ktb10.munggaebe.post.service;
 
+import com.ktb10.munggaebe.image.domain.ImageType;
+import com.ktb10.munggaebe.image.service.ImageService;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
@@ -19,6 +21,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -27,6 +31,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final ImageService imageService;
 
     public Page<Post> getPosts(final int pageNo, final int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
@@ -85,5 +90,16 @@ public class PostService {
         if (SecurityUtil.hasRole("STUDENT") && !post.getMember().getId().equals(currentMemberId)) {
             throw new MemberPermissionDeniedException(currentMemberId, MemberRole.STUDENT);
         }
+    }
+
+    public List<String> getPresignedUrl(final long postId, final List<String> fileNames) {
+
+        if (!postRepository.existsById(postId)) {
+            throw new PostNotFoundException(postId);
+        }
+
+        return fileNames.stream()
+                .map(fileName -> imageService.getPresignedUrl(fileName, postId, ImageType.POST))
+                .toList();
     }
 }
