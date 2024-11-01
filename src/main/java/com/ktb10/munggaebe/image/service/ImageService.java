@@ -7,6 +7,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.util.UUID;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,7 +26,8 @@ public class ImageService {
         log.info("getPresignedUrl start : fileName = {}, id = {}", fileName, id);
 
         String prefix = getPrefix(id, imageType);
-        String url = s3Service.generatePresignedUrl(prefix, fileName);
+        String storedFileName = convertToStoredFileName(fileName);
+        String url = s3Service.generatePresignedUrl(prefix, storedFileName);
         log.info("url = {}", url);
 
         return url;
@@ -32,6 +35,10 @@ public class ImageService {
 
     private static String getPrefix(Long id, ImageType imageType) {
         return PREFIX_PATH + imageType.getBasePath() + "/" + id;
+    }
+
+    private static String convertToStoredFileName(String fileName) {
+        return UUID.randomUUID() + "_" + fileName;
     }
 
 
