@@ -18,4 +18,16 @@ public class PostServiceDto {
             this.content = content;
         }
     }
+
+    @Getter
+    public static class PresignedUrlRes {
+        private String fileName;
+        private String url;
+
+        @Builder
+        public PresignedUrlRes(String fileName, String url) {
+            this.fileName = fileName;
+            this.url = url;
+        }
+    }
 }

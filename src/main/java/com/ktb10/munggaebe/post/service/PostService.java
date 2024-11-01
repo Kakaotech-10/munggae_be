@@ -8,9 +8,9 @@ import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.post.domain.Post;
-import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.PostRepository;
+import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
 import com.ktb10.munggaebe.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -92,14 +92,17 @@ public class PostService {
         }
     }
 
-    public List<String> getPresignedUrl(final long postId, final List<String> fileNames) {
+    public List<PostServiceDto.PresignedUrlRes> getPresignedUrl(final long postId, final List<String> fileNames) {
 
         if (!postRepository.existsById(postId)) {
             throw new PostNotFoundException(postId);
         }
 
         return fileNames.stream()
-                .map(fileName -> imageService.getPresignedUrl(fileName, postId, ImageType.POST))
+                .map(fileName -> PostServiceDto.PresignedUrlRes.builder()
+                                .fileName(fileName)
+                                .url(imageService.getPresignedUrl(fileName, postId, ImageType.POST))
+                                .build())
                 .toList();
     }
 }

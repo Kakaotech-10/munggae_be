@@ -1,9 +1,10 @@
 package com.ktb10.munggaebe.post.controller;
 
-import com.ktb10.munggaebe.post.domain.Post;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.post.controller.dto.PostDto;
-import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
+import com.ktb10.munggaebe.post.domain.Post;
 import com.ktb10.munggaebe.post.service.PostService;
+import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,6 +23,7 @@ import java.util.List;
 public class PostController {
 
     private final PostService postService;
+    private final ObjectMapper objectMapper;
 
     private static final String DEFAULT_POST_PAGE_NO = "0";
     private static final String DEFAULT_POST_PAGE_SIZE = "10";
@@ -80,11 +82,15 @@ public class PostController {
     }
 
     @PostMapping("/posts/{postId}/images/presigned-url")
-    public ResponseEntity<?> getPresignedUrl(@PathVariable final long postId,
+    public ResponseEntity<PostDto.ImagePresignedUrlRes> getPresignedUrl(@PathVariable final long postId,
                                              @RequestBody final PostDto.ImagePresignedUrlReq request) {
-        List<String> urls = postService.getPresignedUrl(postId, request.getFileNames());
+        List<PostServiceDto.PresignedUrlRes> urlRes = postService.getPresignedUrl(postId, request.getFileNames());
 
-        return null;
+        List<PostDto.PresignedUrlDto> urls = urlRes.stream()
+                .map(o -> objectMapper.convertValue(o, PostDto.PresignedUrlDto.class))
+                .toList();
+
+        return ResponseEntity.ok(new PostDto.ImagePresignedUrlRes(urls));
     }
 
     private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {

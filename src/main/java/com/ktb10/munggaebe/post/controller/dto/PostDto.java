@@ -94,4 +94,24 @@ public class PostDto {
             this.member = new MemberDto.MemberRes(post.getMember());
         }
     }
+
+    @Getter
+    public static class ImagePresignedUrlRes {
+        private List<PresignedUrlDto> urls;
+
+        public ImagePresignedUrlRes(List<PresignedUrlDto> urls) {
+            this.urls = urls;
+        }
+    }
+
+    @Getter
+    public static class PresignedUrlDto {
+        private String fileName;
+        private String url;
+
+        public PresignedUrlDto(String fileName, String url) {
+            this.fileName = fileName;
+            this.url = url;
+        }
+    }
 }
