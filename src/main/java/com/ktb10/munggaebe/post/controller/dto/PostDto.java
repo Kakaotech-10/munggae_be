@@ -97,9 +97,12 @@ public class PostDto {
 
     @Getter
     public static class ImagePresignedUrlRes {
+        private int count;
         private List<PresignedUrlDto> urls;
 
-        public ImagePresignedUrlRes(List<PresignedUrlDto> urls) {
+        @Builder
+        public ImagePresignedUrlRes(int count, List<PresignedUrlDto> urls) {
+            this.count = count;
             this.urls = urls;
         }
     }

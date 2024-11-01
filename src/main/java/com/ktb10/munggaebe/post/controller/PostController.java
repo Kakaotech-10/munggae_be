@@ -90,7 +90,12 @@ public class PostController {
                 .map(o -> objectMapper.convertValue(o, PostDto.PresignedUrlDto.class))
                 .toList();
 
-        return ResponseEntity.ok(new PostDto.ImagePresignedUrlRes(urls));
+        return ResponseEntity.ok(
+                PostDto.ImagePresignedUrlRes.builder()
+                        .count(urls.size())
+                        .urls(urls)
+                        .build()
+        );
     }
 
     private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {
