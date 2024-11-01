@@ -54,9 +54,12 @@ public class PostDto {
         }
     }
 
+    @Schema(description = "사전 서명 url 요청")
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class ImagePresignedUrlReq {
+
+        @Schema(description = "파일 이름 리스트", example = "[\"file1.jpg\", \"file2.png\"]")
         private List<String> fileNames;
 
         public ImagePresignedUrlReq(List<String> fileNames) {
@@ -95,9 +98,13 @@ public class PostDto {
         }
     }
 
+    @Schema(description = "사전 서명 url 응답")
     @Getter
     public static class ImagePresignedUrlRes {
+        @Schema(description = "개수", example = "2")
         private int count;
+
+        @Schema(description = "파일 이름, url")
         private List<PresignedUrlDto> urls;
 
         @Builder

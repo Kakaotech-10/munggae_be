@@ -82,6 +82,8 @@ public class PostController {
     }
 
     @PostMapping("/posts/{postId}/images/presigned-url")
+    @Operation(summary = "게시글 이미지 사전 서명 url 생성", description = "S3로부터 사전 서명 url을 생성해 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "게시글 이미지 사전 서명 url 생성 성공")
     public ResponseEntity<PostDto.ImagePresignedUrlRes> getPresignedUrl(@PathVariable final long postId,
                                              @RequestBody final PostDto.ImagePresignedUrlReq request) {
         List<PostServiceDto.PresignedUrlRes> urlRes = postService.getPresignedUrl(postId, request.getFileNames());
