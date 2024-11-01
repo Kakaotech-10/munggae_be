@@ -9,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class PostDto {
 
@@ -50,6 +51,16 @@ public class PostDto {
         public PostUpdateReq(String title, String content) {
             this.title = title;
             this.content = content;
+        }
+    }
+
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class ImagePresignedUrlReq {
+        private List<String> fileNames;
+
+        public ImagePresignedUrlReq(List<String> fileNames) {
+            this.fileNames = fileNames;
         }
     }
 

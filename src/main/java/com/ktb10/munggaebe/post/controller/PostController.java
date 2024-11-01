@@ -13,6 +13,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -76,6 +77,14 @@ public class PostController {
         postService.deletePost(postId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/posts/{postId}/images/presigned-url")
+    public ResponseEntity<?> getPresignedUrl(@PathVariable final long postId,
+                                             @RequestBody final PostDto.ImagePresignedUrlReq request) {
+        List<String> urls = postService.getPresignedUrl(postId, request.getFileNames());
+
+        return null;
     }
 
     private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {
