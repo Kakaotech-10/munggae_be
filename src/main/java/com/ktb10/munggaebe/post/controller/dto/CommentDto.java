@@ -1,4 +1,4 @@
-package com.ktb10.munggaebe.post.dto;
+package com.ktb10.munggaebe.post.controller.dto;
 
 import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.post.domain.Comment;

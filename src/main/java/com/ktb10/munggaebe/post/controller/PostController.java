@@ -1,8 +1,8 @@
 package com.ktb10.munggaebe.post.controller;
 
 import com.ktb10.munggaebe.post.domain.Post;
-import com.ktb10.munggaebe.post.dto.PostDto;
-import com.ktb10.munggaebe.post.dto.PostServiceDto;
+import com.ktb10.munggaebe.post.controller.dto.PostDto;
+import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
 import com.ktb10.munggaebe.post.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
