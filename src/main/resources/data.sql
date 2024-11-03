@@ -40,10 +40,11 @@ CREATE TABLE IF NOT EXISTS image (
     image_id BIGINT AUTO_INCREMENT PRIMARY KEY,
     original_name VARCHAR(255) NOT NULL,
     stored_name VARCHAR(255) NOT NULL,
-    s3_image_path VARCHAR(512) NOT NULL,
+    s3_image_path VARCHAR(1024) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-    DTYPE VARCHAR(31) NOT NULL
+    DTYPE VARCHAR(31) NOT NULL,
+    UNIQUE (stored_name)
 );
 
 CREATE TABLE IF NOT EXISTS post_image (
@@ -140,13 +141,8 @@ INSERT IGNORE INTO image (original_name, stored_name, s3_image_path, DTYPE) VALU
 INSERT IGNORE INTO post_image (image_id, post_id) VALUES
 (1, 1),
 (2, 2),
-(3, 3),
-(1, 4),
-(2, 5);
+(3, 3);
 
 INSERT IGNORE INTO member_image (image_id, member_id) VALUES
 (4, 1),
-(5, 2),
-(4, 3),
-(5, 4),
-(4, 5);
+(5, 2);
