@@ -36,7 +36,7 @@ public class SecurityConfig {
                                 .requestMatchers("/swagger-ui/**",  "/v3/api-docs/**").permitAll()
                                 .requestMatchers("/api/v1/auth/login/oauth2/callback/kakao").permitAll()
                                 .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/v1/posts/*/images/presigned-url").permitAll()
+                                .requestMatchers(HttpMethod.POST, "/api/v1/posts/*/images/**").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/v1/comments/**", "/api/v1/posts/**", "/api/v1/members/**").permitAll()
                                 .anyRequest().authenticated()
                 )
