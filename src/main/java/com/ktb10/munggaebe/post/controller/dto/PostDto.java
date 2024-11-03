@@ -2,6 +2,7 @@ package com.ktb10.munggaebe.post.controller.dto;
 
 import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.post.domain.Post;
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -105,23 +106,24 @@ public class PostDto {
         private int count;
 
         @Schema(description = "파일 이름, url")
-        private List<PresignedUrlDto> urls;
+        private List<UrlDto> urls;
 
         @Builder
-        public ImagePresignedUrlRes(int count, List<PresignedUrlDto> urls) {
+        public ImagePresignedUrlRes(int count, List<UrlDto> urls) {
             this.count = count;
             this.urls = urls;
         }
     }
 
     @Getter
-    public static class PresignedUrlDto {
-        private String fileName;
-        private String url;
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class ImageSaveReq {
+        private List<UrlDto> urls;
 
-        public PresignedUrlDto(String fileName, String url) {
-            this.fileName = fileName;
-            this.url = url;
+        public ImageSaveReq(List<UrlDto> urls) {
+            this.urls = urls;
         }
     }
+
+
 }

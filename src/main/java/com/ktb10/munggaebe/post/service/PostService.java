@@ -1,7 +1,9 @@
 package com.ktb10.munggaebe.post.service;
 
 import com.ktb10.munggaebe.image.domain.ImageType;
+import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.service.ImageService;
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
@@ -104,5 +106,13 @@ public class PostService {
                                 .url(imageService.getPresignedUrl(fileName, postId, ImageType.POST))
                                 .build())
                 .toList();
+    }
+
+    @Transactional
+    public List<PostImage> saveImages(long postId, List<UrlDto> urls) {
+        Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(postId));
+
+        return imageService.savePostImages(post, urls);
     }
 }

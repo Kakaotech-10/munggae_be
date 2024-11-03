@@ -1,6 +1,7 @@
 package com.ktb10.munggaebe.post.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.post.controller.dto.PostDto;
 import com.ktb10.munggaebe.post.domain.Post;
 import com.ktb10.munggaebe.post.service.PostService;
@@ -88,8 +89,8 @@ public class PostController {
                                              @RequestBody final PostDto.ImagePresignedUrlReq request) {
         List<PostServiceDto.PresignedUrlRes> urlRes = postService.getPresignedUrl(postId, request.getFileNames());
 
-        List<PostDto.PresignedUrlDto> urls = urlRes.stream()
-                .map(o -> objectMapper.convertValue(o, PostDto.PresignedUrlDto.class))
+        List<UrlDto> urls = urlRes.stream()
+                .map(o -> objectMapper.convertValue(o, UrlDto.class))
                 .toList();
 
         return ResponseEntity.ok(
@@ -98,6 +99,15 @@ public class PostController {
                         .urls(urls)
                         .build()
         );
+    }
+
+    @PostMapping("/posts/{postId}/images")
+    public ResponseEntity<?> savePostImages(@PathVariable final long postId,
+                                            @RequestBody final PostDto.ImageSaveReq request) {
+
+        postService.saveImages(postId, request.getUrls());
+
+        return ResponseEntity.ok(null);
     }
 
     private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {
