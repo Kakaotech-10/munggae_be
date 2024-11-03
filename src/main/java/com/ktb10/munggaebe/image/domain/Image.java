@@ -2,7 +2,6 @@ package com.ktb10.munggaebe.image.domain;
 
 import jakarta.persistence.*;
 import lombok.AccessLevel;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -39,7 +38,6 @@ public class Image {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    @Builder
     public Image(Long id, String originalName, String storedName, String s3ImagePath) {
         this.id = id;
         this.originalName = originalName;
