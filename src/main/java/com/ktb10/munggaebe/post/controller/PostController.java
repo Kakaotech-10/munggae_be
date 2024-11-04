@@ -37,7 +37,7 @@ public class PostController {
 
         final Page<Post> posts = postService.getPosts(pageNo, pageSize);
 
-        return ResponseEntity.ok(posts.map(PostDto.PostRes::new));
+        return ResponseEntity.ok(posts.map(p -> new PostDto.PostRes(p, postService.getPostImageUrls(p.getId()))));
     }
 
     @PostMapping("/posts")
