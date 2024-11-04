@@ -61,7 +61,7 @@ public class ImageService {
 
     private static String getStoredName(String url) {
         String[] split = url.split("/");
-        return split[split.length - 1];
+        return split[split.length - 1].split("\\?")[0];
     }
 
 }
