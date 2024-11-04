@@ -1,9 +1,9 @@
 package com.ktb10.munggaebe.post.controller.dto;
 
 import com.ktb10.munggaebe.image.domain.PostImage;
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.post.domain.Post;
-import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -11,6 +11,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PostDto {
@@ -91,7 +92,7 @@ public class PostDto {
         private MemberDto.MemberRes member;
 
         @Schema(description = "CDN 이미지 url", example = "[\"http://cdn-path/123_file1.jpg\", \"http://cdn-path/234_file2.png\"]")
-        private List<String> imageUrls;
+        private List<String> imageUrls = new ArrayList<>();
 
         public PostRes(Post post) {
             this.id = post.getId();

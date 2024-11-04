@@ -71,7 +71,7 @@ public class PostController {
         final PostServiceDto.UpdateReq updateReq = toServiceDto(postId, request);
         final Post updatedPost = postService.updatePost(updateReq);
 
-        return ResponseEntity.ok(new PostDto.PostRes(updatedPost));
+        return ResponseEntity.ok(new PostDto.PostRes(updatedPost, postService.getPostImageUrls(updatedPost.getId())));
     }
 
     @DeleteMapping("/posts/{postId}")
