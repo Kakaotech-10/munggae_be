@@ -1,6 +1,7 @@
 package com.ktb10.munggaebe.post.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.post.controller.dto.PostDto;
 import com.ktb10.munggaebe.post.domain.Post;
@@ -103,12 +104,15 @@ public class PostController {
     }
 
     @PostMapping("/posts/{postId}/images")
-    public ResponseEntity<?> savePostImages(@PathVariable final long postId,
+    @Operation(summary = "게시글 이미지 저장", description = "게시물 이미지 이름과 s3 url을 저장합니다.")
+    @ApiResponse(responseCode = "200", description = "게시글 이미지 저장 성공")
+    public ResponseEntity<PostDto.ImageSaveRes> savePostImages(@PathVariable final long postId,
                                             @RequestBody final PostDto.ImageSaveReq request) {
 
-        postService.saveImages(postId, request.getUrls());
+        List<PostImage> postImages = postService.saveImages(postId, request.getUrls());
 
-        return ResponseEntity.ok(null);
+        return ResponseEntity.created(URI.create("/api/v1/posts/" + postId))
+                .body(new PostDto.ImageSaveRes(postImages));
     }
 
     private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {

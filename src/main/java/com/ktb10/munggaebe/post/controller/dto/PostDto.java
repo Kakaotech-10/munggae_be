@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.post.controller.dto;
 
+import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.post.domain.Post;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
@@ -128,9 +129,11 @@ public class PostDto {
         }
     }
 
+    @Schema(description = "이미지 저장 요청")
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class ImageSaveReq {
+        @Schema(description = "파일 이름, url")
         private List<UrlDto> urls;
 
         public ImageSaveReq(List<UrlDto> urls) {
@@ -138,5 +141,37 @@ public class PostDto {
         }
     }
 
+    @Schema(description = "이미지 저장 응답")
+    @Getter
+    public static class ImageSaveRes {
+        private List<ImageRes> images;
 
+        public ImageSaveRes(List<PostImage> postImages) {
+            this.images = postImages.stream()
+                    .map(ImageRes::new)
+                    .toList();
+        }
+    }
+
+    @Schema(description = "이미지 응답")
+    @Getter
+    public static class ImageRes {
+        private Long imageId;
+        private Long postId;
+        private String originalName;
+        private String storedName;
+        private String s3ImagePath;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+
+        public ImageRes(PostImage postImage) {
+            this.imageId = postImage.getId();
+            this.postId = postImage.getPost().getId();
+            this.originalName = postImage.getOriginalName();
+            this.storedName = postImage.getStoredName();
+            this.s3ImagePath = postImage.getS3ImagePath();
+            this.createdAt = postImage.getCreatedAt();
+            this.updatedAt = postImage.getUpdatedAt();
+        }
+    }
 }
