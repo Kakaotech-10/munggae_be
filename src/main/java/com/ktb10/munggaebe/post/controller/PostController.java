@@ -57,8 +57,9 @@ public class PostController {
     public ResponseEntity<PostDto.PostRes> getPost(@PathVariable final long postId) {
 
         final Post post = postService.getPost(postId);
+        final List<String> urls = postService.getPostImageUrls(postId);
 
-        return ResponseEntity.ok(new PostDto.PostRes(post));
+        return ResponseEntity.ok(new PostDto.PostRes(post, urls));
     }
 
     @PutMapping("/posts/{postId}")

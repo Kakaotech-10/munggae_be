@@ -115,4 +115,12 @@ public class PostService {
 
         return imageService.savePostImages(post, urls);
     }
+
+    public List<String> getPostImageUrls(long postId) {
+
+        if (!postRepository.existsById(postId)) {
+            throw new PostNotFoundException(postId);
+        }
+        return imageService.getPostImageUrls(postId);
+    }
 }

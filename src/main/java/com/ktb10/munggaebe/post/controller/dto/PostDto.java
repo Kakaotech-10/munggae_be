@@ -89,6 +89,9 @@ public class PostDto {
         @Schema(description = "게시물 작성자 정보", implementation = MemberDto.MemberRes.class)
         private MemberDto.MemberRes member;
 
+        @Schema(description = "CDN 이미지 url", example = "[\"http://cdn-path/123_file1.jpg\", \"http://cdn-path/234_file2.png\"]")
+        private List<String> imageUrls;
+
         public PostRes(Post post) {
             this.id = post.getId();
             this.title = post.getTitle();
@@ -96,6 +99,16 @@ public class PostDto {
             this.createdAt = post.getCreatedAt();
             this.updatedAt = post.getUpdatedAt();
             this.member = new MemberDto.MemberRes(post.getMember());
+        }
+
+        public PostRes(Post post, List<String> imageUrls) {
+            this.id = post.getId();
+            this.title = post.getTitle();
+            this.content = post.getContent();
+            this.createdAt = post.getCreatedAt();
+            this.updatedAt = post.getUpdatedAt();
+            this.member = new MemberDto.MemberRes(post.getMember());
+            this.imageUrls = imageUrls;
         }
     }
 

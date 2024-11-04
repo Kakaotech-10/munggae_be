@@ -3,6 +3,7 @@ package com.ktb10.munggaebe.image.service;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.repository.ImageRepository;
+import com.ktb10.munggaebe.image.repository.PostImageRepository;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.post.domain.Post;
 import lombok.RequiredArgsConstructor;
@@ -18,10 +19,14 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class ImageService {
 
-    @Value("${cloud.aws.s3.bucket}")
-    private String bucket;
+    @Value("${custom.s3-url}")
+    private String s3Url;
+
+    @Value("${custom.cloudfront-url}")
+    private String cloudfrontUrl;
 
     private final ImageRepository imageRepository;
+    private final PostImageRepository postImageRepository;
     private final S3Service s3Service;
 
     private static final String PREFIX_PATH = "images";
@@ -49,6 +54,24 @@ public class ImageService {
                 .toList();
 
         return imageRepository.saveAll(images);
+    }
+
+    public List<String> getPostImageUrls(long postId) {
+        log.info("getPostImageUrls start : postId = {}", postId);
+
+        List<String> s3ImagePaths = postImageRepository.findS3ImagePathsByPostId(postId);
+        log.info("s3ImagePaths = {}", s3ImagePaths);
+
+        return s3ImagePaths.stream()
+                .map(this::convertS3PathToCloudFront)
+                .toList();
+    }
+
+    private String convertS3PathToCloudFront(String s3Path) {
+        String s3PathWithOutParams = s3Path.split("\\?")[0];
+        String cloudFrontPath = s3PathWithOutParams.replace(s3Url, cloudfrontUrl);
+        log.info("cloudFrontPath = {}", cloudFrontPath);
+        return cloudFrontPath;
     }
 
     private static String getPrefix(Long id, ImageType imageType) {
