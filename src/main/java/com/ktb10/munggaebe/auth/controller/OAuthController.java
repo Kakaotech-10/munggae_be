@@ -41,7 +41,7 @@ public class OAuthController {
             log.info("refreshToken on cookie");
             final ResponseCookie cookie = ResponseCookie.from(COOKIE_TOKEN, refreshTokenResponse.getRefreshToken())
                     .maxAge(refreshTokenResponse.getExpiresIn())
-                    .sameSite("None")
+//                    .sameSite("None")
 //                    .secure(true)
                     .httpOnly(true)
                     .path("/")
