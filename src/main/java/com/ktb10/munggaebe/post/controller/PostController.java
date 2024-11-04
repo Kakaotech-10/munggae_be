@@ -105,7 +105,7 @@ public class PostController {
 
     @PostMapping("/posts/{postId}/images")
     @Operation(summary = "게시글 이미지 저장", description = "게시물 이미지 이름과 s3 url을 저장합니다.")
-    @ApiResponse(responseCode = "200", description = "게시글 이미지 저장 성공")
+    @ApiResponse(responseCode = "201", description = "게시글 이미지 저장 성공")
     public ResponseEntity<PostDto.ImageSaveRes> savePostImages(@PathVariable final long postId,
                                             @RequestBody final PostDto.ImageSaveReq request) {
 
