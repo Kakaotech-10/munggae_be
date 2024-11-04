@@ -9,6 +9,8 @@ import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
+import com.ktb10.munggaebe.post.client.TextFilteringClient;
+import com.ktb10.munggaebe.post.client.dto.FilteringRes;
 import com.ktb10.munggaebe.post.domain.Post;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.PostRepository;
@@ -22,6 +24,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.util.List;
 
@@ -34,6 +37,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final ImageService imageService;
+    private final TextFilteringClient textFilteringClient;
 
     public Page<Post> getPosts(final int pageNo, final int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
@@ -52,6 +56,9 @@ public class PostService {
 
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
+
+        Mono<FilteringRes> result = textFilteringClient.filterText(post.getContent());
+        log.info("text filtering result = {}", result.toString());
 
         final Post postWithMember = Post.builder()
                 .member(member)
