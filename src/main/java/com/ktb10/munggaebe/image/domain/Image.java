@@ -27,7 +27,7 @@ public class Image {
     @Column(name = "stored_name", nullable = false)
     private String storedName;
 
-    @Column(name = "s3_image_path", nullable = false)
+    @Column(name = "s3_image_path", nullable = false, length = 1024)
     private String s3ImagePath;
 
     @CreationTimestamp

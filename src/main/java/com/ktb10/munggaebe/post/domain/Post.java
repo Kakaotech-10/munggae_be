@@ -33,7 +33,8 @@ public class Post {
     @Column(name = "post_title", nullable = false)
     private String title;
 
-    @Column(name = "post_content", nullable = false)
+    @Lob
+    @Column(name = "post_content", nullable = false, length = 256)
     private String content;
 
     @CreationTimestamp
