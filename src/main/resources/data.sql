@@ -28,6 +28,7 @@ CREATE TABLE IF NOT EXISTS comment (
     parent_comment_id BIGINT,
     comment_content TEXT NOT NULL,
     depth INT NOT NULL,
+    is_deleted BOOLEAN NOT NULL DEFAULT FALSE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (comment_id),
@@ -35,6 +36,32 @@ CREATE TABLE IF NOT EXISTS comment (
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE,
     FOREIGN KEY (parent_comment_id) REFERENCES comment(comment_id) ON DELETE CASCADE
 );
+
+CREATE TABLE IF NOT EXISTS image (
+    image_id BIGINT AUTO_INCREMENT PRIMARY KEY,
+    original_name VARCHAR(255) NOT NULL,
+    stored_name VARCHAR(255) NOT NULL,
+    s3_image_path VARCHAR(1024) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    DTYPE VARCHAR(31) NOT NULL,
+    UNIQUE (stored_name)
+);
+
+CREATE TABLE IF NOT EXISTS post_image (
+    image_id BIGINT PRIMARY KEY,
+    post_id BIGINT NOT NULL,
+    FOREIGN KEY (image_id) REFERENCES image(image_id) ON DELETE CASCADE,
+    FOREIGN KEY (post_id) REFERENCES post(post_id) ON DELETE CASCADE
+);
+
+CREATE TABLE IF NOT EXISTS member_image (
+    image_id BIGINT PRIMARY KEY,
+    member_id BIGINT NOT NULL,
+    FOREIGN KEY (image_id) REFERENCES image(image_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
+);
+
 
 -- Member 데이터 삽입
 INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_english, kakao_id, created_at, updated_at) VALUES
@@ -104,3 +131,19 @@ INSERT IGNORE INTO comment (comment_id, post_id, member_id, parent_comment_id, c
 (18, 17, 19, NULL, 'This is the eighteenth comment', 0, NOW(), NOW()),
 (19, 18, 20, NULL, 'This is the nineteenth comment', 0, NOW(), NOW()),
 (20, 19, 1, NULL, 'This is the twentieth comment', 0, NOW(), NOW());
+
+INSERT IGNORE INTO image (original_name, stored_name, s3_image_path, DTYPE) VALUES
+('sample1.jpg', 'stored1.jpg', '/post/sample1.jpg', 'post'),
+('sample2.jpg', 'stored2.jpg', '/post/sample2.jpg', 'post'),
+('sample3.jpg', 'stored3.jpg', '/post/sample3.jpg', 'post'),
+('sample4.jpg', 'stored4.jpg', '/member/sample4.jpg', 'member'),
+('sample5.jpg', 'stored5.jpg', '/member/sample5.jpg', 'member');
+
+INSERT IGNORE INTO post_image (image_id, post_id) VALUES
+(1, 1),
+(2, 2),
+(3, 3);
+
+INSERT IGNORE INTO member_image (image_id, member_id) VALUES
+(4, 1),
+(5, 2);

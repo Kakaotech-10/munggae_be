@@ -49,3 +49,8 @@ kakao:
 custom:
   jwt:
     secretKey: e84a2015a611cc64abc74b0b1b88a4de8d7921f145e0f6ff579dd96f7b816cc8e84a2015a611cc64abc74b0b1b88a4de8d7921f1
+
+---
+spring:
+  profiles.include:
+    - s3

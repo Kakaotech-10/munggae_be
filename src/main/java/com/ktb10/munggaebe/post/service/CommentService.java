@@ -7,7 +7,7 @@ import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.post.domain.Comment;
 import com.ktb10.munggaebe.post.domain.Post;
-import com.ktb10.munggaebe.post.dto.CommentServiceDto;
+import com.ktb10.munggaebe.post.service.dto.CommentServiceDto;
 import com.ktb10.munggaebe.post.exception.CommentNotFoundException;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.CommentRepository;

@@ -26,17 +26,17 @@ public class Member implements UserDetails {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "role", nullable = false)
+    @Column(name = "role", nullable = false, length = 50)
     private MemberRole role;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "course", nullable = false)
+    @Column(name = "course", nullable = false, length = 50)
     private MemberCourse course;
 
-    @Column(name = "member_name", nullable = false)
+    @Column(name = "member_name", nullable = false, length = 50)
     private String name;
 
-    @Column(name = "member_name_english", nullable = false)
+    @Column(name = "member_name_english", nullable = false, length = 50)
     private String nameEnglish;
 
     @Column(name = "kakao_id", nullable = false)

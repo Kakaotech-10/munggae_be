@@ -1,9 +1,12 @@
 package com.ktb10.munggaebe.post.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.image.domain.PostImage;
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
+import com.ktb10.munggaebe.post.controller.dto.PostDto;
 import com.ktb10.munggaebe.post.domain.Post;
-import com.ktb10.munggaebe.post.dto.PostDto;
-import com.ktb10.munggaebe.post.dto.PostServiceDto;
 import com.ktb10.munggaebe.post.service.PostService;
+import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -13,6 +16,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
@@ -21,6 +25,7 @@ import java.net.URI;
 public class PostController {
 
     private final PostService postService;
+    private final ObjectMapper objectMapper;
 
     private static final String DEFAULT_POST_PAGE_NO = "0";
     private static final String DEFAULT_POST_PAGE_SIZE = "10";
@@ -33,7 +38,7 @@ public class PostController {
 
         final Page<Post> posts = postService.getPosts(pageNo, pageSize);
 
-        return ResponseEntity.ok(posts.map(PostDto.PostRes::new));
+        return ResponseEntity.ok(posts.map(p -> new PostDto.PostRes(p, postService.getPostImageUrls(p.getId()))));
     }
 
     @PostMapping("/posts")
@@ -53,8 +58,9 @@ public class PostController {
     public ResponseEntity<PostDto.PostRes> getPost(@PathVariable final long postId) {
 
         final Post post = postService.getPost(postId);
+        final List<String> urls = postService.getPostImageUrls(postId);
 
-        return ResponseEntity.ok(new PostDto.PostRes(post));
+        return ResponseEntity.ok(new PostDto.PostRes(post, urls));
     }
 
     @PutMapping("/posts/{postId}")
@@ -65,7 +71,7 @@ public class PostController {
         final PostServiceDto.UpdateReq updateReq = toServiceDto(postId, request);
         final Post updatedPost = postService.updatePost(updateReq);
 
-        return ResponseEntity.ok(new PostDto.PostRes(updatedPost));
+        return ResponseEntity.ok(new PostDto.PostRes(updatedPost, postService.getPostImageUrls(updatedPost.getId())));
     }
 
     @DeleteMapping("/posts/{postId}")
@@ -76,6 +82,37 @@ public class PostController {
         postService.deletePost(postId);
 
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/posts/{postId}/images/presigned-url")
+    @Operation(summary = "게시글 이미지 사전 서명 url 생성", description = "S3로부터 사전 서명 url을 생성해 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "게시글 이미지 사전 서명 url 생성 성공")
+    public ResponseEntity<PostDto.ImagePresignedUrlRes> getPresignedUrl(@PathVariable final long postId,
+                                             @RequestBody final PostDto.ImagePresignedUrlReq request) {
+        List<PostServiceDto.PresignedUrlRes> urlRes = postService.getPresignedUrl(postId, request.getFileNames());
+
+        List<UrlDto> urls = urlRes.stream()
+                .map(o -> objectMapper.convertValue(o, UrlDto.class))
+                .toList();
+
+        return ResponseEntity.ok(
+                PostDto.ImagePresignedUrlRes.builder()
+                        .count(urls.size())
+                        .urls(urls)
+                        .build()
+        );
+    }
+
+    @PostMapping("/posts/{postId}/images")
+    @Operation(summary = "게시글 이미지 저장", description = "게시물 이미지 이름과 s3 url을 저장합니다.")
+    @ApiResponse(responseCode = "201", description = "게시글 이미지 저장 성공")
+    public ResponseEntity<PostDto.ImageSaveRes> savePostImages(@PathVariable final long postId,
+                                            @RequestBody final PostDto.ImageSaveReq request) {
+
+        List<PostImage> postImages = postService.saveImages(postId, request.getUrls());
+
+        return ResponseEntity.created(URI.create("/api/v1/posts/" + postId))
+                .body(new PostDto.ImageSaveRes(postImages));
     }
 
     private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {

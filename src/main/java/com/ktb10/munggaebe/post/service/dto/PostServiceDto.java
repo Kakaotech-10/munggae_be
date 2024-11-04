@@ -1,4 +1,4 @@
-package com.ktb10.munggaebe.post.dto;
+package com.ktb10.munggaebe.post.service.dto;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -16,6 +16,18 @@ public class PostServiceDto {
             this.postId = postId;
             this.title = title;
             this.content = content;
+        }
+    }
+
+    @Getter
+    public static class PresignedUrlRes {
+        private String fileName;
+        private String url;
+
+        @Builder
+        public PresignedUrlRes(String fileName, String url) {
+            this.fileName = fileName;
+            this.url = url;
         }
     }
 }

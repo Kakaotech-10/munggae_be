@@ -1,4 +1,4 @@
-package com.ktb10.munggaebe.post.dto;
+package com.ktb10.munggaebe.post.service.dto;
 
 import lombok.Builder;
 import lombok.Getter;
