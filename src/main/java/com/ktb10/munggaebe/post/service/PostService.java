@@ -96,9 +96,10 @@ public class PostService {
 
     public List<PostServiceDto.PresignedUrlRes> getPresignedUrl(final long postId, final List<String> fileNames) {
 
-        if (!postRepository.existsById(postId)) {
-            throw new PostNotFoundException(postId);
-        }
+        final Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(postId));
+
+        validateAuthorization(post);
 
         return fileNames.stream()
                 .map(fileName -> PostServiceDto.PresignedUrlRes.builder()
@@ -110,8 +111,10 @@ public class PostService {
 
     @Transactional
     public List<PostImage> saveImages(long postId, List<UrlDto> urls) {
-        Post post = postRepository.findById(postId)
+        final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
+
+        validateAuthorization(post);
 
         return imageService.savePostImages(post, urls);
     }
