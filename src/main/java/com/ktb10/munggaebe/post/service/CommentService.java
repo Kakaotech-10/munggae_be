@@ -14,6 +14,7 @@ import com.ktb10.munggaebe.post.repository.CommentRepository;
 import com.ktb10.munggaebe.post.repository.PostRepository;
 import com.ktb10.munggaebe.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -29,6 +31,7 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
+    private final FilteringService filteringService;
 
     private static final int ROOT_COMMENT_DEPTH = 0;
     private static final int REPLY_DEPTH = 1;
@@ -48,6 +51,7 @@ public class CommentService {
     @Transactional
     public Comment createRootComment(final Comment entity, final long postId) {
 
+        log.info("createRootComment start : postId = {}, content = {}", postId, entity.getContent());
         Long currentMemberId = SecurityUtil.getCurrentUserId();
 
         final Post post = postRepository.findById(postId)
@@ -56,12 +60,16 @@ public class CommentService {
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
+        boolean isCommentClean = isCommentClean(entity.getContent());
+        log.info("isCommentClean = {}", isCommentClean);
+
         final Comment comment = Comment.builder()
                 .post(post)
                 .member(member)
                 .parent(null)
                 .content(entity.getContent())
                 .depth(ROOT_COMMENT_DEPTH)
+                .isClean(isCommentClean)
                 .build();
 
         return commentRepository.save(comment);
@@ -125,5 +133,9 @@ public class CommentService {
         if (SecurityUtil.hasRole("STUDENT") && !comment.getMember().getId().equals(currentUserId)) {
             throw new MemberPermissionDeniedException(currentUserId, MemberRole.STUDENT);
         }
+    }
+
+    private boolean isCommentClean(String content) {
+        return filteringService.isCleanText(content);
     }
 }

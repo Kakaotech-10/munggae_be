@@ -64,6 +64,9 @@ public class CommentDto {
         @Schema(description = "댓글 삭제 여부", example = "false")
         private boolean isDeleted;
 
+        @Schema(description = "댓글 클린 여부", example = "true")
+        private boolean isClean;
+
         @Schema(description = "댓글 내용 (삭제된 경우 '삭제된 댓글입니다.')", example = "이것은 댓글입니다.")
         private String content;
 
@@ -82,6 +85,7 @@ public class CommentDto {
             this.parentId = comment.getParent() == null ? null : comment.getParent().getId();
             this.depth = comment.getDepth();
             this.isDeleted = comment.isDeleted();
+            this.isClean = comment.isClean();
             this.content = comment.isDeleted() ? DELETED_CONTENT : comment.getContent();
             this.createdAt = comment.getCreatedAt();
             this.updatedAt = comment.getUpdatedAt();
@@ -107,6 +111,9 @@ public class CommentDto {
         @Schema(description = "댓글 삭제 여부", example = "false")
         private boolean isDeleted;
 
+        @Schema(description = "댓글 클린 여부", example = "true")
+        private boolean isClean;
+
         @Schema(description = "댓글 내용 (삭제된 경우 '삭제된 댓글입니다.')", example = "이것은 댓글입니다.")
         private String content;
 
@@ -128,6 +135,7 @@ public class CommentDto {
             this.parentId = comment.getParent() == null ? null : comment.getParent().getId();
             this.depth = comment.getDepth();
             this.isDeleted = comment.isDeleted();
+            this.isClean = comment.isClean();
             this.content = comment.isDeleted() ? DELETED_CONTENT : comment.getContent();
             this.createdAt = comment.getCreatedAt();
             this.updatedAt = comment.getUpdatedAt();
