@@ -49,11 +49,12 @@ public class Post {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Post(Long id, Member member, String title, String content) {
+    public Post(Long id, Member member, String title, String content, boolean isClean) {
         this.id = id;
         this.member = member;
         this.title = title;
         this.content = content;
+        this.isClean = isClean;
     }
 
     public void updatePost(String title, String content) {

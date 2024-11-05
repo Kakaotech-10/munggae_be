@@ -48,18 +48,20 @@ public class PostService {
 
     @Transactional
     public Post createPost(final Post post) {
-
+        log.info("createPost start : title = {}, content = {}", post.getTitle(), post.getContent());
         Long currentMemberId = SecurityUtil.getCurrentUserId();
 
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
         boolean isClean = filteringService.isCleanText(post.getContent());
+        log.info("createPost isClean = {}", isClean);
 
         final Post postWithMember = Post.builder()
                 .member(member)
                 .title(post.getTitle())
                 .content(post.getContent())
+                .isClean(isClean)
                 .build();
 
         return postRepository.save(postWithMember);
