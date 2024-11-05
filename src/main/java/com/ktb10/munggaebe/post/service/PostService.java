@@ -67,14 +67,6 @@ public class PostService {
         return postRepository.save(postWithMember);
     }
 
-    private boolean isPostClean(String title, String content) {
-        boolean isTitleClean = filteringService.isCleanText(title);
-        log.info("isTitleClean = {}", isTitleClean);
-        boolean isContentClean = filteringService.isCleanText(content);
-        log.info("isContentClean = {}", isContentClean);
-        return isTitleClean && isContentClean;
-    }
-
     @Transactional
     public Post updatePost(final PostServiceDto.UpdateReq updateReq) {
 
@@ -102,14 +94,6 @@ public class PostService {
         validateAuthorization(post);
         
         postRepository.deleteById(postId);
-    }
-
-    private void validateAuthorization(Post post) {
-        log.info("validateAuthorization Post's memberId");
-        Long currentMemberId = SecurityUtil.getCurrentUserId();
-        if (SecurityUtil.hasRole("STUDENT") && !post.getMember().getId().equals(currentMemberId)) {
-            throw new MemberPermissionDeniedException(currentMemberId, MemberRole.STUDENT);
-        }
     }
 
     public List<PostServiceDto.PresignedUrlRes> getPresignedUrl(final long postId, final List<String> fileNames) {
@@ -143,5 +127,21 @@ public class PostService {
             throw new PostNotFoundException(postId);
         }
         return imageService.getPostImageUrls(postId);
+    }
+
+    private void validateAuthorization(Post post) {
+        log.info("validateAuthorization Post's memberId");
+        Long currentMemberId = SecurityUtil.getCurrentUserId();
+        if (SecurityUtil.hasRole("STUDENT") && !post.getMember().getId().equals(currentMemberId)) {
+            throw new MemberPermissionDeniedException(currentMemberId, MemberRole.STUDENT);
+        }
+    }
+
+    private boolean isPostClean(String title, String content) {
+        boolean isTitleClean = filteringService.isCleanText(title);
+        log.info("isTitleClean = {}", isTitleClean);
+        boolean isContentClean = filteringService.isCleanText(content);
+        log.info("isContentClean = {}", isContentClean);
+        return isTitleClean && isContentClean;
     }
 }
