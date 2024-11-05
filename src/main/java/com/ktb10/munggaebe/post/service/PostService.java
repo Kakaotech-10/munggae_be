@@ -54,17 +54,25 @@ public class PostService {
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
-        boolean isClean = filteringService.isCleanText(post.getContent());
-        log.info("createPost isClean = {}", isClean);
+        boolean isPostClean = isPostClean(post);
+        log.info("createPost isPostClean = {}", isPostClean);
 
         final Post postWithMember = Post.builder()
                 .member(member)
                 .title(post.getTitle())
                 .content(post.getContent())
-                .isClean(isClean)
+                .isClean(isPostClean)
                 .build();
 
         return postRepository.save(postWithMember);
+    }
+
+    private boolean isPostClean(Post post) {
+        boolean isTitleClean = filteringService.isCleanText(post.getTitle());
+        log.info("createPost isTitleClean = {}", isTitleClean);
+        boolean isContentClean = filteringService.isCleanText(post.getContent());
+        log.info("createPost isContentClean = {}", isContentClean);
+        return isTitleClean && isContentClean;
     }
 
     @Transactional
