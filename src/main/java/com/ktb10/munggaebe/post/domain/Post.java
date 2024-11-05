@@ -37,6 +37,9 @@ public class Post {
     @Column(name = "post_content", nullable = false, length = 256)
     private String content;
 
+    @Column(name = "is_clean", nullable = false)
+    private boolean isClean;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;

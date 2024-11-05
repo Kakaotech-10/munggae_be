@@ -6,6 +6,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -16,10 +18,10 @@ public class FilteringService {
     public boolean isCleanText(String text) {
         log.info("Filtering text {}", text);
 
-        FilteringRes result = textFilteringClient.filterText(text);
-        log.info("text filtering result = {}", result);
+        FilteringRes filteringResult = textFilteringClient.filterText(text);
+        log.info("text filtering result = {}", filteringResult);
 
-        //클린 여부 반환
-        return false;
+        List<String> filteredLabels = filteringResult.getFilteredLabels();
+        return filteredLabels.size() == 1 && filteredLabels.contains("clean");
     }
 }

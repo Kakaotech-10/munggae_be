@@ -9,7 +9,6 @@ import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
-import com.ktb10.munggaebe.post.client.TextFilteringClient;
 import com.ktb10.munggaebe.post.domain.Post;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.PostRepository;
@@ -35,7 +34,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final ImageService imageService;
-    private final TextFilteringClient textFilteringClient;
+    private final FilteringService filteringService;
 
     public Page<Post> getPosts(final int pageNo, final int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
@@ -54,6 +53,8 @@ public class PostService {
 
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
+
+        boolean isClean = filteringService.isCleanText(post.getContent());
 
         final Post postWithMember = Post.builder()
                 .member(member)
