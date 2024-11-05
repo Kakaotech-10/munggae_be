@@ -90,12 +90,16 @@ public class CommentService {
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
+        boolean isCommentClean = isCommentClean(entity.getContent());
+        log.info("isCommentClean = {}", isCommentClean);
+
         Comment comment = Comment.builder()
                 .post(post)
                 .member(member)
                 .parent(parent)
                 .content(entity.getContent())
                 .depth(REPLY_DEPTH)
+                .isClean(isCommentClean)
                 .build();
 
         return commentRepository.save(comment);
