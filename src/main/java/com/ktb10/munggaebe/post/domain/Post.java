@@ -57,8 +57,9 @@ public class Post {
         this.isClean = isClean;
     }
 
-    public void updatePost(String title, String content) {
+    public void updatePost(String title, String content, boolean isClean) {
         this.title = title;
         this.content = content;
+        this.isClean = isClean;
     }
 }

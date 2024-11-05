@@ -114,6 +114,7 @@ public class PostDto {
             this.createdAt = post.getCreatedAt();
             this.updatedAt = post.getUpdatedAt();
             this.member = new MemberDto.MemberRes(post.getMember());
+            this.isClean = post.isClean();
             this.imageUrls = imageUrls;
         }
     }

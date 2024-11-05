@@ -54,7 +54,7 @@ public class PostService {
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
-        boolean isPostClean = isPostClean(post);
+        boolean isPostClean = isPostClean(post.getTitle(), post.getContent());
         log.info("createPost isPostClean = {}", isPostClean);
 
         final Post postWithMember = Post.builder()
@@ -67,24 +67,28 @@ public class PostService {
         return postRepository.save(postWithMember);
     }
 
-    private boolean isPostClean(Post post) {
-        boolean isTitleClean = filteringService.isCleanText(post.getTitle());
-        log.info("createPost isTitleClean = {}", isTitleClean);
-        boolean isContentClean = filteringService.isCleanText(post.getContent());
-        log.info("createPost isContentClean = {}", isContentClean);
+    private boolean isPostClean(String title, String content) {
+        boolean isTitleClean = filteringService.isCleanText(title);
+        log.info("isTitleClean = {}", isTitleClean);
+        boolean isContentClean = filteringService.isCleanText(content);
+        log.info("isContentClean = {}", isContentClean);
         return isTitleClean && isContentClean;
     }
 
     @Transactional
     public Post updatePost(final PostServiceDto.UpdateReq updateReq) {
 
+        log.info("updatePost start : id = {}, title = {}, content = {}", updateReq.getPostId(), updateReq.getTitle(), updateReq.getContent());
         final long postId = updateReq.getPostId();
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
         validateAuthorization(post);
 
-        post.updatePost(updateReq.getTitle(), updateReq.getContent());
+        boolean isPostClean = isPostClean(updateReq.getTitle(), updateReq.getContent());
+        log.info("updatePost isPostClean = {}", isPostClean);
+
+        post.updatePost(updateReq.getTitle(), updateReq.getContent(), isPostClean);
 
         return post;
     }
@@ -101,6 +105,7 @@ public class PostService {
     }
 
     private void validateAuthorization(Post post) {
+        log.info("validateAuthorization Post's memberId");
         Long currentMemberId = SecurityUtil.getCurrentUserId();
         if (SecurityUtil.hasRole("STUDENT") && !post.getMember().getId().equals(currentMemberId)) {
             throw new MemberPermissionDeniedException(currentMemberId, MemberRole.STUDENT);
