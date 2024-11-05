@@ -78,6 +78,7 @@ public class CommentService {
     @Transactional
     public Comment createReplyComment(final Comment entity, final long commentId) {
 
+        log.info("createReplyComment start : commentId = {}, content = {}", commentId, entity.getContent());
         Long currentMemberId = SecurityUtil.getCurrentUserId();
 
         final Comment parent = commentRepository.findById(commentId)
@@ -110,13 +111,17 @@ public class CommentService {
     @Transactional
     public Comment updateComment(final CommentServiceDto.UpdateReq updateReq) {
 
+        log.info("updateComment start : commentId = {}, content = {}", updateReq.getCommentId(), updateReq.getContent());
         final Long commentId = updateReq.getCommentId();
         final Comment comment = commentRepository.findById(commentId)
                 .orElseThrow(() -> new CommentNotFoundException(commentId));
 
         validateAuthorization(comment);
 
-        comment.updateComment(updateReq.getContent());
+        boolean isCommentClean = isCommentClean(updateReq.getContent());
+        log.info("isCommentClean = {}", isCommentClean);
+
+        comment.updateComment(updateReq.getContent(), isCommentClean);
 
         return comment;
     }
@@ -133,6 +138,7 @@ public class CommentService {
     }
 
     private void validateAuthorization(Comment comment) {
+        log.info("validateAuthorization Comment's memberId");
         Long currentUserId = SecurityUtil.getCurrentUserId();
         if (SecurityUtil.hasRole("STUDENT") && !comment.getMember().getId().equals(currentUserId)) {
             throw new MemberPermissionDeniedException(currentUserId, MemberRole.STUDENT);

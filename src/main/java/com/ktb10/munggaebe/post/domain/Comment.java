@@ -71,8 +71,9 @@ public class Comment {
         this.isClean = isClean;
     }
 
-    public void updateComment(String content) {
+    public void updateComment(String content, boolean isClean) {
         this.content = content;
+        this.isClean = isClean;
     }
 
     public void deleteComment() {
