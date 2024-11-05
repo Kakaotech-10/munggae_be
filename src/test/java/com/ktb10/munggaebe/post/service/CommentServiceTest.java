@@ -43,6 +43,9 @@ class CommentServiceTest {
     @Mock
     private MemberRepository memberRepository;
 
+    @Mock
+    private FilteringService filteringService;
+
     @InjectMocks
     private CommentService commentService;
 

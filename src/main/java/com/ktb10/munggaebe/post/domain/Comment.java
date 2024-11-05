@@ -45,6 +45,9 @@ public class Comment {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
+    @Column(name = "is_clean", nullable = false)
+    private boolean isClean;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -57,7 +60,7 @@ public class Comment {
     List<Comment> replies = new ArrayList<>();
 
     @Builder
-    public Comment(Long id, Post post, Member member, Comment parent, String content, Integer depth) {
+    public Comment(Long id, Post post, Member member, Comment parent, String content, Integer depth, boolean isClean) {
         this.id = id;
         this.post = post;
         this.member = member;
@@ -65,10 +68,12 @@ public class Comment {
         this.content = content;
         this.depth = depth;
         this.isDeleted = false;
+        this.isClean = isClean;
     }
 
-    public void updateComment(String content) {
+    public void updateComment(String content, boolean isClean) {
         this.content = content;
+        this.isClean = isClean;
     }
 
     public void deleteComment() {

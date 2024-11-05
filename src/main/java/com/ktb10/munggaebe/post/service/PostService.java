@@ -34,6 +34,7 @@ public class PostService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final ImageService imageService;
+    private final FilteringService filteringService;
 
     public Page<Post> getPosts(final int pageNo, final int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
@@ -47,16 +48,20 @@ public class PostService {
 
     @Transactional
     public Post createPost(final Post post) {
-
+        log.info("createPost start : title = {}, content = {}", post.getTitle(), post.getContent());
         Long currentMemberId = SecurityUtil.getCurrentUserId();
 
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
+        boolean isPostClean = isPostClean(post.getTitle(), post.getContent());
+        log.info("createPost isPostClean = {}", isPostClean);
+
         final Post postWithMember = Post.builder()
                 .member(member)
                 .title(post.getTitle())
                 .content(post.getContent())
+                .isClean(isPostClean)
                 .build();
 
         return postRepository.save(postWithMember);
@@ -65,13 +70,17 @@ public class PostService {
     @Transactional
     public Post updatePost(final PostServiceDto.UpdateReq updateReq) {
 
+        log.info("updatePost start : id = {}, title = {}, content = {}", updateReq.getPostId(), updateReq.getTitle(), updateReq.getContent());
         final long postId = updateReq.getPostId();
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
         validateAuthorization(post);
 
-        post.updatePost(updateReq.getTitle(), updateReq.getContent());
+        boolean isPostClean = isPostClean(updateReq.getTitle(), updateReq.getContent());
+        log.info("updatePost isPostClean = {}", isPostClean);
+
+        post.updatePost(updateReq.getTitle(), updateReq.getContent(), isPostClean);
 
         return post;
     }
@@ -85,13 +94,6 @@ public class PostService {
         validateAuthorization(post);
         
         postRepository.deleteById(postId);
-    }
-
-    private void validateAuthorization(Post post) {
-        Long currentMemberId = SecurityUtil.getCurrentUserId();
-        if (SecurityUtil.hasRole("STUDENT") && !post.getMember().getId().equals(currentMemberId)) {
-            throw new MemberPermissionDeniedException(currentMemberId, MemberRole.STUDENT);
-        }
     }
 
     public List<PostServiceDto.PresignedUrlRes> getPresignedUrl(final long postId, final List<String> fileNames) {
@@ -125,5 +127,21 @@ public class PostService {
             throw new PostNotFoundException(postId);
         }
         return imageService.getPostImageUrls(postId);
+    }
+
+    private void validateAuthorization(Post post) {
+        log.info("validateAuthorization Post's memberId");
+        Long currentMemberId = SecurityUtil.getCurrentUserId();
+        if (SecurityUtil.hasRole("STUDENT") && !post.getMember().getId().equals(currentMemberId)) {
+            throw new MemberPermissionDeniedException(currentMemberId, MemberRole.STUDENT);
+        }
+    }
+
+    private boolean isPostClean(String title, String content) {
+        boolean isTitleClean = filteringService.isCleanText(title);
+        log.info("isTitleClean = {}", isTitleClean);
+        boolean isContentClean = filteringService.isCleanText(content);
+        log.info("isContentClean = {}", isContentClean);
+        return isTitleClean && isContentClean;
     }
 }

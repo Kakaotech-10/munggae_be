@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ktb10'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.2-SNAPSHOT'
 
 java {
 	toolchain {
@@ -65,6 +65,11 @@ dependencies {
 	//s3
 	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
 	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.261'
+
+	//Web Client
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	//Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. 문제로 추가
+	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.94.Final'
 }
 
 tasks.named('test') {

@@ -54,3 +54,4 @@ custom:
 spring:
   profiles.include:
     - s3
+    - api

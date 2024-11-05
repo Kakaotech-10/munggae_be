@@ -1,4 +1,4 @@
-package com.ktb10.munggaebe.auth.feign;
+package com.ktb10.munggaebe.auth.client;
 
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.http.MediaType;

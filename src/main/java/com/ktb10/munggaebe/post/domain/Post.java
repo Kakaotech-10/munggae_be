@@ -37,6 +37,9 @@ public class Post {
     @Column(name = "post_content", nullable = false, length = 256)
     private String content;
 
+    @Column(name = "is_clean", nullable = false)
+    private boolean isClean;
+
     @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
@@ -46,15 +49,17 @@ public class Post {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Post(Long id, Member member, String title, String content) {
+    public Post(Long id, Member member, String title, String content, boolean isClean) {
         this.id = id;
         this.member = member;
         this.title = title;
         this.content = content;
+        this.isClean = isClean;
     }
 
-    public void updatePost(String title, String content) {
+    public void updatePost(String title, String content, boolean isClean) {
         this.title = title;
         this.content = content;
+        this.isClean = isClean;
     }
 }

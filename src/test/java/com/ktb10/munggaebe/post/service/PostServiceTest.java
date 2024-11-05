@@ -42,6 +42,9 @@ class PostServiceTest {
     @Mock
     private MemberRepository memberRepository;
 
+    @Mock
+    private FilteringService filteringService;
+
     @BeforeEach
     void setup() {
         Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
