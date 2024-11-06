@@ -1,4 +1,4 @@
-package com.ktb10.munggaebe.auth.dto;
+package com.ktb10.munggaebe.auth.service.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;

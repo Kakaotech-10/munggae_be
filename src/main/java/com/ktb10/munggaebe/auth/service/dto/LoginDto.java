@@ -1,7 +1,5 @@
 package com.ktb10.munggaebe.auth.service.dto;
 
-import com.ktb10.munggaebe.auth.dto.AccessTokenResponse;
-import com.ktb10.munggaebe.auth.dto.RefreshTokenResponse;
 import lombok.Builder;
 import lombok.Getter;
 
