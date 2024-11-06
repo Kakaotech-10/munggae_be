@@ -1,7 +1,7 @@
 package com.ktb10.munggaebe.auth.jwt;
 
-import com.ktb10.munggaebe.auth.dto.AccessTokenResponse;
-import com.ktb10.munggaebe.auth.dto.RefreshTokenResponse;
+import com.ktb10.munggaebe.auth.service.dto.AccessTokenResponse;
+import com.ktb10.munggaebe.auth.service.dto.RefreshTokenResponse;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

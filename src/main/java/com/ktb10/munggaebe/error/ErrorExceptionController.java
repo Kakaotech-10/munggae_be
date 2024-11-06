@@ -1,6 +1,5 @@
 package com.ktb10.munggaebe.error;
 
-import com.ktb10.munggaebe.auth.exception.JwtErrorException;
 import com.ktb10.munggaebe.auth.exception.OAuthResponseJsonProcessingException;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
@@ -60,8 +59,8 @@ public class ErrorExceptionController {
                 .body(ErrorResponse.from(errorCode));
     }
 
-    @ExceptionHandler(JwtErrorException.class)
-    public ResponseEntity<ErrorResponse> handleJwtErrorException(JwtErrorException e) {
+    @ExceptionHandler(ErrorCodeException.class)
+    public ResponseEntity<ErrorResponse> handleJwtErrorException(ErrorCodeException e) {
         final ErrorCode errorCode = e.getErrorCode();
         log.warn(e.getMessage(), e);
 

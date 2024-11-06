@@ -1,5 +1,6 @@
-package com.ktb10.munggaebe.auth.dto;
+package com.ktb10.munggaebe.auth.controller.dto;
 
+import com.ktb10.munggaebe.auth.service.dto.AccessTokenResponse;
 import com.ktb10.munggaebe.auth.service.dto.LoginDto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

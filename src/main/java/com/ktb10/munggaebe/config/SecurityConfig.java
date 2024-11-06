@@ -7,6 +7,7 @@ import com.ktb10.munggaebe.auth.jwt.JwtTokenProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -26,22 +27,29 @@ public class SecurityConfig {
     private final ObjectMapper objectMapper;
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity httpSecurity) throws Exception {
-        httpSecurity
+    @Order(1)
+    public SecurityFilterChain permitAllFilterChain(HttpSecurity http) throws Exception {
+        http
+                .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico", "/api/v1/auth/login/oauth2/callback/kakao")
                 .csrf(AbstractHttpConfigurer::disable)
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth ->
-                        auth
-                                .requestMatchers("/swagger-ui/**",  "/v3/api-docs/**").permitAll()
-                                .requestMatchers("/api/v1/auth/login/oauth2/callback/kakao").permitAll()
-                                .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()
-                                .requestMatchers(HttpMethod.GET, "/api/v1/comments/**", "/api/v1/posts/**", "/api/v1/members/**").permitAll()
-                                .anyRequest().authenticated()
-                )
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
+
+        return http.build();
+    }
+
+    @Bean
+    @Order(2)
+    public SecurityFilterChain jwtFilterChain(HttpSecurity http) throws Exception {
+        http
+                .csrf(AbstractHttpConfigurer::disable)
+                .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .authorizeRequests(auth -> auth
+                        .requestMatchers(HttpMethod.POST, "/api/v1/auth/**").permitAll()  // POST /api/v1/auth/**만 허용
+                        .requestMatchers(HttpMethod.GET, "/api/v1/comments/**", "/api/v1/posts/**", "/api/v1/members/**").permitAll()
+                        .anyRequest().authenticated())
                 .addFilterBefore(new JwtAuthenticationFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
                 .addFilterBefore(new JwtExceptionFilter(objectMapper), JwtAuthenticationFilter.class);
 
-        return httpSecurity.build();
+        return http.build();
     }
 }
