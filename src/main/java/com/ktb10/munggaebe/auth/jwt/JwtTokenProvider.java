@@ -1,7 +1,6 @@
 package com.ktb10.munggaebe.auth.jwt;
 
-import com.ktb10.munggaebe.auth.exception.JwtErrorException;
-import com.ktb10.munggaebe.error.ErrorCode;
+import com.ktb10.munggaebe.auth.exception.*;
 import com.ktb10.munggaebe.member.service.MemberService;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
@@ -55,17 +54,17 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return true;
         } catch (SignatureException e) {
-            throw new JwtErrorException(ErrorCode.JWT_INVALID_SIGNATURE);
+            throw new InvalidSignatureCodeException();
         } catch (SecurityException e) {
-            throw new JwtErrorException(ErrorCode.JWT_SECURITY_EXCEPTION);
+            throw new SecurityCodeException();
         } catch (MalformedJwtException e) {
-            throw new JwtErrorException(ErrorCode.JWT_MALFORMED_TOKEN);
+            throw new MalformedTokenCodeException();
         } catch (ExpiredJwtException e) {
-            throw new JwtErrorException(ErrorCode.JWT_EXPIRED_TOKEN);
+            throw new ExpiredTokenCodeException();
         } catch (UnsupportedJwtException e) {
-            throw new JwtErrorException(ErrorCode.JWT_UNSUPPORTED_TOKEN);
+            throw new UnsupportedTokenCodeException();
         } catch (IllegalArgumentException e) {
-            throw new JwtErrorException(ErrorCode.JWT_ILLEGAL_TOKEN);
+            throw new IllegalTokenCodeException();
         }
     }
 
