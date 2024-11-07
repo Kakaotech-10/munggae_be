@@ -6,6 +6,8 @@ build/
 !**/src/test/**/build/
 application-s3.yml
 application-api.yml
+application-local.yml
+application-prod.yml
 
 ### STS ###
 .apt_generated
