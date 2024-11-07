@@ -1,12 +1,6 @@
 spring:
   datasource:
-    url: jdbc:mysql://localhost:3306/munggaedb?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-#    url: jdbc:mysql://mysql-munggae-service:3306/munggaedatabase?allowPublicKeyRetrieval=true&useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: root
-    password: 1234
-#    password: 123
     driver-class-name: com.mysql.cj.jdbc.Driver
-
   jpa:
     hibernate:
       ddl-auto: update
@@ -38,20 +32,15 @@ springdoc:
   swagger-ui:
     operations-sorter: alpha
 
-
-kakao:
-  key:
-    client-id: 43c3276a70b38834e826316a1e73238f
-#    client-id: 0bd0b44d1c546670862fe8976d4b4905
-  redirect-uri: http://localhost:3000/login/oauth2/callback/kakao
-#  redirect-uri: http://localhost:8080/api/v1/auth/login/oauth2/callback/kakao
-
-custom:
-  jwt:
-    secretKey: e84a2015a611cc64abc74b0b1b88a4de8d7921f145e0f6ff579dd96f7b816cc8e84a2015a611cc64abc74b0b1b88a4de8d7921f1
-
 ---
 spring:
-  profiles.include:
-    - s3
-    - api
+  profiles:
+    active: local
+    group:
+      dev:
+        - dev
+      local:
+        - local
+    include:
+      - s3
+      - api
