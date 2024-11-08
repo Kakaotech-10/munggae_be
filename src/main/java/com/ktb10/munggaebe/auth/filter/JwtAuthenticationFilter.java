@@ -23,7 +23,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
-        log.info("requestURI = {}", request.getRequestURI());
+        log.info("JwtAuthenticationFilter start : requestURI = {}, method = {}", request.getRequestURI(), request.getMethod());
         String token = resolveToken(request);
 
         if (jwtTokenProvider.validateToken(token)) {
@@ -36,11 +36,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
+        log.info("shouldNotFilter start : requestURI = {}, method = {}", request.getRequestURI(), request.getMethod());
+
         String path = request.getRequestURI();
-        return (HttpMethod.GET.matches(request.getMethod()) &&
+        boolean result =  (HttpMethod.GET.matches(request.getMethod()) &&
                 (path.startsWith("/api/v1/comments/") || path.startsWith("/api/v1/posts/") || path.startsWith("/api/v1/members/")))
                 || (HttpMethod.POST.matches(request.getMethod()) &&
                 (path.startsWith("/api/v1/auth/")));
+
+        log.info("shouldNotFilter end : result = {}", result);
+        return result;
     }
 
     private String resolveToken(HttpServletRequest request) {
