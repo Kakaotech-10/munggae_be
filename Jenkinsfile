@@ -5,6 +5,8 @@ pipeline {
         DOCKER_CREDENTIALS_ID = 'dockerhub-credentials'
         SPRING_IMAGE_REPO = 'ella00/munggae-be-spring'
         FASTAPI_IMAGE_REPO = 'ella00/munggae-be-fastapi'
+        IMAGE_ACCESS_KEY_ID = credentials('image-access-key-id')
+        IMAGE_SECRET_ACCESS_KEY = credentials('image-secret-access-key')
     }
 
     stages {
@@ -14,6 +16,15 @@ pipeline {
                 checkout([$class: 'GitSCM', branches: [[name: '*/main']], 
                           extensions: [[$class: 'CleanBeforeCheckout']], 
                           userRemoteConfigs: [[url: 'https://github.com/Kakaotech-10/munggae_be.git']]])
+            }
+        }
+
+        stage('Set Environment Variable') {
+            steps {
+                script {
+                    sh 'echo "cloud.aws.credentials.accessKey=${IMAGE_ACCESS_KEY_ID}" >> .env'
+                    sh 'echo "cloud.aws.credentials.secretKey=${IMAGE_SECRET_ACCESS_KEY}" >> .env'
+                }
             }
         }
 
