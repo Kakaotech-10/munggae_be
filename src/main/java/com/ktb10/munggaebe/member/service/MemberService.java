@@ -124,4 +124,12 @@ public class MemberService implements UserDetailsService {
 
         return imageService.saveMemberImage(member, urls);
     }
+
+    public String getMemberImageUrl(long memberId) {
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new MemberNotFoundException(memberId);
+        }
+        return imageService.getMemberImageUrl(memberId);
+    }
 }

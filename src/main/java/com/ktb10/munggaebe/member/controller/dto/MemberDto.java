@@ -54,12 +54,24 @@ public class MemberDto {
         @Schema(description = "회원의 영어 이름", example = "Gildong.Hong")
         private String nameEnglish;
 
+        @Schema(description = "CDN 이미지 url", example = "http://cdn-path/123_file1.jpg")
+        private String imageUrl;
+
         public MemberRes(Member member) {
             this.id = member.getId();
             this.role = member.getRole();
             this.course = member.getCourse();
             this.name = member.getName();
             this.nameEnglish = member.getNameEnglish();
+        }
+
+        public MemberRes(Member member, String imageUrl) {
+            this.id = member.getId();
+            this.role = member.getRole();
+            this.course = member.getCourse();
+            this.name = member.getName();
+            this.nameEnglish = member.getNameEnglish();
+            this.imageUrl = imageUrl;
         }
     }
 

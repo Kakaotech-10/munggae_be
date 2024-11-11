@@ -32,7 +32,7 @@ public class MemberController {
 
         Member member = memberService.findMemberById(memberId);
 
-        return ResponseEntity.ok(new MemberDto.MemberRes(member));
+        return ResponseEntity.ok(new MemberDto.MemberRes(member, memberService.getMemberImageUrl(memberId)));
     }
 
     @GetMapping("/members/course")
@@ -54,7 +54,7 @@ public class MemberController {
         final MemberServiceDto.UpdateReq updateReq = toServiceDto(memberId, request);
         final Member updatedMember = memberService.updateMember(updateReq);
 
-        return ResponseEntity.ok(new MemberDto.MemberRes(updatedMember));
+        return ResponseEntity.ok(new MemberDto.MemberRes(updatedMember, memberService.getMemberImageUrl(memberId)));
     }
 
     @PostMapping("/members/{memberId}/images/presigned-url")
