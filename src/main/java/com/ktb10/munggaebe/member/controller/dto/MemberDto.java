@@ -78,23 +78,23 @@ public class MemberDto {
     @Schema(description = "사전 서명 url 요청")
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class ImagePresignedUrlReq {
+    public static class MemberImagePresignedUrlReq {
 
         @Schema(description = "파일 이름 리스트", example = "file1.jpg")
         private String fileName;
 
-        public ImagePresignedUrlReq(String fileName) {
+        public MemberImagePresignedUrlReq(String fileName) {
             this.fileName = fileName;
         }
     }
 
     @Schema(description = "사전 서명 url 응답")
     @Getter
-    public static class ImagePresignedUrlRes {
+    public static class MemberImagePresignedUrlRes {
         @Schema(description = "파일 이름, url")
         private UrlDto urls;
 
-        public ImagePresignedUrlRes(UrlDto urls) {
+        public MemberImagePresignedUrlRes(UrlDto urls) {
             this.urls = urls;
         }
     }
@@ -102,18 +102,18 @@ public class MemberDto {
     @Schema(description = "이미지 저장 요청")
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
-    public static class ImageSaveReq {
+    public static class MemberImageSaveReq {
         @Schema(description = "파일 이름, url")
         private UrlDto urls;
 
-        public ImageSaveReq(UrlDto urls) {
+        public MemberImageSaveReq(UrlDto urls) {
             this.urls = urls;
         }
     }
 
     @Schema(description = "이미지 저장 응답")
     @Getter
-    public static class ImageSaveRes {
+    public static class MemberImageSaveRes {
         private Long imageId;
         private Long memberId;
         private String originalName;
@@ -122,7 +122,7 @@ public class MemberDto {
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
-        public ImageSaveRes(MemberImage memberImage) {
+        public MemberImageSaveRes(MemberImage memberImage) {
             this.imageId = memberImage.getId();
             this.memberId = memberImage.getMember().getId();
             this.originalName = memberImage.getOriginalName();

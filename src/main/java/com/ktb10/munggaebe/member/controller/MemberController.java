@@ -60,26 +60,26 @@ public class MemberController {
     @PostMapping("/members/{memberId}/images/presigned-url")
     @Operation(summary = "맴버 이미지 사전 서명 url 생성", description = "S3로부터 사전 서명 url을 생성해 반환합니다.")
     @ApiResponse(responseCode = "200", description = "맴버 이미지 사전 서명 url 생성 성공")
-    public ResponseEntity<MemberDto.ImagePresignedUrlRes> getPresignedUrl(@PathVariable final long memberId,
-                                                                        @RequestBody final MemberDto.ImagePresignedUrlReq request) {
+    public ResponseEntity<MemberDto.MemberImagePresignedUrlRes> getPresignedUrl(@PathVariable final long memberId,
+                                                                                @RequestBody final MemberDto.MemberImagePresignedUrlReq request) {
         String url = memberService.getPresignedUrl(memberId, request.getFileName());
 
 
         return ResponseEntity.ok(
-                new MemberDto.ImagePresignedUrlRes(new UrlDto(request.getFileName(), url))
+                new MemberDto.MemberImagePresignedUrlRes(new UrlDto(request.getFileName(), url))
         );
     }
 
     @PostMapping("/members/{memberId}/images")
     @Operation(summary = "맴버 이미지 저장", description = "맴버 이미지 이름과 s3 url을 저장합니다.")
     @ApiResponse(responseCode = "201", description = "맴버 이미지 저장 성공")
-    public ResponseEntity<MemberDto.ImageSaveRes> saveMemberImage(@PathVariable final long memberId,
-                                                               @RequestBody final MemberDto.ImageSaveReq request) {
+    public ResponseEntity<MemberDto.MemberImageSaveRes> saveMemberImage(@PathVariable final long memberId,
+                                                                        @RequestBody final MemberDto.MemberImageSaveReq request) {
 
         MemberImage memberImage = memberService.saveImage(memberId, request.getUrls());
 
         return ResponseEntity.created(URI.create("/api/v1/members/" + memberId))
-                .body(new MemberDto.ImageSaveRes(memberImage));
+                .body(new MemberDto.MemberImageSaveRes(memberImage));
     }
 
     private static MemberServiceDto.UpdateReq toServiceDto(final long memberId, final MemberDto.MemberUpdateReq request) {
