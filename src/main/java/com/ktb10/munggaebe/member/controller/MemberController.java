@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.member.controller;
 
+import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.controller.dto.CourseRes;
 import com.ktb10.munggaebe.member.controller.dto.MemberDto;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -66,6 +68,18 @@ public class MemberController {
         return ResponseEntity.ok(
                 new MemberDto.ImagePresignedUrlRes(new UrlDto(request.getFileName(), url))
         );
+    }
+
+    @PostMapping("/members/{memberId}/images")
+    @Operation(summary = "맴버 이미지 저장", description = "맴버 이미지 이름과 s3 url을 저장합니다.")
+    @ApiResponse(responseCode = "201", description = "맴버 이미지 저장 성공")
+    public ResponseEntity<MemberDto.ImageSaveRes> saveMemberImage(@PathVariable final long memberId,
+                                                               @RequestBody final MemberDto.ImageSaveReq request) {
+
+        MemberImage memberImage = memberService.saveImage(memberId, request.getUrls());
+
+        return ResponseEntity.created(URI.create("/api/v1/members/" + memberId))
+                .body(new MemberDto.ImageSaveRes(memberImage));
     }
 
     private static MemberServiceDto.UpdateReq toServiceDto(final long memberId, final MemberDto.MemberUpdateReq request) {

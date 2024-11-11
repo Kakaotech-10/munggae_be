@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.member.controller.dto;
 
+import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
@@ -9,6 +10,8 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+
+import java.time.LocalDateTime;
 
 public class MemberDto {
 
@@ -81,6 +84,40 @@ public class MemberDto {
 
         public ImagePresignedUrlRes(UrlDto urls) {
             this.urls = urls;
+        }
+    }
+
+    @Schema(description = "이미지 저장 요청")
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class ImageSaveReq {
+        @Schema(description = "파일 이름, url")
+        private UrlDto urls;
+
+        public ImageSaveReq(UrlDto urls) {
+            this.urls = urls;
+        }
+    }
+
+    @Schema(description = "이미지 저장 응답")
+    @Getter
+    public static class ImageSaveRes {
+        private Long imageId;
+        private Long memberId;
+        private String originalName;
+        private String storedName;
+        private String s3ImagePath;
+        private LocalDateTime createdAt;
+        private LocalDateTime updatedAt;
+
+        public ImageSaveRes(MemberImage memberImage) {
+            this.imageId = memberImage.getId();
+            this.memberId = memberImage.getMember().getId();
+            this.originalName = memberImage.getOriginalName();
+            this.storedName = memberImage.getStoredName();
+            this.s3ImagePath = memberImage.getS3ImagePath();
+            this.createdAt = memberImage.getCreatedAt();
+            this.updatedAt = memberImage.getUpdatedAt();
         }
     }
 }

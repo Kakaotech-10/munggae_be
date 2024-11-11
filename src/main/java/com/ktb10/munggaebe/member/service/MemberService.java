@@ -1,7 +1,9 @@
 package com.ktb10.munggaebe.member.service;
 
 import com.ktb10.munggaebe.image.domain.ImageType;
+import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.service.ImageService;
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
@@ -73,8 +75,7 @@ public class MemberService implements UserDetailsService {
     public Member updateMember(final MemberServiceDto.UpdateReq updateReq) {
 
         final Long memberId = updateReq.getMemberId();
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        final Member member = findMemberById(memberId);
 
         validateAuthorization(memberId);
 
@@ -112,5 +113,15 @@ public class MemberService implements UserDetailsService {
         validateAuthorization(memberId);
 
         return imageService.getPresignedUrl(fileName, memberId, ImageType.MEMBER);
+    }
+
+    @Transactional
+    public MemberImage saveImage(long memberId, UrlDto urls) {
+
+        Member member = findMemberById(memberId);
+
+        validateAuthorization(memberId);
+
+        return imageService.saveMemberImage(member, urls);
     }
 }

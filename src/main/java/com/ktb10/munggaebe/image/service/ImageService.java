@@ -1,10 +1,12 @@
 package com.ktb10.munggaebe.image.service;
 
 import com.ktb10.munggaebe.image.domain.ImageType;
+import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.repository.ImageRepository;
 import com.ktb10.munggaebe.image.repository.PostImageRepository;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
+import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.post.domain.Post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +67,19 @@ public class ImageService {
         return s3ImagePaths.stream()
                 .map(this::convertS3PathToCloudFront)
                 .toList();
+    }
+
+    public MemberImage saveMemberImage(Member member, UrlDto urls) {
+        log.info("saveMemberImage start : urls = {}", urls);
+
+        MemberImage memberImage = MemberImage.builder()
+                .member(member)
+                .originalName(urls.getFileName())
+                .storedName(getStoredName(urls.getUrl()))
+                .s3ImagePath(urls.getUrl())
+                .build();
+
+        return imageRepository.save(memberImage);
     }
 
     private String convertS3PathToCloudFront(String s3Path) {
