@@ -1,5 +1,7 @@
 package com.ktb10.munggaebe.member.service;
 
+import com.ktb10.munggaebe.image.domain.ImageType;
+import com.ktb10.munggaebe.image.service.ImageService;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
@@ -27,6 +29,7 @@ import java.util.Optional;
 public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
+    private final ImageService imageService;
 
 
     @Transactional
@@ -81,6 +84,7 @@ public class MemberService implements UserDetailsService {
     }
 
     private void validateAuthorization(final long memberId) {
+        log.info("validateAuthorization memberId");
         final Long currentUserId = SecurityUtil.getCurrentUserId();
         if (currentUserId != memberId) {
             throw new MemberPermissionDeniedException(currentUserId);
@@ -97,5 +101,16 @@ public class MemberService implements UserDetailsService {
     public Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
+    }
+
+    public String getPresignedUrl(final long memberId, final String fileName) {
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new MemberNotFoundException(memberId);
+        }
+
+        validateAuthorization(memberId);
+
+        return imageService.getPresignedUrl(fileName, memberId, ImageType.MEMBER);
     }
 }

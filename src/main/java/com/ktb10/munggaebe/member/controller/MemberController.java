@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.member.controller;
 
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.controller.dto.CourseRes;
 import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.member.domain.Member;
@@ -52,6 +53,19 @@ public class MemberController {
         final Member updatedMember = memberService.updateMember(updateReq);
 
         return ResponseEntity.ok(new MemberDto.MemberRes(updatedMember));
+    }
+
+    @PostMapping("/members/{memberId}/images/presigned-url")
+    @Operation(summary = "맴버 이미지 사전 서명 url 생성", description = "S3로부터 사전 서명 url을 생성해 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "맴버 이미지 사전 서명 url 생성 성공")
+    public ResponseEntity<MemberDto.ImagePresignedUrlRes> getPresignedUrl(@PathVariable final long memberId,
+                                                                        @RequestBody final MemberDto.ImagePresignedUrlReq request) {
+        String url = memberService.getPresignedUrl(memberId, request.getFileName());
+
+
+        return ResponseEntity.ok(
+                new MemberDto.ImagePresignedUrlRes(new UrlDto(request.getFileName(), url))
+        );
     }
 
     private static MemberServiceDto.UpdateReq toServiceDto(final long memberId, final MemberDto.MemberUpdateReq request) {

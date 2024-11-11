@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.member.controller.dto;
 
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
@@ -56,6 +57,30 @@ public class MemberDto {
             this.course = member.getCourse();
             this.name = member.getName();
             this.nameEnglish = member.getNameEnglish();
+        }
+    }
+
+    @Schema(description = "사전 서명 url 요청")
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class ImagePresignedUrlReq {
+
+        @Schema(description = "파일 이름 리스트", example = "file1.jpg")
+        private String fileName;
+
+        public ImagePresignedUrlReq(String fileName) {
+            this.fileName = fileName;
+        }
+    }
+
+    @Schema(description = "사전 서명 url 응답")
+    @Getter
+    public static class ImagePresignedUrlRes {
+        @Schema(description = "파일 이름, url")
+        private UrlDto urls;
+
+        public ImagePresignedUrlRes(UrlDto urls) {
+            this.urls = urls;
         }
     }
 }
