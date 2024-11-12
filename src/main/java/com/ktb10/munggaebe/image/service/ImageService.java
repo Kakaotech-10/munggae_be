@@ -1,10 +1,13 @@
 package com.ktb10.munggaebe.image.service;
 
 import com.ktb10.munggaebe.image.domain.ImageType;
+import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.repository.ImageRepository;
+import com.ktb10.munggaebe.image.repository.MemberImageRepository;
 import com.ktb10.munggaebe.image.repository.PostImageRepository;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
+import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.post.domain.Post;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +30,7 @@ public class ImageService {
 
     private final ImageRepository imageRepository;
     private final PostImageRepository postImageRepository;
+    private final MemberImageRepository memberImageRepository;
     private final S3Service s3Service;
 
     private static final String PREFIX_PATH = "images";
@@ -67,7 +71,33 @@ public class ImageService {
                 .toList();
     }
 
+    public MemberImage saveMemberImage(Member member, UrlDto urls) {
+        log.info("saveMemberImage start : urls = {}", urls);
+
+        MemberImage memberImage = MemberImage.builder()
+                .member(member)
+                .originalName(urls.getFileName())
+                .storedName(getStoredName(urls.getUrl()))
+                .s3ImagePath(urls.getUrl())
+                .build();
+
+        return imageRepository.save(memberImage);
+    }
+
+    public String getMemberImageUrl(long memberId) {
+        log.info("getMemberImageUrl start : memberId = {}", memberId);
+
+        String s3ImagePath = memberImageRepository.findS3ImagePathsByMemberId(memberId);
+        log.info("s3ImagePath = {}", s3ImagePath);
+
+        return convertS3PathToCloudFront(s3ImagePath);
+    }
+
     private String convertS3PathToCloudFront(String s3Path) {
+        if (s3Path == null) {
+            return null;
+        }
+
         String s3PathWithOutParams = s3Path.split("\\?")[0];
         String cloudFrontPath = s3PathWithOutParams.replace(s3Url, cloudfrontUrl);
         log.info("cloudFrontPath = {}", cloudFrontPath);

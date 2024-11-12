@@ -1,5 +1,9 @@
 package com.ktb10.munggaebe.member.service;
 
+import com.ktb10.munggaebe.image.domain.ImageType;
+import com.ktb10.munggaebe.image.domain.MemberImage;
+import com.ktb10.munggaebe.image.service.ImageService;
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
@@ -27,6 +31,7 @@ import java.util.Optional;
 public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
+    private final ImageService imageService;
 
 
     @Transactional
@@ -70,8 +75,7 @@ public class MemberService implements UserDetailsService {
     public Member updateMember(final MemberServiceDto.UpdateReq updateReq) {
 
         final Long memberId = updateReq.getMemberId();
-        final Member member = memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException(memberId));
+        final Member member = findMemberById(memberId);
 
         validateAuthorization(memberId);
 
@@ -81,6 +85,7 @@ public class MemberService implements UserDetailsService {
     }
 
     private void validateAuthorization(final long memberId) {
+        log.info("validateAuthorization memberId");
         final Long currentUserId = SecurityUtil.getCurrentUserId();
         if (currentUserId != memberId) {
             throw new MemberPermissionDeniedException(currentUserId);
@@ -97,5 +102,34 @@ public class MemberService implements UserDetailsService {
     public Member findMemberById(Long memberId) {
         return memberRepository.findById(memberId)
                 .orElseThrow(() -> new MemberNotFoundException(memberId));
+    }
+
+    public String getPresignedUrl(final long memberId, final String fileName) {
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new MemberNotFoundException(memberId);
+        }
+
+        validateAuthorization(memberId);
+
+        return imageService.getPresignedUrl(fileName, memberId, ImageType.MEMBER);
+    }
+
+    @Transactional
+    public MemberImage saveImage(long memberId, UrlDto urls) {
+
+        Member member = findMemberById(memberId);
+
+        validateAuthorization(memberId);
+
+        return imageService.saveMemberImage(member, urls);
+    }
+
+    public String getMemberImageUrl(long memberId) {
+
+        if (!memberRepository.existsById(memberId)) {
+            throw new MemberNotFoundException(memberId);
+        }
+        return imageService.getMemberImageUrl(memberId);
     }
 }

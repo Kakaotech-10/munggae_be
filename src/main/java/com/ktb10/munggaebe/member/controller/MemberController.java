@@ -1,5 +1,7 @@
 package com.ktb10.munggaebe.member.controller;
 
+import com.ktb10.munggaebe.image.domain.MemberImage;
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.controller.dto.CourseRes;
 import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.member.domain.Member;
@@ -12,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
@@ -29,7 +32,7 @@ public class MemberController {
 
         Member member = memberService.findMemberById(memberId);
 
-        return ResponseEntity.ok(new MemberDto.MemberRes(member));
+        return ResponseEntity.ok(new MemberDto.MemberRes(member, memberService.getMemberImageUrl(memberId)));
     }
 
     @GetMapping("/members/course")
@@ -51,7 +54,32 @@ public class MemberController {
         final MemberServiceDto.UpdateReq updateReq = toServiceDto(memberId, request);
         final Member updatedMember = memberService.updateMember(updateReq);
 
-        return ResponseEntity.ok(new MemberDto.MemberRes(updatedMember));
+        return ResponseEntity.ok(new MemberDto.MemberRes(updatedMember, memberService.getMemberImageUrl(memberId)));
+    }
+
+    @PostMapping("/members/{memberId}/images/presigned-url")
+    @Operation(summary = "맴버 이미지 사전 서명 url 생성", description = "S3로부터 사전 서명 url을 생성해 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "맴버 이미지 사전 서명 url 생성 성공")
+    public ResponseEntity<MemberDto.MemberImagePresignedUrlRes> getPresignedUrl(@PathVariable final long memberId,
+                                                                                @RequestBody final MemberDto.MemberImagePresignedUrlReq request) {
+        String url = memberService.getPresignedUrl(memberId, request.getFileName());
+
+
+        return ResponseEntity.ok(
+                new MemberDto.MemberImagePresignedUrlRes(new UrlDto(request.getFileName(), url))
+        );
+    }
+
+    @PostMapping("/members/{memberId}/images")
+    @Operation(summary = "맴버 이미지 저장", description = "맴버 이미지 이름과 s3 url을 저장합니다.")
+    @ApiResponse(responseCode = "201", description = "맴버 이미지 저장 성공")
+    public ResponseEntity<MemberDto.MemberImageSaveRes> saveMemberImage(@PathVariable final long memberId,
+                                                                        @RequestBody final MemberDto.MemberImageSaveReq request) {
+
+        MemberImage memberImage = memberService.saveImage(memberId, request.getUrls());
+
+        return ResponseEntity.created(URI.create("/api/v1/members/" + memberId))
+                .body(new MemberDto.MemberImageSaveRes(memberImage));
     }
 
     private static MemberServiceDto.UpdateReq toServiceDto(final long memberId, final MemberDto.MemberUpdateReq request) {
