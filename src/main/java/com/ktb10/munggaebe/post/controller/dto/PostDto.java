@@ -136,7 +136,7 @@ public class PostDto {
         }
     }
 
-    @Schema(description = "이미지 저장 요청")
+    @Schema(description = "여러 이미지 저장 요청")
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class ImageSaveReq {
@@ -157,6 +157,18 @@ public class PostDto {
             this.images = postImages.stream()
                     .map(ImageRes::new)
                     .toList();
+        }
+    }
+
+    @Schema(description = "단일 이미지 수정 요청")
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class ImageUpdateReq {
+        @Schema(description = "파일 이름, url")
+        private UrlDto imageInfo;
+
+        public ImageUpdateReq(UrlDto imageInfo) {
+            this.imageInfo = imageInfo;
         }
     }
 

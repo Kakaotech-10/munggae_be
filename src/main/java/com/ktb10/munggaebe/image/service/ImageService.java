@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.image.service;
 
+import com.ktb10.munggaebe.image.domain.Image;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.domain.PostImage;
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -48,9 +50,9 @@ public class ImageService {
         return url;
     }
 
-    public List<PostImage> savePostImages(Post post, List<UrlDto> urls) {
-        log.info("savePostImages start : urls = {}", urls);
-        List<PostImage> images = urls.stream()
+    public List<PostImage> savePostImages(Post post, List<UrlDto> urlDtos) {
+        log.info("savePostImages start : urls = {}", urlDtos);
+        List<PostImage> images = urlDtos.stream()
                 .map(u -> PostImage.builder()
                         .post(post)
                         .originalName(u.getFileName())
@@ -108,6 +110,21 @@ public class ImageService {
                 .fileName(memberImage.getOriginalName())
                 .path(convertS3PathToCloudFront(memberImage.getS3ImagePath()))
                 .build();
+    }
+
+    public Image updateImage(long imageId, UrlDto urlDto) {
+        log.info("updateImage start : imageId = {}, UrlDto.fileName = {}, UrlDto.url = {}", imageId, urlDto.getFileName(), urlDto.getUrl());
+
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new NoSuchElementException("Image not found"));
+
+        final String prevS3ImagePath = image.getS3ImagePath();
+
+        image.update(urlDto.getFileName(), getStoredName(urlDto.getUrl()), urlDto.getUrl());
+
+        s3Service.deleteImage(prevS3ImagePath);
+
+        return image;
     }
 
     private String convertS3PathToCloudFront(String s3Path) {

@@ -44,4 +44,10 @@ public class Image {
         this.storedName = storedName;
         this.s3ImagePath = s3ImagePath;
     }
+
+    public void update(String originalName, String storedName, String s3ImagePath) {
+        this.originalName = originalName;
+        this.storedName = storedName;
+        this.s3ImagePath = s3ImagePath;
+    }
 }

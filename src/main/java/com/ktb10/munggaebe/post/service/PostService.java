@@ -1,6 +1,7 @@
 package com.ktb10.munggaebe.post.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.image.domain.Image;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.service.ImageService;
@@ -135,6 +136,22 @@ public class PostService {
         return postImageUrls.stream()
                 .map(u -> objectMapper.convertValue(u, PostServiceDto.ImageCdnPathRes.class))
                 .toList();
+    }
+
+    @Transactional
+    public PostImage updateImage(long postId, long imageId, UrlDto url) {
+
+        log.info("updateImage start : postId = {}, imageId = {}", postId, imageId);
+        final Post post = postRepository.findById(postId)
+                .orElseThrow(() -> new PostNotFoundException(postId));
+        validateAuthorization(post);
+
+        Image updatedImage = imageService.updateImage(imageId, url);
+
+        if (updatedImage instanceof PostImage postImage) {
+            return postImage;
+        }
+        throw new IllegalStateException("해당 이미지가 PostImage 타입이 아닙니다.");
     }
 
     private void validateAuthorization(Post post) {
