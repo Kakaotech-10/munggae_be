@@ -139,14 +139,14 @@ public class PostService {
     }
 
     @Transactional
-    public PostImage updateImage(long postId, long imageId, UrlDto url) {
+    public PostImage updateImage(long postId, long imageId, UrlDto imageInfo) {
 
         log.info("updateImage start : postId = {}, imageId = {}", postId, imageId);
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
         validateAuthorization(post);
 
-        Image updatedImage = imageService.updateImage(imageId, url);
+        Image updatedImage = imageService.updateImage(imageId, imageInfo);
 
         if (updatedImage instanceof PostImage postImage) {
             return postImage;

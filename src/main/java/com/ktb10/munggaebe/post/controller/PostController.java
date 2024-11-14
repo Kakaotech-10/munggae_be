@@ -117,7 +117,7 @@ public class PostController {
     }
 
     @PutMapping("/posts/{postId}/images/{imageId}")
-    @Operation(summary = "게시글 이미지 수정", description = "주어진 이미지 id와 file 이름을 통해 이미지를 수정합니다")
+    @Operation(summary = "게시글 이미지 수정", description = "주어진 이미지 id를 통해 이미지를 수정합니다")
     @ApiResponse(responseCode = "200", description = "게시글 이미지 수정 성공")
     public ResponseEntity<PostDto.ImageRes> updatePostImage(@PathVariable final long postId,
                                              @PathVariable final long imageId,
