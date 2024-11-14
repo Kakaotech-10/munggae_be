@@ -54,8 +54,8 @@ public class MemberDto {
         @Schema(description = "회원의 영어 이름", example = "Gildong.Hong")
         private String nameEnglish;
 
-        @Schema(description = "CDN 이미지 url", example = "http://cdn-path/123_file1.jpg")
-        private String imageUrl;
+        @Schema(description = "CDN 이미지 url", example = "{\"imageId\": 1, \"fileName\": \"file1.jpg\", \"path\": \"http://cdn-path/123_file1.jpg\"}")
+        private MemberImageCdnPathRes imageUrl;
 
         public MemberRes(Member member) {
             this.id = member.getId();
@@ -65,7 +65,7 @@ public class MemberDto {
             this.nameEnglish = member.getNameEnglish();
         }
 
-        public MemberRes(Member member, String imageUrl) {
+        public MemberRes(Member member, MemberImageCdnPathRes imageUrl) {
             this.id = member.getId();
             this.role = member.getRole();
             this.course = member.getCourse();
@@ -130,6 +130,20 @@ public class MemberDto {
             this.s3ImagePath = memberImage.getS3ImagePath();
             this.createdAt = memberImage.getCreatedAt();
             this.updatedAt = memberImage.getUpdatedAt();
+        }
+    }
+
+    @Schema(description = "cdn path 응답")
+    @Getter
+    public static class MemberImageCdnPathRes {
+        private Long imageId;
+        private String fileName;
+        private String path;
+
+        public MemberImageCdnPathRes(Long imageId, String fileName, String path) {
+            this.imageId = imageId;
+            this.fileName = fileName;
+            this.path = path;
         }
     }
 }

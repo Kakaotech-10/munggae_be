@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -90,13 +91,23 @@ public class ImageService {
         return imageRepository.save(memberImage);
     }
 
-    public String getMemberImageUrl(long memberId) {
+    public ImageCdnPathDto getMemberImageUrl(long memberId) {
         log.info("getMemberImageUrl start : memberId = {}", memberId);
 
-        String s3ImagePath = memberImageRepository.findS3ImagePathsByMemberId(memberId);
-        log.info("s3ImagePath = {}", s3ImagePath);
+        Optional<MemberImage> optionalMemberImage = memberImageRepository.findByMemberId(memberId);
 
-        return convertS3PathToCloudFront(s3ImagePath);
+        if (optionalMemberImage.isEmpty()) {
+            log.info("memberImage isEmpty");
+            return null;
+        }
+
+        MemberImage memberImage = optionalMemberImage.get();
+
+        return ImageCdnPathDto.builder()
+                .imageId(memberImage.getId())
+                .fileName(memberImage.getOriginalName())
+                .path(convertS3PathToCloudFront(memberImage.getS3ImagePath()))
+                .build();
     }
 
     private String convertS3PathToCloudFront(String s3Path) {

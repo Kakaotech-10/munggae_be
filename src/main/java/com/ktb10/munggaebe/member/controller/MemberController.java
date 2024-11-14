@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.member.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.controller.dto.CourseRes;
@@ -24,6 +25,7 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/members/{memberId}")
     @Operation(summary = "단일 맴버 id로 조회", description = "맴버 id, 이름, 영어이름, 과정, 권한을 반환합니다.")
@@ -32,7 +34,7 @@ public class MemberController {
 
         Member member = memberService.findMemberById(memberId);
 
-        return ResponseEntity.ok(new MemberDto.MemberRes(member, memberService.getMemberImageUrl(memberId)));
+        return ResponseEntity.ok(appendCdnPath(member));
     }
 
     @GetMapping("/members/course")
@@ -54,7 +56,7 @@ public class MemberController {
         final MemberServiceDto.UpdateReq updateReq = toServiceDto(memberId, request);
         final Member updatedMember = memberService.updateMember(updateReq);
 
-        return ResponseEntity.ok(new MemberDto.MemberRes(updatedMember, memberService.getMemberImageUrl(memberId)));
+        return ResponseEntity.ok(appendCdnPath(updatedMember));
     }
 
     @PostMapping("/members/{memberId}/images/presigned-url")
@@ -89,5 +91,10 @@ public class MemberController {
                 .nameEnglish(request.getNameEnglish())
                 .course(request.getCourse())
                 .build();
+    }
+
+    private MemberDto.MemberRes appendCdnPath(Member member) {
+        MemberServiceDto.ImageCdnPathRes memberImageCdnPath = memberService.getMemberImageUrl(member.getId());
+        return new MemberDto.MemberRes(member, objectMapper.convertValue(memberImageCdnPath, MemberDto.MemberImageCdnPathRes.class));
     }
 }
