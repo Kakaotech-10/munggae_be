@@ -94,7 +94,8 @@ public class PostDto {
         @Schema(description = "게시글 클린 여부", example = "true")
         private boolean isClean;
 
-        @Schema(description = "CDN 이미지 url", example = "[\"http://cdn-path/123_file1.jpg\", \"http://cdn-path/234_file2.png\"]")
+        @Schema(description = "CDN 이미지 url", example = "[{\"imageId\": 1, \"fileName\": \"file1.jpg\", \"path\": \"http://cdn-path/123_file1.jpg\"}" +
+                ", {\"imageId\": 2, \"fileName\": \"file2.jpg\", \"path\": \"http://cdn-path/234_file2.png\"}]")
         private List<ImageCdnPathRes> imageUrls = new ArrayList<>();
 
         public PostRes(Post post) {
