@@ -68,6 +68,15 @@ public class ErrorExceptionController {
                 .body(ErrorResponse.from(errorCode));
     }
 
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
+        final ErrorCode errorCode = ErrorCode.ILLEGAL_ARGUMENT_EXCEPTION;
+        log.warn(e.getMessage(), e);
+
+        return ResponseEntity.status(errorCode.getStatus())
+                .body(ErrorResponse.from(errorCode));
+    }
+
     @ExceptionHandler(Exception.class)
     public ErrorResponse handleException(Exception e) {
         final ErrorCode errorCode = ErrorCode.INTERNAL_SERVER_ERROR;
