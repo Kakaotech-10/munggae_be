@@ -6,6 +6,7 @@ import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.repository.ImageRepository;
 import com.ktb10.munggaebe.image.repository.MemberImageRepository;
 import com.ktb10.munggaebe.image.repository.PostImageRepository;
+import com.ktb10.munggaebe.image.service.dto.ImageCdnPathDto;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.post.domain.Post;
@@ -60,14 +61,19 @@ public class ImageService {
         return imageRepository.saveAll(images);
     }
 
-    public List<String> getPostImageUrls(long postId) {
+    public List<ImageCdnPathDto> getPostImageUrls(long postId) {
         log.info("getPostImageUrls start : postId = {}", postId);
 
-        List<String> s3ImagePaths = postImageRepository.findS3ImagePathsByPostId(postId);
-        log.info("s3ImagePaths = {}", s3ImagePaths);
+        List<PostImage> postImages = postImageRepository.findAllByPostId(postId);
+        log.info("postImages.size = {}", postImages.size());
 
-        return s3ImagePaths.stream()
-                .map(this::convertS3PathToCloudFront)
+        return postImages.stream()
+                .map(pi -> ImageCdnPathDto.builder()
+                        .imageId(pi.getId())
+                        .fileName(pi.getOriginalName())
+                        .path(convertS3PathToCloudFront(pi.getS3ImagePath()))
+                        .build()
+                )
                 .toList();
     }
 

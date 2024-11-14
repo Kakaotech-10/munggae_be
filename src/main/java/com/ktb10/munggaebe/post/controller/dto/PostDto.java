@@ -95,7 +95,7 @@ public class PostDto {
         private boolean isClean;
 
         @Schema(description = "CDN 이미지 url", example = "[\"http://cdn-path/123_file1.jpg\", \"http://cdn-path/234_file2.png\"]")
-        private List<String> imageUrls = new ArrayList<>();
+        private List<ImageCdnPathRes> imageUrls = new ArrayList<>();
 
         public PostRes(Post post) {
             this.id = post.getId();
@@ -107,7 +107,7 @@ public class PostDto {
             this.isClean = post.isClean();
         }
 
-        public PostRes(Post post, List<String> imageUrls) {
+        public PostRes(Post post, List<ImageCdnPathRes> imageUrls) {
             this.id = post.getId();
             this.title = post.getTitle();
             this.content = post.getContent();
@@ -178,6 +178,20 @@ public class PostDto {
             this.s3ImagePath = postImage.getS3ImagePath();
             this.createdAt = postImage.getCreatedAt();
             this.updatedAt = postImage.getUpdatedAt();
+        }
+    }
+
+    @Schema(description = "cdn path 응답")
+    @Getter
+    public static class ImageCdnPathRes {
+        private Long imageId;
+        private String fileName;
+        private String path;
+
+        public ImageCdnPathRes(Long imageId, String fileName, String path) {
+            this.imageId = imageId;
+            this.fileName = fileName;
+            this.path = path;
         }
     }
 }

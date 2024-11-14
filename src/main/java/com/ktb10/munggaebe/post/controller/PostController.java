@@ -38,8 +38,10 @@ public class PostController {
 
         final Page<Post> posts = postService.getPosts(pageNo, pageSize);
 
-        return ResponseEntity.ok(posts.map(p -> new PostDto.PostRes(p, postService.getPostImageUrls(p.getId()))));
+        return ResponseEntity.ok(posts.map(this::appendCdnPaths));
     }
+
+
 
     @PostMapping("/posts")
     @Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다.")
@@ -58,9 +60,8 @@ public class PostController {
     public ResponseEntity<PostDto.PostRes> getPost(@PathVariable final long postId) {
 
         final Post post = postService.getPost(postId);
-        final List<String> urls = postService.getPostImageUrls(postId);
 
-        return ResponseEntity.ok(new PostDto.PostRes(post, urls));
+        return ResponseEntity.ok(appendCdnPaths(post));
     }
 
     @PutMapping("/posts/{postId}")
@@ -71,7 +72,7 @@ public class PostController {
         final PostServiceDto.UpdateReq updateReq = toServiceDto(postId, request);
         final Post updatedPost = postService.updatePost(updateReq);
 
-        return ResponseEntity.ok(new PostDto.PostRes(updatedPost, postService.getPostImageUrls(updatedPost.getId())));
+        return ResponseEntity.ok(appendCdnPaths(updatedPost));
     }
 
     @DeleteMapping("/posts/{postId}")
@@ -121,5 +122,13 @@ public class PostController {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .build();
+    }
+
+    private PostDto.PostRes appendCdnPaths(Post p) {
+        List<PostServiceDto.ImageCdnPathRes> postImageCdnPaths = postService.getPostImageCdnPaths(p.getId());
+        List<PostDto.ImageCdnPathRes> imageCdnPathRes = postImageCdnPaths.stream()
+                .map(pi -> objectMapper.convertValue(pi, PostDto.ImageCdnPathRes.class))
+                .toList();
+        return new PostDto.PostRes(p, imageCdnPathRes);
     }
 }

@@ -1,8 +1,10 @@
 package com.ktb10.munggaebe.post.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.service.ImageService;
+import com.ktb10.munggaebe.image.service.dto.ImageCdnPathDto;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberRole;
@@ -35,6 +37,7 @@ public class PostService {
     private final MemberRepository memberRepository;
     private final ImageService imageService;
     private final FilteringService filteringService;
+    private final ObjectMapper objectMapper;
 
     public Page<Post> getPosts(final int pageNo, final int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
@@ -121,12 +124,17 @@ public class PostService {
         return imageService.savePostImages(post, urls);
     }
 
-    public List<String> getPostImageUrls(long postId) {
+    public List<PostServiceDto.ImageCdnPathRes> getPostImageCdnPaths(long postId) {
 
         if (!postRepository.existsById(postId)) {
             throw new PostNotFoundException(postId);
         }
-        return imageService.getPostImageUrls(postId);
+
+        List<ImageCdnPathDto> postImageUrls = imageService.getPostImageUrls(postId);
+
+        return postImageUrls.stream()
+                .map(u -> objectMapper.convertValue(u, PostServiceDto.ImageCdnPathRes.class))
+                .toList();
     }
 
     private void validateAuthorization(Post post) {
