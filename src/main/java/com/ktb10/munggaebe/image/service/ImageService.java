@@ -117,6 +117,7 @@ public class ImageService {
 
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new NoSuchElementException("Image not found"));
+        validateUrl(imageInfo.getUrl(), image);
 
         final String prevS3ImagePath = image.getS3ImagePath();
 
@@ -125,6 +126,12 @@ public class ImageService {
         s3Service.deleteImage(prevS3ImagePath);
 
         return image;
+    }
+
+    private static void validateUrl(String url, Image image) {
+        if (getStoredName(url).equals(image.getStoredName())) {
+            throw new IllegalArgumentException("잘못된 Url 입력입니다.");
+        }
     }
 
     private String convertS3PathToCloudFront(String s3Path) {
