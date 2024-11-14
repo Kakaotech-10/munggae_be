@@ -74,13 +74,25 @@ public class MemberController {
     @PostMapping("/members/{memberId}/images")
     @Operation(summary = "맴버 이미지 저장", description = "맴버 이미지 이름과 s3 url을 저장합니다.")
     @ApiResponse(responseCode = "201", description = "맴버 이미지 저장 성공")
-    public ResponseEntity<MemberDto.MemberImageSaveRes> saveMemberImage(@PathVariable final long memberId,
-                                                                        @RequestBody final MemberDto.MemberImageSaveReq request) {
+    public ResponseEntity<MemberDto.MemberImageRes> saveMemberImage(@PathVariable final long memberId,
+                                                                    @RequestBody final MemberDto.MemberImageSaveReq request) {
 
         final MemberImage memberImage = memberService.saveImage(memberId, request.getUrls());
 
         return ResponseEntity.created(URI.create("/api/v1/members/" + memberId))
-                .body(new MemberDto.MemberImageSaveRes(memberImage));
+                .body(new MemberDto.MemberImageRes(memberImage));
+    }
+
+    @PutMapping("/members/{memberId}/images/{imageId}")
+    @Operation(summary = "맴버 이미지 수정", description = "주어진 이미지 id를 통해 이미지를 수정합니다")
+    @ApiResponse(responseCode = "200", description = "맴버 이미지 수정 성공")
+    public ResponseEntity<MemberDto.MemberImageRes> updatePostImage(@PathVariable final long memberId,
+                                                                    @PathVariable final long imageId,
+                                                                    @RequestBody final MemberDto.MemberImageUpdateReq request) {
+
+        final MemberImage memberImage = memberService.updateImage(memberId, imageId, request.getImageInfo());
+
+        return ResponseEntity.ok(new MemberDto.MemberImageRes(memberImage));
     }
 
     private static MemberServiceDto.UpdateReq toServiceDto(final long memberId, final MemberDto.MemberUpdateReq request) {

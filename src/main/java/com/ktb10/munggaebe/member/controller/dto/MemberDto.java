@@ -113,7 +113,7 @@ public class MemberDto {
 
     @Schema(description = "이미지 저장 응답")
     @Getter
-    public static class MemberImageSaveRes {
+    public static class MemberImageRes {
         private Long imageId;
         private Long memberId;
         private String originalName;
@@ -122,7 +122,7 @@ public class MemberDto {
         private LocalDateTime createdAt;
         private LocalDateTime updatedAt;
 
-        public MemberImageSaveRes(MemberImage memberImage) {
+        public MemberImageRes(MemberImage memberImage) {
             this.imageId = memberImage.getId();
             this.memberId = memberImage.getMember().getId();
             this.originalName = memberImage.getOriginalName();
@@ -144,6 +144,18 @@ public class MemberDto {
             this.imageId = imageId;
             this.fileName = fileName;
             this.path = path;
+        }
+    }
+
+    @Schema(description = "이미지 수정 요청")
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class MemberImageUpdateReq {
+        @Schema(description = "파일 이름, url")
+        private UrlDto imageInfo;
+
+        public MemberImageUpdateReq(UrlDto imageInfo) {
+            this.imageInfo = imageInfo;
         }
     }
 }
