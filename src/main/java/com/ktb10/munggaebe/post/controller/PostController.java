@@ -90,9 +90,9 @@ public class PostController {
     @ApiResponse(responseCode = "200", description = "게시글 이미지 사전 서명 url 생성 성공")
     public ResponseEntity<PostDto.ImagePresignedUrlRes> getPresignedUrl(@PathVariable final long postId,
                                              @RequestBody final PostDto.ImagePresignedUrlReq request) {
-        List<PostServiceDto.PresignedUrlRes> urlRes = postService.getPresignedUrl(postId, request.getFileNames());
+        final List<PostServiceDto.PresignedUrlRes> urlRes = postService.getPresignedUrl(postId, request.getFileNames());
 
-        List<UrlDto> urls = urlRes.stream()
+        final List<UrlDto> urls = urlRes.stream()
                 .map(o -> objectMapper.convertValue(o, UrlDto.class))
                 .toList();
 
@@ -110,7 +110,7 @@ public class PostController {
     public ResponseEntity<PostDto.ImageSaveRes> savePostImages(@PathVariable final long postId,
                                             @RequestBody final PostDto.ImageSaveReq request) {
 
-        List<PostImage> postImages = postService.saveImages(postId, request.getUrls());
+        final List<PostImage> postImages = postService.saveImages(postId, request.getUrls());
 
         return ResponseEntity.created(URI.create("/api/v1/posts/" + postId))
                 .body(new PostDto.ImageSaveRes(postImages));
@@ -124,9 +124,9 @@ public class PostController {
                 .build();
     }
 
-    private PostDto.PostRes appendCdnPaths(Post p) {
-        List<PostServiceDto.ImageCdnPathRes> postImageCdnPaths = postService.getPostImageCdnPaths(p.getId());
-        List<PostDto.ImageCdnPathRes> imageCdnPathRes = postImageCdnPaths.stream()
+    private PostDto.PostRes appendCdnPaths(final Post p) {
+        final List<PostServiceDto.ImageCdnPathRes> postImageCdnPaths = postService.getPostImageCdnPaths(p.getId());
+        final List<PostDto.ImageCdnPathRes> imageCdnPathRes = postImageCdnPaths.stream()
                 .map(pi -> objectMapper.convertValue(pi, PostDto.ImageCdnPathRes.class))
                 .toList();
         return new PostDto.PostRes(p, imageCdnPathRes);

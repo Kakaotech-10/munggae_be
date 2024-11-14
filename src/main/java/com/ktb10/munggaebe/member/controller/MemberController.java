@@ -32,7 +32,7 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "단일 맴버 정보 반환 성공")
     public ResponseEntity<MemberDto.MemberRes> getMember(@PathVariable Long memberId) {
 
-        Member member = memberService.findMemberById(memberId);
+        final Member member = memberService.findMemberById(memberId);
 
         return ResponseEntity.ok(appendCdnPath(member));
     }
@@ -64,8 +64,7 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "맴버 이미지 사전 서명 url 생성 성공")
     public ResponseEntity<MemberDto.MemberImagePresignedUrlRes> getPresignedUrl(@PathVariable final long memberId,
                                                                                 @RequestBody final MemberDto.MemberImagePresignedUrlReq request) {
-        String url = memberService.getPresignedUrl(memberId, request.getFileName());
-
+        final String url = memberService.getPresignedUrl(memberId, request.getFileName());
 
         return ResponseEntity.ok(
                 new MemberDto.MemberImagePresignedUrlRes(new UrlDto(request.getFileName(), url))
@@ -78,7 +77,7 @@ public class MemberController {
     public ResponseEntity<MemberDto.MemberImageSaveRes> saveMemberImage(@PathVariable final long memberId,
                                                                         @RequestBody final MemberDto.MemberImageSaveReq request) {
 
-        MemberImage memberImage = memberService.saveImage(memberId, request.getUrls());
+        final MemberImage memberImage = memberService.saveImage(memberId, request.getUrls());
 
         return ResponseEntity.created(URI.create("/api/v1/members/" + memberId))
                 .body(new MemberDto.MemberImageSaveRes(memberImage));
@@ -93,8 +92,8 @@ public class MemberController {
                 .build();
     }
 
-    private MemberDto.MemberRes appendCdnPath(Member member) {
-        MemberServiceDto.ImageCdnPathRes memberImageCdnPath = memberService.getMemberImageUrl(member.getId());
+    private MemberDto.MemberRes appendCdnPath(final Member member) {
+        final MemberServiceDto.ImageCdnPathRes memberImageCdnPath = memberService.getMemberImageUrl(member.getId());
         return new MemberDto.MemberRes(member, objectMapper.convertValue(memberImageCdnPath, MemberDto.MemberImageCdnPathRes.class));
     }
 }
