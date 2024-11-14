@@ -112,15 +112,15 @@ public class ImageService {
                 .build();
     }
 
-    public Image updateImage(long imageId, UrlDto urlDto) {
-        log.info("updateImage start : imageId = {}, UrlDto.fileName = {}, UrlDto.url = {}", imageId, urlDto.getFileName(), urlDto.getUrl());
+    public Image updateImage(long imageId, UrlDto imageInfo) {
+        log.info("updateImage start : imageId = {}, imageInfo.fileName = {}, imageInfo.url = {}", imageId, imageInfo.getFileName(), imageInfo.getUrl());
 
         Image image = imageRepository.findById(imageId)
                 .orElseThrow(() -> new NoSuchElementException("Image not found"));
 
         final String prevS3ImagePath = image.getS3ImagePath();
 
-        image.update(urlDto.getFileName(), getStoredName(urlDto.getUrl()), urlDto.getUrl());
+        image.update(imageInfo.getFileName(), getStoredName(imageInfo.getUrl()), imageInfo.getUrl());
 
         s3Service.deleteImage(prevS3ImagePath);
 
