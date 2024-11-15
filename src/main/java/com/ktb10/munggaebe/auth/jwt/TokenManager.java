@@ -58,7 +58,8 @@ public class TokenManager {
     @Transactional
     public void addBlackList(String refreshToken) {
         log.info("addBlackList start");
-        String key = "blacklist:refreshToken:" + refreshToken;
+        String hashedToken = TokenHasher.hashToken(refreshToken);
+        String key = "blacklist:refreshToken:" + hashedToken;
         redisTemplate.opsForValue().set(key, "invalid", BLACKLIST_TTL, TimeUnit.SECONDS);
         log.info("check save : key = {}, value = {}", key, redisTemplate.opsForValue().get(key));
     }
