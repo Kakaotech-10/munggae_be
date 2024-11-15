@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.member.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.controller.dto.CourseRes;
@@ -24,15 +25,16 @@ import java.util.List;
 public class MemberController {
 
     private final MemberService memberService;
+    private final ObjectMapper objectMapper;
 
     @GetMapping("/members/{memberId}")
     @Operation(summary = "단일 맴버 id로 조회", description = "맴버 id, 이름, 영어이름, 과정, 권한을 반환합니다.")
     @ApiResponse(responseCode = "200", description = "단일 맴버 정보 반환 성공")
     public ResponseEntity<MemberDto.MemberRes> getMember(@PathVariable Long memberId) {
 
-        Member member = memberService.findMemberById(memberId);
+        final Member member = memberService.findMemberById(memberId);
 
-        return ResponseEntity.ok(new MemberDto.MemberRes(member, memberService.getMemberImageUrl(memberId)));
+        return ResponseEntity.ok(appendCdnPath(member));
     }
 
     @GetMapping("/members/course")
@@ -54,7 +56,7 @@ public class MemberController {
         final MemberServiceDto.UpdateReq updateReq = toServiceDto(memberId, request);
         final Member updatedMember = memberService.updateMember(updateReq);
 
-        return ResponseEntity.ok(new MemberDto.MemberRes(updatedMember, memberService.getMemberImageUrl(memberId)));
+        return ResponseEntity.ok(appendCdnPath(updatedMember));
     }
 
     @PostMapping("/members/{memberId}/images/presigned-url")
@@ -62,8 +64,7 @@ public class MemberController {
     @ApiResponse(responseCode = "200", description = "맴버 이미지 사전 서명 url 생성 성공")
     public ResponseEntity<MemberDto.MemberImagePresignedUrlRes> getPresignedUrl(@PathVariable final long memberId,
                                                                                 @RequestBody final MemberDto.MemberImagePresignedUrlReq request) {
-        String url = memberService.getPresignedUrl(memberId, request.getFileName());
-
+        final String url = memberService.getPresignedUrl(memberId, request.getFileName());
 
         return ResponseEntity.ok(
                 new MemberDto.MemberImagePresignedUrlRes(new UrlDto(request.getFileName(), url))
@@ -73,13 +74,25 @@ public class MemberController {
     @PostMapping("/members/{memberId}/images")
     @Operation(summary = "맴버 이미지 저장", description = "맴버 이미지 이름과 s3 url을 저장합니다.")
     @ApiResponse(responseCode = "201", description = "맴버 이미지 저장 성공")
-    public ResponseEntity<MemberDto.MemberImageSaveRes> saveMemberImage(@PathVariable final long memberId,
-                                                                        @RequestBody final MemberDto.MemberImageSaveReq request) {
+    public ResponseEntity<MemberDto.MemberImageRes> saveMemberImage(@PathVariable final long memberId,
+                                                                    @RequestBody final MemberDto.MemberImageSaveReq request) {
 
-        MemberImage memberImage = memberService.saveImage(memberId, request.getUrls());
+        final MemberImage memberImage = memberService.saveImage(memberId, request.getUrls());
 
         return ResponseEntity.created(URI.create("/api/v1/members/" + memberId))
-                .body(new MemberDto.MemberImageSaveRes(memberImage));
+                .body(new MemberDto.MemberImageRes(memberImage));
+    }
+
+    @PutMapping("/members/{memberId}/images/{imageId}")
+    @Operation(summary = "맴버 이미지 수정", description = "주어진 이미지 id를 통해 이미지를 수정합니다")
+    @ApiResponse(responseCode = "200", description = "맴버 이미지 수정 성공")
+    public ResponseEntity<MemberDto.MemberImageRes> updatePostImage(@PathVariable final long memberId,
+                                                                    @PathVariable final long imageId,
+                                                                    @RequestBody final MemberDto.MemberImageUpdateReq request) {
+
+        final MemberImage memberImage = memberService.updateImage(memberId, imageId, request.getImageInfo());
+
+        return ResponseEntity.ok(new MemberDto.MemberImageRes(memberImage));
     }
 
     private static MemberServiceDto.UpdateReq toServiceDto(final long memberId, final MemberDto.MemberUpdateReq request) {
@@ -89,5 +102,10 @@ public class MemberController {
                 .nameEnglish(request.getNameEnglish())
                 .course(request.getCourse())
                 .build();
+    }
+
+    private MemberDto.MemberRes appendCdnPath(final Member member) {
+        final MemberServiceDto.ImageCdnPathRes memberImageCdnPath = memberService.getMemberImageUrl(member.getId());
+        return new MemberDto.MemberRes(member, objectMapper.convertValue(memberImageCdnPath, MemberDto.MemberImageCdnPathRes.class));
     }
 }

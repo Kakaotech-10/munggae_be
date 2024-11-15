@@ -1,8 +1,11 @@
 package com.ktb10.munggaebe.member.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.image.domain.Image;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.service.ImageService;
+import com.ktb10.munggaebe.image.service.dto.ImageCdnPathDto;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
@@ -32,6 +35,7 @@ public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
     private final ImageService imageService;
+    private final ObjectMapper objectMapper;
 
 
     @Transactional
@@ -125,11 +129,30 @@ public class MemberService implements UserDetailsService {
         return imageService.saveMemberImage(member, urls);
     }
 
-    public String getMemberImageUrl(long memberId) {
+    public MemberServiceDto.ImageCdnPathRes getMemberImageUrl(long memberId) {
 
         if (!memberRepository.existsById(memberId)) {
             throw new MemberNotFoundException(memberId);
         }
-        return imageService.getMemberImageUrl(memberId);
+        ImageCdnPathDto imageCdnPath = imageService.getMemberImageUrl(memberId);
+
+        return objectMapper.convertValue(imageCdnPath, MemberServiceDto.ImageCdnPathRes.class);
+    }
+
+    @Transactional
+    public MemberImage updateImage(long memberId, long imageId, UrlDto imageInfo) {
+
+        log.info("updateImage start : memberId = {}, imageId = {}", memberId, imageId);
+        if (!memberRepository.existsById(memberId)) {
+            throw new MemberNotFoundException(memberId);
+        }
+        validateAuthorization(memberId);
+
+        Image updatedImage = imageService.updateImage(imageId, imageInfo);
+
+        if (updatedImage instanceof MemberImage memberImage) {
+            return memberImage;
+        }
+        throw new IllegalStateException("해당 이미지가 MemberImage 타입이 아닙니다.");
     }
 }

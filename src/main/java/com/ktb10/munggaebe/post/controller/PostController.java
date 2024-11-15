@@ -38,8 +38,10 @@ public class PostController {
 
         final Page<Post> posts = postService.getPosts(pageNo, pageSize);
 
-        return ResponseEntity.ok(posts.map(p -> new PostDto.PostRes(p, postService.getPostImageUrls(p.getId()))));
+        return ResponseEntity.ok(posts.map(this::appendCdnPaths));
     }
+
+
 
     @PostMapping("/posts")
     @Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다.")
@@ -58,9 +60,8 @@ public class PostController {
     public ResponseEntity<PostDto.PostRes> getPost(@PathVariable final long postId) {
 
         final Post post = postService.getPost(postId);
-        final List<String> urls = postService.getPostImageUrls(postId);
 
-        return ResponseEntity.ok(new PostDto.PostRes(post, urls));
+        return ResponseEntity.ok(appendCdnPaths(post));
     }
 
     @PutMapping("/posts/{postId}")
@@ -71,7 +72,7 @@ public class PostController {
         final PostServiceDto.UpdateReq updateReq = toServiceDto(postId, request);
         final Post updatedPost = postService.updatePost(updateReq);
 
-        return ResponseEntity.ok(new PostDto.PostRes(updatedPost, postService.getPostImageUrls(updatedPost.getId())));
+        return ResponseEntity.ok(appendCdnPaths(updatedPost));
     }
 
     @DeleteMapping("/posts/{postId}")
@@ -89,9 +90,9 @@ public class PostController {
     @ApiResponse(responseCode = "200", description = "게시글 이미지 사전 서명 url 생성 성공")
     public ResponseEntity<PostDto.ImagePresignedUrlRes> getPresignedUrl(@PathVariable final long postId,
                                              @RequestBody final PostDto.ImagePresignedUrlReq request) {
-        List<PostServiceDto.PresignedUrlRes> urlRes = postService.getPresignedUrl(postId, request.getFileNames());
+        final List<PostServiceDto.PresignedUrlRes> urlRes = postService.getPresignedUrl(postId, request.getFileNames());
 
-        List<UrlDto> urls = urlRes.stream()
+        final List<UrlDto> urls = urlRes.stream()
                 .map(o -> objectMapper.convertValue(o, UrlDto.class))
                 .toList();
 
@@ -109,10 +110,22 @@ public class PostController {
     public ResponseEntity<PostDto.ImageSaveRes> savePostImages(@PathVariable final long postId,
                                             @RequestBody final PostDto.ImageSaveReq request) {
 
-        List<PostImage> postImages = postService.saveImages(postId, request.getUrls());
+        final List<PostImage> postImages = postService.saveImages(postId, request.getUrls());
 
         return ResponseEntity.created(URI.create("/api/v1/posts/" + postId))
                 .body(new PostDto.ImageSaveRes(postImages));
+    }
+
+    @PutMapping("/posts/{postId}/images/{imageId}")
+    @Operation(summary = "게시글 이미지 수정", description = "주어진 이미지 id를 통해 이미지를 수정합니다")
+    @ApiResponse(responseCode = "200", description = "게시글 이미지 수정 성공")
+    public ResponseEntity<PostDto.ImageRes> updatePostImage(@PathVariable final long postId,
+                                             @PathVariable final long imageId,
+                                             @RequestBody final PostDto.ImageUpdateReq request) {
+
+        final PostImage postImage = postService.updateImage(postId, imageId, request.getImageInfo());
+
+        return ResponseEntity.ok(new PostDto.ImageRes(postImage));
     }
 
     private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {
@@ -121,5 +134,13 @@ public class PostController {
                 .title(request.getTitle())
                 .content(request.getContent())
                 .build();
+    }
+
+    private PostDto.PostRes appendCdnPaths(final Post p) {
+        final List<PostServiceDto.ImageCdnPathRes> postImageCdnPaths = postService.getPostImageCdnPaths(p.getId());
+        final List<PostDto.ImageCdnPathRes> imageCdnPathRes = postImageCdnPaths.stream()
+                .map(pi -> objectMapper.convertValue(pi, PostDto.ImageCdnPathRes.class))
+                .toList();
+        return new PostDto.PostRes(p, imageCdnPathRes);
     }
 }

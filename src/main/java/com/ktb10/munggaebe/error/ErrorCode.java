@@ -7,6 +7,7 @@ public enum ErrorCode {
 
     //common
     INTERNAL_SERVER_ERROR("COM_001", "서버 측 오류가 발생했습니다.", 500),
+    ILLEGAL_ARGUMENT_EXCEPTION("COM_002", "클라이언트의 잘못된 요청입니다.", 400),
 
     //member
     MEMBER_NOT_FOUND("MEM_001", "해당하는 맴버를 찾을 수 없습니다.", 404),

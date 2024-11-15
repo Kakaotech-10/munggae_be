@@ -34,4 +34,18 @@ public class MemberServiceDto {
             this.member = member;
         }
     }
+
+    @Getter
+    public static class ImageCdnPathRes {
+        private Long imageId;
+        private String fileName;
+        private String path;
+
+        @Builder
+        public ImageCdnPathRes(Long imageId, String fileName, String path) {
+            this.imageId = imageId;
+            this.fileName = fileName;
+            this.path = path;
+        }
+    }
 }

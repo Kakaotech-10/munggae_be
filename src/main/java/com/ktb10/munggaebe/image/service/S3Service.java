@@ -4,12 +4,15 @@ import com.amazonaws.HttpMethod;
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.Headers;
 import com.amazonaws.services.s3.model.CannedAccessControlList;
+import com.amazonaws.services.s3.model.DeleteObjectRequest;
 import com.amazonaws.services.s3.model.GeneratePresignedUrlRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.Date;
 
@@ -35,6 +38,16 @@ public class S3Service {
         URL url = amazonS3.generatePresignedUrl(generatePresignedUrlRequest);
 
         return url.toString();
+    }
+
+    public void deleteImage(String url) {
+        log.info("deleteImage start : url = {}", url);
+        try {
+            String path = new URI(url).getPath().substring(1);
+            amazonS3.deleteObject(new DeleteObjectRequest(bucket, path));
+        } catch (URISyntaxException e) {
+            throw new IllegalArgumentException("잘못된 Url 형식입니다.");
+        }
     }
 
     private static String getFilePath(String prefix, String fileName) {

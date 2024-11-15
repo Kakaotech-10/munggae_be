@@ -1,11 +1,13 @@
 package com.ktb10.munggaebe.image.service;
 
+import com.ktb10.munggaebe.image.domain.Image;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.repository.ImageRepository;
 import com.ktb10.munggaebe.image.repository.MemberImageRepository;
 import com.ktb10.munggaebe.image.repository.PostImageRepository;
+import com.ktb10.munggaebe.image.service.dto.ImageCdnPathDto;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.post.domain.Post;
@@ -15,6 +17,8 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.UUID;
 
 @Slf4j
@@ -46,9 +50,9 @@ public class ImageService {
         return url;
     }
 
-    public List<PostImage> savePostImages(Post post, List<UrlDto> urls) {
-        log.info("savePostImages start : urls = {}", urls);
-        List<PostImage> images = urls.stream()
+    public List<PostImage> savePostImages(Post post, List<UrlDto> urlDtos) {
+        log.info("savePostImages start : urls = {}", urlDtos);
+        List<PostImage> images = urlDtos.stream()
                 .map(u -> PostImage.builder()
                         .post(post)
                         .originalName(u.getFileName())
@@ -60,14 +64,19 @@ public class ImageService {
         return imageRepository.saveAll(images);
     }
 
-    public List<String> getPostImageUrls(long postId) {
+    public List<ImageCdnPathDto> getPostImageUrls(long postId) {
         log.info("getPostImageUrls start : postId = {}", postId);
 
-        List<String> s3ImagePaths = postImageRepository.findS3ImagePathsByPostId(postId);
-        log.info("s3ImagePaths = {}", s3ImagePaths);
+        List<PostImage> postImages = postImageRepository.findAllByPostId(postId);
+        log.info("postImages.size = {}", postImages.size());
 
-        return s3ImagePaths.stream()
-                .map(this::convertS3PathToCloudFront)
+        return postImages.stream()
+                .map(pi -> ImageCdnPathDto.builder()
+                        .imageId(pi.getId())
+                        .fileName(pi.getOriginalName())
+                        .path(convertS3PathToCloudFront(pi.getS3ImagePath()))
+                        .build()
+                )
                 .toList();
     }
 
@@ -84,13 +93,45 @@ public class ImageService {
         return imageRepository.save(memberImage);
     }
 
-    public String getMemberImageUrl(long memberId) {
+    public ImageCdnPathDto getMemberImageUrl(long memberId) {
         log.info("getMemberImageUrl start : memberId = {}", memberId);
 
-        String s3ImagePath = memberImageRepository.findS3ImagePathsByMemberId(memberId);
-        log.info("s3ImagePath = {}", s3ImagePath);
+        Optional<MemberImage> optionalMemberImage = memberImageRepository.findByMemberId(memberId);
 
-        return convertS3PathToCloudFront(s3ImagePath);
+        if (optionalMemberImage.isEmpty()) {
+            log.info("memberImage isEmpty");
+            return null;
+        }
+
+        MemberImage memberImage = optionalMemberImage.get();
+
+        return ImageCdnPathDto.builder()
+                .imageId(memberImage.getId())
+                .fileName(memberImage.getOriginalName())
+                .path(convertS3PathToCloudFront(memberImage.getS3ImagePath()))
+                .build();
+    }
+
+    public Image updateImage(long imageId, UrlDto imageInfo) {
+        log.info("updateImage start : imageId = {}, imageInfo.fileName = {}, imageInfo.url = {}", imageId, imageInfo.getFileName(), imageInfo.getUrl());
+
+        Image image = imageRepository.findById(imageId)
+                .orElseThrow(() -> new NoSuchElementException("Image not found"));
+        validateUrl(imageInfo.getUrl(), image);
+
+        final String prevS3ImagePath = image.getS3ImagePath();
+
+        image.update(imageInfo.getFileName(), getStoredName(imageInfo.getUrl()), imageInfo.getUrl());
+
+        s3Service.deleteImage(prevS3ImagePath);
+
+        return image;
+    }
+
+    private static void validateUrl(String url, Image image) {
+        if (getStoredName(url).equals(image.getStoredName())) {
+            throw new IllegalArgumentException("잘못된 Url 입력입니다.");
+        }
     }
 
     private String convertS3PathToCloudFront(String s3Path) {

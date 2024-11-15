@@ -22,7 +22,7 @@ public class TextFilteringClient {
     private final WebClient fastApiWebClient;
 
     public FilteringRes filterText(String text) {
-        String uri = "/comments/";
+        String uri = "/ai/text";
         return fastApiWebClient.post()
                 .uri(uri)
                 .body(BodyInserters.fromValue(new FilteringReq(text)))

@@ -40,9 +40,9 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
         boolean result =  (HttpMethod.GET.matches(request.getMethod()) &&
-                (path.startsWith("/api/v1/comments/") || path.startsWith("/api/v1/posts/") || path.startsWith("/api/v1/members/")))
+                (path.startsWith("/api/v1/comments") || path.startsWith("/api/v1/posts") || path.startsWith("/api/v1/members")))
                 || (HttpMethod.POST.matches(request.getMethod()) &&
-                (path.startsWith("/api/v1/auth/")));
+                (path.startsWith("/api/v1/auth")));
 
         log.info("shouldNotFilter end : result = {}", result);
         return result;

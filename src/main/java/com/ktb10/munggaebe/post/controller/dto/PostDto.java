@@ -94,8 +94,9 @@ public class PostDto {
         @Schema(description = "게시글 클린 여부", example = "true")
         private boolean isClean;
 
-        @Schema(description = "CDN 이미지 url", example = "[\"http://cdn-path/123_file1.jpg\", \"http://cdn-path/234_file2.png\"]")
-        private List<String> imageUrls = new ArrayList<>();
+        @Schema(description = "CDN 이미지 url", example = "[{\"imageId\": 1, \"fileName\": \"file1.jpg\", \"path\": \"http://cdn-path/123_file1.jpg\"}" +
+                ", {\"imageId\": 2, \"fileName\": \"file2.jpg\", \"path\": \"http://cdn-path/234_file2.png\"}]")
+        private List<ImageCdnPathRes> imageUrls = new ArrayList<>();
 
         public PostRes(Post post) {
             this.id = post.getId();
@@ -107,7 +108,7 @@ public class PostDto {
             this.isClean = post.isClean();
         }
 
-        public PostRes(Post post, List<String> imageUrls) {
+        public PostRes(Post post, List<ImageCdnPathRes> imageUrls) {
             this.id = post.getId();
             this.title = post.getTitle();
             this.content = post.getContent();
@@ -135,7 +136,7 @@ public class PostDto {
         }
     }
 
-    @Schema(description = "이미지 저장 요청")
+    @Schema(description = "여러 이미지 저장 요청")
     @Getter
     @NoArgsConstructor(access = AccessLevel.PROTECTED)
     public static class ImageSaveReq {
@@ -159,6 +160,18 @@ public class PostDto {
         }
     }
 
+    @Schema(description = "단일 이미지 수정 요청")
+    @Getter
+    @NoArgsConstructor(access = AccessLevel.PROTECTED)
+    public static class ImageUpdateReq {
+        @Schema(description = "파일 이름, url")
+        private UrlDto imageInfo;
+
+        public ImageUpdateReq(UrlDto imageInfo) {
+            this.imageInfo = imageInfo;
+        }
+    }
+
     @Schema(description = "이미지 응답")
     @Getter
     public static class ImageRes {
@@ -178,6 +191,20 @@ public class PostDto {
             this.s3ImagePath = postImage.getS3ImagePath();
             this.createdAt = postImage.getCreatedAt();
             this.updatedAt = postImage.getUpdatedAt();
+        }
+    }
+
+    @Schema(description = "cdn path 응답")
+    @Getter
+    public static class ImageCdnPathRes {
+        private Long imageId;
+        private String fileName;
+        private String path;
+
+        public ImageCdnPathRes(Long imageId, String fileName, String path) {
+            this.imageId = imageId;
+            this.fileName = fileName;
+            this.path = path;
         }
     }
 }
