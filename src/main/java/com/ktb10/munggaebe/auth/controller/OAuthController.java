@@ -68,4 +68,27 @@ public class OAuthController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(regeneratedAccessToken);
     }
+
+    @PostMapping("/logout")
+    @Operation(summary = "로그아웃", description = "로그아웃하며, refreshToken을 redis에 저장해 블랙리스트로 관리합니다.")
+    @ApiResponse(responseCode = "204", description = "로그아웃 성공")
+    public ResponseEntity<Void> logout(
+            @CookieValue(COOKIE_TOKEN) final String refreshToken,
+            final HttpServletResponse response
+    ) {
+        log.info("logout start");
+
+        kakaoService.logout(refreshToken);
+
+        final ResponseCookie cookie = ResponseCookie.from(COOKIE_TOKEN, "")
+                .maxAge(0)
+//                    .sameSite("None")
+//                    .secure(true)
+                .httpOnly(true)
+                .path("/")
+                .build();
+        response.addHeader(SET_COOKIE, cookie.toString());
+
+        return ResponseEntity.noContent().build();
+    }
 }

@@ -3,14 +3,14 @@ package com.ktb10.munggaebe.auth.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.ktb10.munggaebe.auth.service.dto.AccessTokenResponse;
-import com.ktb10.munggaebe.auth.service.dto.RefreshTokenResponse;
-import com.ktb10.munggaebe.auth.exception.OAuthResponseJsonProcessingException;
 import com.ktb10.munggaebe.auth.client.KakaoAuthClient;
 import com.ktb10.munggaebe.auth.client.KakaoMemberApiClient;
+import com.ktb10.munggaebe.auth.exception.OAuthResponseJsonProcessingException;
 import com.ktb10.munggaebe.auth.jwt.JwtTokenProvider;
 import com.ktb10.munggaebe.auth.jwt.TokenManager;
+import com.ktb10.munggaebe.auth.service.dto.AccessTokenResponse;
 import com.ktb10.munggaebe.auth.service.dto.LoginDto;
+import com.ktb10.munggaebe.auth.service.dto.RefreshTokenResponse;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.service.MemberService;
 import com.ktb10.munggaebe.member.service.dto.MemberServiceDto;
@@ -158,5 +158,14 @@ public class KakaoService {
 
         log.info("refreshToken inValid = {}", refreshToken);
         throw new RuntimeException("refresh token이 유효하지 않습니다.");
+    }
+
+    public void logout(String refreshToken) {
+
+//        if (!jwtTokenProvider.validateToken(refreshToken)) {
+//            throw new RuntimeException("refresh token이 유효하지 않습니다.");
+//        }
+
+        tokenManager.addBlackList(refreshToken);
     }
 }
