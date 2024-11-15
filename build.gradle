@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ktb10'
-version = '0.0.2-SNAPSHOT'
+version = '0.0.3-SNAPSHOT'
 
 java {
 	toolchain {
@@ -70,6 +70,9 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-webflux'
 	//Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. 문제로 추가
 	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.94.Final'
+
+	//Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 tasks.named('test') {
