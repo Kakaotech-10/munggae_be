@@ -63,4 +63,11 @@ public class TokenManager {
         redisTemplate.opsForValue().set(key, "invalid", BLACKLIST_TTL, TimeUnit.SECONDS);
         log.info("check save : key = {}, value = {}", key, redisTemplate.opsForValue().get(key));
     }
+
+    public boolean isTokenBlacklisted(String refreshToken) {
+        String hashedToken = TokenHasher.hashToken(refreshToken);
+        String key = "blacklist:refreshToken:" + hashedToken;
+        Boolean hasKey = redisTemplate.hasKey(key);
+        return hasKey != null && hasKey;
+    }
 }
