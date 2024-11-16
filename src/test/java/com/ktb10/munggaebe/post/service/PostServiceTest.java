@@ -1,7 +1,9 @@
 package com.ktb10.munggaebe.post.service;
 
 import com.ktb10.munggaebe.image.domain.ImageType;
+import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.service.ImageService;
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
@@ -335,6 +337,61 @@ class PostServiceTest {
 
         // When & Then
         assertThatThrownBy(() -> postService.getPresignedUrl(postId, fileNames))
+                .isInstanceOf(MemberPermissionDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("이미지를 성공적으로 저장한다.")
+    void saveImages_success() {
+        // Given
+        long postId = 1L;
+        List<UrlDto> urls = List.of(new UrlDto("file1.png", "url1"), new UrlDto("file2.jpeg", "url2"));
+        PostImage postImage1 = PostImage.builder().s3ImagePath("s3ImagePath1").build();
+        PostImage postImage2 = PostImage.builder().s3ImagePath("s3ImagePath2").build();
+        List<PostImage> savedImages = List.of(postImage1, postImage2);
+
+        Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
+        Post post = Post.builder().id(postId).member(member).build();
+
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+        given(imageService.savePostImages(post, urls)).willReturn(savedImages);
+
+        // When
+        List<PostImage> result = postService.saveImages(postId, urls);
+
+        // Then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting(PostImage::getS3ImagePath).containsExactly("s3ImagePath1", "s3ImagePath2");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시물 ID로 저장 시 PostNotFoundException을 발생시킨다.")
+    void saveImages_postNotFound() {
+        // Given
+        long postId = 1L;
+        List<UrlDto> urls = List.of(new UrlDto("file1.png", "url1"), new UrlDto("file2.jpeg", "url2"));
+
+        given(postRepository.findById(postId)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> postService.saveImages(postId, urls))
+                .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("권한이 없는 사용자가 이미지를 저장하려 하면 MemberPermissionDeniedException을 발생시킨다.")
+    void saveImages_permissionDenied() {
+        // Given
+        long postId = 1L;
+        List<UrlDto> urls = List.of(new UrlDto("file1.png", "url1"), new UrlDto("file2.jpeg", "url2"));
+
+        Member member = Member.builder().id(2L).role(MemberRole.STUDENT).build();
+        Post post = Post.builder().id(postId).member(member).build();
+
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+        // When & Then
+        assertThatThrownBy(() -> postService.saveImages(postId, urls))
                 .isInstanceOf(MemberPermissionDeniedException.class);
     }
 }
