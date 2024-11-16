@@ -122,7 +122,6 @@ class CommentServiceTest {
     void createRootComment_ShouldThrowException_WhenPostNotFound() {
         // given
         long postId = 1L;
-        long memberId = 1L;
         Comment entity = Comment.builder().content("New root comment").build();
 
         given(postRepository.findById(postId)).willReturn(Optional.empty());
@@ -177,7 +176,6 @@ class CommentServiceTest {
     void createReplyComment_ShouldThrowException_WhenParentCommentNotFound() {
         // given
         long commentId = 1L;
-        long memberId = 1L;
         Comment entity = Comment.builder().content("New reply comment").build();
 
         given(commentRepository.findById(commentId)).willReturn(Optional.empty());
