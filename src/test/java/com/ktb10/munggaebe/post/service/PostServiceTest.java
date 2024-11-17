@@ -2,6 +2,7 @@ package com.ktb10.munggaebe.post.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.image.domain.ImageType;
+import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.service.ImageService;
 import com.ktb10.munggaebe.image.service.dto.ImageCdnPathDto;
@@ -426,7 +427,7 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("존재하지 않는 게시물 ID로 요청 시 PostNotFoundException을 발생시킨다.\"")
+    @DisplayName("존재하지 않는 게시물 ID로 요청 시 PostNotFoundException을 발생시킨다.")
     void getPostImageCdnPaths_postNotFound() {
         // Given
         long postId = 1L;
@@ -436,5 +437,88 @@ class PostServiceTest {
         // When & Then
         assertThatThrownBy(() -> postService.getPostImageCdnPaths(postId))
                 .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("이미지를 업데이트하고, 업데이트된 이미지를 반환한다.")
+    void updateImage_success() {
+        // Given
+        long postId = 1L;
+        long imageId = 1L;
+
+        Member member = Member.builder().id(1L).build();
+        Post post = Post.builder().id(postId).member(member).build();
+        UrlDto imageInfo = new UrlDto("file1.jpg", "url1");
+        PostImage expected = PostImage.builder()
+                .id(imageId)
+                .originalName(imageInfo.getFileName())
+                .s3ImagePath(imageInfo.getUrl())
+                .build();
+
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+        given(imageService.updateImage(1L, imageInfo)).willReturn(expected);
+
+        // When
+        PostImage result = postService.updateImage(postId, imageId, imageInfo);
+
+        // Then
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시물 ID로 요청 시 PostNotFoundException을 발생시킨다.")
+    void updateImage_postNotFound() {
+        // Given
+        long postId = 1L;
+        long imageId = 1L;
+        UrlDto imageInfo = new UrlDto("file1.jpg", "url1");
+
+        given(postRepository.findById(postId)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> postService.updateImage(postId, imageId, imageInfo))
+                .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("권한이 없는 사용자가 이미지를 수정하려 하면 MemberPermissionDeniedException을 발생시킨다.")
+    void updateImage_permissionDenied() {
+        // Given
+        long postId = 1L;
+        long imageId = 1L;
+
+        Member member = Member.builder().id(2L).build();
+        Post post = Post.builder().id(postId).member(member).build();
+        UrlDto imageInfo = new UrlDto("file1.jpg", "url1");
+
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+        // When & Then
+        assertThatThrownBy(() -> postService.updateImage(postId, imageId, imageInfo))
+                .isInstanceOf(MemberPermissionDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("imageService.updateImage의 반환값 타입이 PostImage가 아니면 IllegalStateException 발생")
+    void updateImage_imageType() {
+        // Given
+        long postId = 1L;
+        long imageId = 1L;
+
+        Member member = Member.builder().id(1L).build();
+        Post post = Post.builder().id(postId).member(member).build();
+        UrlDto imageInfo = new UrlDto("file1.jpg", "url1");
+        MemberImage memberImage = MemberImage.builder()
+                .id(imageId)
+                .originalName(imageInfo.getFileName())
+                .s3ImagePath(imageInfo.getUrl())
+                .build();
+
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+        given(imageService.updateImage(1L, imageInfo)).willReturn(memberImage);
+
+        // When & Then
+        assertThatThrownBy(() -> postService.updateImage(postId, imageId, imageInfo))
+                .isInstanceOf(IllegalStateException.class);
     }
 }
