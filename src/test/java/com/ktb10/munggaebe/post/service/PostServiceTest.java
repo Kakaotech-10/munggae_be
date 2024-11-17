@@ -1,8 +1,10 @@
 package com.ktb10.munggaebe.post.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.PostImage;
 import com.ktb10.munggaebe.image.service.ImageService;
+import com.ktb10.munggaebe.image.service.dto.ImageCdnPathDto;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberRole;
@@ -53,6 +55,9 @@ class PostServiceTest {
 
     @Mock
     private ImageService imageService;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setup() {
@@ -393,5 +398,43 @@ class PostServiceTest {
         // When & Then
         assertThatThrownBy(() -> postService.saveImages(postId, urls))
                 .isInstanceOf(MemberPermissionDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("해당하는 게시물의 이미지들의 정보를 반환한다.")
+    void getPostImageCdnPaths_success() {
+        //Given
+        long postId = 1L;
+        ImageCdnPathDto dto1 = ImageCdnPathDto.builder().imageId(1L).fileName("file1.jpg").path("cdnPath1").build();
+        ImageCdnPathDto dto2 = ImageCdnPathDto.builder().imageId(2L).fileName("file2.jpg").path("cdnPath2").build();
+
+        PostServiceDto.ImageCdnPathRes expected1 = PostServiceDto.ImageCdnPathRes.builder().imageId(1L).fileName("file1.jpg").path("cdnPath1").build();
+        PostServiceDto.ImageCdnPathRes expected2 = PostServiceDto.ImageCdnPathRes.builder().imageId(2L).fileName("file2.jpg").path("cdnPath2").build();
+
+        given(postRepository.existsById(postId)).willReturn(true);
+        given(imageService.getPostImageUrls(postId)).willReturn(List.of(dto1, dto2));
+        given(objectMapper.convertValue(dto1, PostServiceDto.ImageCdnPathRes.class)).willReturn(expected1);
+        given(objectMapper.convertValue(dto2, PostServiceDto.ImageCdnPathRes.class)).willReturn(expected2);
+
+        //When
+        List<PostServiceDto.ImageCdnPathRes> result = postService.getPostImageCdnPaths(postId);
+
+        //Then
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.getFirst()).usingRecursiveComparison().isEqualTo(expected1);
+        assertThat(result.getLast()).usingRecursiveComparison().isEqualTo(expected2);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시물 ID로 요청 시 PostNotFoundException을 발생시킨다.\"")
+    void getPostImageCdnPaths_postNotFound() {
+        // Given
+        long postId = 1L;
+
+        given(postRepository.existsById(postId)).willReturn(false);
+
+        // When & Then
+        assertThatThrownBy(() -> postService.getPostImageCdnPaths(postId))
+                .isInstanceOf(PostNotFoundException.class);
     }
 }
