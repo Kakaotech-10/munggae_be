@@ -11,12 +11,12 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfig {
 
     @Value("${custom.fast-api.base-url}")
-    private String fastApiBaseUrl;
+    private String baseUrl;
 
     @Bean
-    public WebClient fastApiWebClient(WebClient.Builder builder) {
+    public WebClient textFilteringWebClient(WebClient.Builder builder) {
         return builder
-                .baseUrl(fastApiBaseUrl)
+                .baseUrl(baseUrl)
                 .defaultHeaders(httpHeaders -> {
                     httpHeaders.add(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
                 })
