@@ -19,11 +19,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TextFilteringClient {
 
-    private final WebClient fastApiWebClient;
+    private final WebClient textFilteringWebClient;
 
     public FilteringRes filterText(String text) {
         String uri = "/ai/text";
-        return fastApiWebClient.post()
+        return textFilteringWebClient.post()
                 .uri(uri)
                 .body(BodyInserters.fromValue(new FilteringReq(text)))
                 .retrieve()

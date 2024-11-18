@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ktb10'
-version = '0.0.3-SNAPSHOT'
+version = '0.0.4-SNAPSHOT'
 
 java {
 	toolchain {
@@ -73,6 +73,9 @@ dependencies {
 
 	//Redis
 	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	//MockWebServer
+	testImplementation 'com.squareup.okhttp3:mockwebserver'
 }
 
 tasks.named('test') {

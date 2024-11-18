@@ -1,14 +1,21 @@
 package com.ktb10.munggaebe.post.service;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.image.domain.ImageType;
+import com.ktb10.munggaebe.image.domain.MemberImage;
+import com.ktb10.munggaebe.image.domain.PostImage;
+import com.ktb10.munggaebe.image.service.ImageService;
+import com.ktb10.munggaebe.image.service.dto.ImageCdnPathDto;
+import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.post.domain.Post;
-import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.PostRepository;
+import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,8 +33,10 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,6 +53,12 @@ class PostServiceTest {
 
     @Mock
     private FilteringService filteringService;
+
+    @Mock
+    private ImageService imageService;
+
+    @Mock
+    private ObjectMapper objectMapper;
 
     @BeforeEach
     void setup() {
@@ -274,4 +289,236 @@ class PostServiceTest {
         verify(postRepository).deleteById(postId);
     }
 
+    @Test
+    @DisplayName("파일 이름 리스트로 Presigned URL을 성공적으로 생성한다.")
+    void generatePresignedUrls_success() {
+        // Given
+        long postId = 1L;
+        List<String> fileNames = List.of("file1.jpg", "file2.jpg");
+
+        Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
+        Post post = Post.builder().id(postId).member(member).build();
+        setupSecurityContextWithRole(member, "STUDENT");
+
+        given(postRepository.findById(postId)).willReturn(Optional.ofNullable(post));
+        given(imageService.getPresignedUrl(anyString(), eq(postId), eq(ImageType.POST)))
+                .willReturn("url");
+
+        // When
+        List<PostServiceDto.PresignedUrlRes> result = postService.getPresignedUrl(postId, fileNames);
+
+        // Then
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.getFirst().getUrl()).isEqualTo("url");
+
+        then(imageService).should(times(2))
+                .getPresignedUrl(anyString(), eq(postId), eq(ImageType.POST));
+    }
+
+    @Test
+    @DisplayName("게시물을 찾을 수 없는 경우 PostNotFoundException을 발생시킨다.")
+    void getPresignedUrl_postNotFound() {
+        // Given
+        long postId = 1L;
+        List<String> fileNames = List.of("file1.jpg", "file2.jpg");
+
+        given(postRepository.findById(postId)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> postService.getPresignedUrl(postId, fileNames))
+                .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("권한이 없는 사용자가 접근할 경우 MemberPermissionDeniedException을 발생시킨다.")
+    void getPresignedUrl_permissionDenied() {
+        // Given
+        long postId = 1L;
+        List<String> fileNames = List.of("file1.jpg", "file2.jpg");
+
+        Member member = Member.builder().id(2L).role(MemberRole.STUDENT).build();
+        Post post = Post.builder().id(postId).member(member).build();
+
+        given(postRepository.findById(postId)).willReturn(Optional.ofNullable(post));
+
+        // When & Then
+        assertThatThrownBy(() -> postService.getPresignedUrl(postId, fileNames))
+                .isInstanceOf(MemberPermissionDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("이미지를 성공적으로 저장한다.")
+    void saveImages_success() {
+        // Given
+        long postId = 1L;
+        List<UrlDto> urls = List.of(new UrlDto("file1.png", "url1"), new UrlDto("file2.jpeg", "url2"));
+        PostImage postImage1 = PostImage.builder().s3ImagePath("s3ImagePath1").build();
+        PostImage postImage2 = PostImage.builder().s3ImagePath("s3ImagePath2").build();
+        List<PostImage> savedImages = List.of(postImage1, postImage2);
+
+        Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
+        Post post = Post.builder().id(postId).member(member).build();
+
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+        given(imageService.savePostImages(post, urls)).willReturn(savedImages);
+
+        // When
+        List<PostImage> result = postService.saveImages(postId, urls);
+
+        // Then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting(PostImage::getS3ImagePath).containsExactly("s3ImagePath1", "s3ImagePath2");
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시물 ID로 저장 시 PostNotFoundException을 발생시킨다.")
+    void saveImages_postNotFound() {
+        // Given
+        long postId = 1L;
+        List<UrlDto> urls = List.of(new UrlDto("file1.png", "url1"), new UrlDto("file2.jpeg", "url2"));
+
+        given(postRepository.findById(postId)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> postService.saveImages(postId, urls))
+                .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("권한이 없는 사용자가 이미지를 저장하려 하면 MemberPermissionDeniedException을 발생시킨다.")
+    void saveImages_permissionDenied() {
+        // Given
+        long postId = 1L;
+        List<UrlDto> urls = List.of(new UrlDto("file1.png", "url1"), new UrlDto("file2.jpeg", "url2"));
+
+        Member member = Member.builder().id(2L).role(MemberRole.STUDENT).build();
+        Post post = Post.builder().id(postId).member(member).build();
+
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+        // When & Then
+        assertThatThrownBy(() -> postService.saveImages(postId, urls))
+                .isInstanceOf(MemberPermissionDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("해당하는 게시물의 이미지들의 정보를 반환한다.")
+    void getPostImageCdnPaths_success() {
+        //Given
+        long postId = 1L;
+        ImageCdnPathDto dto1 = ImageCdnPathDto.builder().imageId(1L).fileName("file1.jpg").path("cdnPath1").build();
+        ImageCdnPathDto dto2 = ImageCdnPathDto.builder().imageId(2L).fileName("file2.jpg").path("cdnPath2").build();
+
+        PostServiceDto.ImageCdnPathRes expected1 = PostServiceDto.ImageCdnPathRes.builder().imageId(1L).fileName("file1.jpg").path("cdnPath1").build();
+        PostServiceDto.ImageCdnPathRes expected2 = PostServiceDto.ImageCdnPathRes.builder().imageId(2L).fileName("file2.jpg").path("cdnPath2").build();
+
+        given(postRepository.existsById(postId)).willReturn(true);
+        given(imageService.getPostImageUrls(postId)).willReturn(List.of(dto1, dto2));
+        given(objectMapper.convertValue(dto1, PostServiceDto.ImageCdnPathRes.class)).willReturn(expected1);
+        given(objectMapper.convertValue(dto2, PostServiceDto.ImageCdnPathRes.class)).willReturn(expected2);
+
+        //When
+        List<PostServiceDto.ImageCdnPathRes> result = postService.getPostImageCdnPaths(postId);
+
+        //Then
+        assertThat(result.size()).isEqualTo(2);
+        assertThat(result.getFirst()).usingRecursiveComparison().isEqualTo(expected1);
+        assertThat(result.getLast()).usingRecursiveComparison().isEqualTo(expected2);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시물 ID로 요청 시 PostNotFoundException을 발생시킨다.")
+    void getPostImageCdnPaths_postNotFound() {
+        // Given
+        long postId = 1L;
+
+        given(postRepository.existsById(postId)).willReturn(false);
+
+        // When & Then
+        assertThatThrownBy(() -> postService.getPostImageCdnPaths(postId))
+                .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("이미지를 업데이트하고, 업데이트된 이미지를 반환한다.")
+    void updateImage_success() {
+        // Given
+        long postId = 1L;
+        long imageId = 1L;
+
+        Member member = Member.builder().id(1L).build();
+        Post post = Post.builder().id(postId).member(member).build();
+        UrlDto imageInfo = new UrlDto("file1.jpg", "url1");
+        PostImage expected = PostImage.builder()
+                .id(imageId)
+                .originalName(imageInfo.getFileName())
+                .s3ImagePath(imageInfo.getUrl())
+                .build();
+
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+        given(imageService.updateImage(1L, imageInfo)).willReturn(expected);
+
+        // When
+        PostImage result = postService.updateImage(postId, imageId, imageInfo);
+
+        // Then
+        assertThat(result).isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("존재하지 않는 게시물 ID로 요청 시 PostNotFoundException을 발생시킨다.")
+    void updateImage_postNotFound() {
+        // Given
+        long postId = 1L;
+        long imageId = 1L;
+        UrlDto imageInfo = new UrlDto("file1.jpg", "url1");
+
+        given(postRepository.findById(postId)).willReturn(Optional.empty());
+
+        // When & Then
+        assertThatThrownBy(() -> postService.updateImage(postId, imageId, imageInfo))
+                .isInstanceOf(PostNotFoundException.class);
+    }
+
+    @Test
+    @DisplayName("권한이 없는 사용자가 이미지를 수정하려 하면 MemberPermissionDeniedException을 발생시킨다.")
+    void updateImage_permissionDenied() {
+        // Given
+        long postId = 1L;
+        long imageId = 1L;
+
+        Member member = Member.builder().id(2L).build();
+        Post post = Post.builder().id(postId).member(member).build();
+        UrlDto imageInfo = new UrlDto("file1.jpg", "url1");
+
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+
+        // When & Then
+        assertThatThrownBy(() -> postService.updateImage(postId, imageId, imageInfo))
+                .isInstanceOf(MemberPermissionDeniedException.class);
+    }
+
+    @Test
+    @DisplayName("imageService.updateImage의 반환값 타입이 PostImage가 아니면 IllegalStateException 발생")
+    void updateImage_imageType() {
+        // Given
+        long postId = 1L;
+        long imageId = 1L;
+
+        Member member = Member.builder().id(1L).build();
+        Post post = Post.builder().id(postId).member(member).build();
+        UrlDto imageInfo = new UrlDto("file1.jpg", "url1");
+        MemberImage memberImage = MemberImage.builder()
+                .id(imageId)
+                .originalName(imageInfo.getFileName())
+                .s3ImagePath(imageInfo.getUrl())
+                .build();
+
+        given(postRepository.findById(postId)).willReturn(Optional.of(post));
+        given(imageService.updateImage(1L, imageInfo)).willReturn(memberImage);
+
+        // When & Then
+        assertThatThrownBy(() -> postService.updateImage(postId, imageId, imageInfo))
+                .isInstanceOf(IllegalStateException.class);
+    }
 }
