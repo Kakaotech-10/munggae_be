@@ -20,6 +20,7 @@ pipeline {
         }
 
         stage('Set Environment Variable') {
+            agent { label 'java-docker' }
             steps {
                 script {
                     sh 'echo "cloud.aws.credentials.accessKey=${IMAGE_ACCESS_KEY_ID}" >> .env'
