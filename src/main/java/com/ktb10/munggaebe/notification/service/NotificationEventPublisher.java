@@ -1,16 +1,24 @@
 package com.ktb10.munggaebe.notification.service;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.notification.domain.NotificationType;
 import com.ktb10.munggaebe.notification.service.dto.NotificationEvent;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class NotificationEventPublisher {
 
-    private final RedisTemplate<String, String> redisTemplate;
+    private final ObjectMapper objectMapper;
+
+    @Qualifier("redisPubSubTemplate")
+    private final RedisTemplate<String, Object> redisPubSubTemplate;
 
     private static final String NOTIFICATION_TOPIC = "notifications";
 
@@ -30,6 +38,14 @@ public class NotificationEventPublisher {
     }
 
     public void publishEvent(NotificationEvent event) {
-        redisTemplate.convertAndSend(NOTIFICATION_TOPIC, event);
+        log.info("publishEvent start : event = {}", event);
+        try {
+            String jsonEvent = objectMapper.writeValueAsString(event);
+            Long count = redisPubSubTemplate.convertAndSend(NOTIFICATION_TOPIC, jsonEvent);
+            log.info("clients count = {}", count);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("직렬화 문제 발생");
+        }
+
     }
 }

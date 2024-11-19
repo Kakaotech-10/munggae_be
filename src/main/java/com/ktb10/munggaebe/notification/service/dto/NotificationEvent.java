@@ -1,10 +1,11 @@
 package com.ktb10.munggaebe.notification.service.dto;
 
 import com.ktb10.munggaebe.notification.domain.NotificationType;
-import lombok.Builder;
-import lombok.Getter;
+import lombok.*;
 
 @Getter
+@ToString
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationEvent {
 
     private Long receiverId;

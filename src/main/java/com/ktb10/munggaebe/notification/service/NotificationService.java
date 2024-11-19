@@ -28,4 +28,6 @@ public class NotificationService {
 
         return emitterRepository.save(userId, emitter);
     }
+
+    public void send() {}
 }
