@@ -10,10 +10,10 @@ import java.util.List;
 @ToString
 public class FilteringRes {
 
-    @JsonProperty("origin_text")
+    @JsonProperty("text")
     private String originText;
 
-    @JsonProperty("filtered_labels")
+    @JsonProperty("labels")
     private List<String> filteredLabels;
 
     @JsonProperty("message")
