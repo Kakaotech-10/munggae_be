@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.notification.domain;
 
+import com.ktb10.munggaebe.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,6 +20,10 @@ public class Notification {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "notification_id", updatable = false)
     private Long id;
+
+    @ManyToOne
+    @JoinColumn(name = "member_id", nullable = false, updatable = false)
+    private Member member;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
