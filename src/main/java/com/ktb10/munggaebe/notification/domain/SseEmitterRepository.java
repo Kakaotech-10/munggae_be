@@ -9,4 +9,12 @@ import java.util.concurrent.ConcurrentHashMap;
 public class SseEmitterRepository {
 
     private final ConcurrentHashMap<Long, SseEmitter> userEmitters = new ConcurrentHashMap<>();
+
+    public SseEmitter save(Long userId, SseEmitter sseEmitter) {
+        return null;
+    }
+
+    public void deleteById(long userId) {
+
+    }
 }
