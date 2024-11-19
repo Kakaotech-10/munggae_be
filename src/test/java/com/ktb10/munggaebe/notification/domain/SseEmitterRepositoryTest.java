@@ -96,11 +96,10 @@ class SseEmitterRepositoryTest {
     @DisplayName("저장된 모든 emitter를 반환한다.")
     void findAll_success() {
         // Given
-        long userId = 1L;
         SseEmitter sseEmitter1 = new SseEmitter();
         SseEmitter sseEmitter2 = new SseEmitter();
-        repository.save(userId, sseEmitter1);
-        repository.save(userId, sseEmitter2);
+        repository.save(1L, sseEmitter1);
+        repository.save(2L, sseEmitter2);
 
         // When
         List<SseEmitter> result = repository.findAll();
