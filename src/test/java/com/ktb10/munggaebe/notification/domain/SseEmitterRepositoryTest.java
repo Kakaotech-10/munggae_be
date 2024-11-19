@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.notification.domain;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,11 @@ class SseEmitterRepositoryTest {
 
     @Autowired
     private SseEmitterRepository repository;
+
+    @BeforeEach
+    void setUp() {
+        repository.clear();
+    }
 
     @Test
     @DisplayName("emitter를 성공적으로 저장한다.")
