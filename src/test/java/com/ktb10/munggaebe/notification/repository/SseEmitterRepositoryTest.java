@@ -1,4 +1,4 @@
-package com.ktb10.munggaebe.notification.domain;
+package com.ktb10.munggaebe.notification.repository;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;

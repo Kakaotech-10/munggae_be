@@ -1,4 +1,4 @@
-package com.ktb10.munggaebe.notification.domain;
+package com.ktb10.munggaebe.notification.repository;
 
 import org.springframework.stereotype.Repository;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
