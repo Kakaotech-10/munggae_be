@@ -2,7 +2,7 @@ package com.ktb10.munggaebe.notification.service;
 
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberRole;
-import com.ktb10.munggaebe.notification.domain.SseEmitterRepository;
+import com.ktb10.munggaebe.notification.repository.SseEmitterRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
