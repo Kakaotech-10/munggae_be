@@ -44,8 +44,9 @@ public class Notification {
     private LocalDateTime updatedAt;
 
     @Builder
-    public Notification(Long id, NotificationType type, String message, boolean isRead) {
+    public Notification(Long id, Member member, NotificationType type, String message, boolean isRead) {
         this.id = id;
+        this.member = member;
         this.type = type;
         this.message = message;
         this.isRead = isRead;
