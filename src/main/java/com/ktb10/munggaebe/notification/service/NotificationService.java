@@ -37,13 +37,22 @@ public class NotificationService {
 
     public void handleNotificationEvent(NotificationEvent event) {
         log.info("handleNotificationEvent start: event = {}", event);
-        CompletableFuture<Void> dbTask = saveNotification(event);
-        CompletableFuture<Void> sendTask = sendNotification(event);
+        CompletableFuture<Void> dbTask = saveNotification(event)
+                .exceptionally(e -> {
+                    log.error("DB 저장 중 오류 발생: {}", e.getMessage(), e);
+                    return null;
+                });
+
+        CompletableFuture<Void> sendTask = sendNotification(event)
+                .exceptionally(e -> {
+                    log.error("알림 전송 중 오류 발생: {}", e.getMessage(), e);
+                    return null;
+                });
 
         CompletableFuture.allOf(dbTask, sendTask)
                 .thenRun(() -> log.info("모든 병렬 처리 완료 : event = {}", event))
                 .exceptionally(e -> {
-                    log.error("Error Notification 병렬 처리: {}", e.getMessage(), e);
+                    log.error("Error Notification 병렬 처리: {}", e.getMessage());
                     return null;
                 });
     }
