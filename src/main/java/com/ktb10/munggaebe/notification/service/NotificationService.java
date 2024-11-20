@@ -48,12 +48,12 @@ public class NotificationService {
                 });
     }
 
-    @Async
+    @Async("notificationAsyncExecutor")
     public CompletableFuture<Void> sendNotification(NotificationEvent event) {
         return null;
     }
 
-    @Async
+    @Async("notificationAsyncExecutor")
     public CompletableFuture<Void> saveNotification(NotificationEvent event) {
         return null;
     }
