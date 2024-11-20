@@ -59,11 +59,14 @@ public class NotificationService {
 
     @Async("notificationAsyncExecutor")
     public CompletableFuture<Void> sendNotification(NotificationEvent event) {
-        return null;
+        return CompletableFuture.runAsync(() -> {
+
+        });
     }
 
     @Async("notificationAsyncExecutor")
     public CompletableFuture<Void> saveNotification(NotificationEvent event) {
-        return null;
+        return CompletableFuture.runAsync(() -> {
+        });
     }
 }
