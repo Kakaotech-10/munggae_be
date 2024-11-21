@@ -22,7 +22,7 @@ public class Notification {
     private Long id;
 
     @ManyToOne
-    @JoinColumn(name = "member_id", nullable = false, updatable = false)
+    @JoinColumn(name = "member_id", nullable = true, updatable = false)
     private Member member;
 
     @Enumerated(EnumType.STRING)
