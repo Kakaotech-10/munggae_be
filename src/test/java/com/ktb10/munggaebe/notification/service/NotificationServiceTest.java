@@ -47,7 +47,7 @@ class NotificationServiceTest {
     @DisplayName("구독한 사용자의 emitter를 성공적으로 저장한다.")
     void subscribe_success() {
         // Given
-        long lastEventId = 1L;
+        String lastEventId = "lastEventId";
         SseEmitter emitter = new SseEmitter(1L);
 
         given(emitterRepository.save(anyLong(), any())).willReturn(emitter);
@@ -64,7 +64,7 @@ class NotificationServiceTest {
     @DisplayName("생성한 emitter의 만료시간은 정해진 시간이다.")
     void subscribe_timeout() {
         // Given
-        long lastEventId = 1L;
+        String lastEventId = "lastEventId";
         long defaultTimeout = 1L;
         SseEmitter emitter = new SseEmitter(defaultTimeout);
 

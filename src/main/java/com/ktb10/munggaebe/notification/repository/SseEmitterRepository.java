@@ -5,6 +5,7 @@ import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -26,6 +27,10 @@ public class SseEmitterRepository {
 
     public List<SseEmitter> findAll() {
         return new ArrayList<>(userEmitters.values());
+    }
+
+    public List<Map.Entry<Long, SseEmitter>> findAllEntries() {
+        return new ArrayList<>(userEmitters.entrySet());
     }
 
     public void clear() {

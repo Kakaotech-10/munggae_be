@@ -22,7 +22,7 @@ public class NotificationController {
     private final NotificationEventPublisher publisher;
 
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public ResponseEntity<SseEmitter> subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") Long lastEventId) {
+    public ResponseEntity<SseEmitter> subscribe(@RequestHeader(value = "Last-Event-ID", required = false, defaultValue = "") String lastEventId) {
 
         SseEmitter emitter = notificationService.subscribe(lastEventId);
 
@@ -32,7 +32,7 @@ public class NotificationController {
     @GetMapping(value = "/publish") // publish, consume 테스트 용 controller method
     public ResponseEntity<?> publish() {
         publisher.publishEvent(NotificationEvent.builder()
-                .receiverId(1L)
+                .receiverId(null)
                 .message("publish test")
                 .type(NotificationType.ANNOUNCEMENT)
                 .build());
