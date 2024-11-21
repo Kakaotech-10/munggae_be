@@ -21,6 +21,7 @@ import java.util.concurrent.CompletableFuture;
 public class NotificationService {
 
     private final SseEmitterRepository emitterRepository;
+    private final NotificationPersistenceService notificationPersistenceService;
 
     private static final long DEFAULT_TIMEOUT = 10 * 60 * 1000; //10m
 
@@ -79,7 +80,11 @@ public class NotificationService {
     @Async("notificationAsyncExecutor")
     public CompletableFuture<Void> saveNotification(NotificationEvent event) {
         return CompletableFuture.runAsync(() -> {
-
+            if (event.getReceiverId() == null) {
+                notificationPersistenceService.saveBroadCasting(event);
+                return;
+            }
+            notificationPersistenceService.saveUnicasting(event);
         });
     }
 
