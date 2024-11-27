@@ -1,6 +1,7 @@
 package com.ktb10.munggaebe.notification.service;
 
 import com.ktb10.munggaebe.member.domain.Member;
+import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.notification.repository.NotificationRepository;
@@ -9,6 +10,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Slf4j
 @Service
@@ -22,7 +25,10 @@ public class NotificationPersistenceService {
     @Transactional
     public void saveBroadCasting(NotificationEvent event) {
         log.info("saveBroadCasting start");
-        notificationRepository.save(event.toEntity());
+        List<Member> members = memberRepository.findAll();
+        members.stream()
+                .filter(m -> m.getRole().equals(MemberRole.STUDENT))
+                .forEach(member -> notificationRepository.save(event.toEntity(member)));
     }
 
     @Transactional
