@@ -74,7 +74,7 @@ public class NotificationPersistenceService {
     }
 
     private void validateAuthorization(Notification notification) {
-        log.info("validateAuthorization Post's memberId");
+        log.info("validateAuthorization Notification's memberId");
         Long currentMemberId = SecurityUtil.getCurrentUserId();
         if (SecurityUtil.hasRole("STUDENT") && !notification.getMember().getId().equals(currentMemberId)) {
             throw new MemberPermissionDeniedException(currentMemberId, MemberRole.STUDENT);
