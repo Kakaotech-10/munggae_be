@@ -63,4 +63,13 @@ public class NotificationController {
 
         return ResponseEntity.ok(notifications.map(NotificationDto.NotificationRes::new));
     }
+
+    @PatchMapping("/{notificationId}/read")
+    @Operation(summary = "알림 읽음 처리", description = "알림 읽음 처리합니다.")
+    @ApiResponse(responseCode = "200", description = "알림 읽음 처리 성공")
+    public ResponseEntity<NotificationDto.NotificationRes> readNotification(@PathVariable final Long notificationId) {
+        final Notification notification = notificationPersistenceService.markNotificationAsRead(notificationId);
+
+        return ResponseEntity.ok(new NotificationDto.NotificationRes(notification));
+    }
 }

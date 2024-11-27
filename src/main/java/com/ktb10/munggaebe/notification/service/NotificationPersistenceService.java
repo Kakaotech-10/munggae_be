@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -42,6 +43,17 @@ public class NotificationPersistenceService {
         log.info("saveUnicasting start: receiverId = {}", event.getReceiverId());
         Member member = findMemberByReceiverId(event.getReceiverId());
         notificationRepository.save(event.toEntity(member));
+    }
+
+    @Transactional
+    public Notification markNotificationAsRead(long notificationId) {
+        log.info("markNotificationAsRead start: notificationId = {}", notificationId);
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new NoSuchElementException("존재하지 않는 알림입니다. notificationId = " + notificationId));
+
+        notification.markAsRead();
+
+        return notification;
     }
 
     public Page<Notification> findAllMyNotifications(int pageNo, int pageSize) {
