@@ -4,10 +4,16 @@ import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
+import com.ktb10.munggaebe.notification.domain.Notification;
 import com.ktb10.munggaebe.notification.repository.NotificationRepository;
 import com.ktb10.munggaebe.notification.service.dto.NotificationEvent;
+import com.ktb10.munggaebe.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +44,16 @@ public class NotificationPersistenceService {
         notificationRepository.save(event.toEntity(member));
     }
 
-    public Member findMemberByReceiverId(long receiverId) {
+    public Page<Notification> findAllMyNotifications(int pageNo, int pageSize) {
+        log.info("findAllMyNotifications start");
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
+        Long memberId = SecurityUtil.getCurrentUserId();
+
+        return notificationRepository.findAllByMemberId(pageable, memberId);
+    }
+
+    private Member findMemberByReceiverId(long receiverId) {
         return memberRepository.findById(receiverId)
                 .orElseThrow(() -> new MemberNotFoundException(receiverId));
     }
