@@ -56,7 +56,7 @@ public class NotificationController {
     @GetMapping("/me")
     @Operation(summary = "내 알림 조회", description = "나의 알림들을 조회해서 반환합니다.")
     @ApiResponse(responseCode = "200", description = "내 알림 조회 성공")
-    public ResponseEntity<?> myNotifications(@RequestParam(required = false, defaultValue = DEFAULT_NOTIFICATION_PAGE_NO) final int pageNo,
+    public ResponseEntity<Page<NotificationDto.NotificationRes>> myNotifications(@RequestParam(required = false, defaultValue = DEFAULT_NOTIFICATION_PAGE_NO) final int pageNo,
                                              @RequestParam(required = false, defaultValue = DEFAULT_NOTIFICATION_PAGE_SIZE) final int pageSize) {
 
         final Page<Notification> notifications = notificationPersistenceService.findAllMyNotifications(pageNo, pageSize);
