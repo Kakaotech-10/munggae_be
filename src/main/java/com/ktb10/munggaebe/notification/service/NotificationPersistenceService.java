@@ -3,6 +3,7 @@ package com.ktb10.munggaebe.notification.service;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
+import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.notification.domain.Notification;
 import com.ktb10.munggaebe.notification.repository.NotificationRepository;
@@ -51,6 +52,8 @@ public class NotificationPersistenceService {
         Notification notification = notificationRepository.findById(notificationId)
                 .orElseThrow(() -> new NoSuchElementException("존재하지 않는 알림입니다. notificationId = " + notificationId));
 
+        validateAuthorization(notification);
+
         notification.markAsRead();
 
         return notification;
@@ -68,5 +71,13 @@ public class NotificationPersistenceService {
     private Member findMemberByReceiverId(long receiverId) {
         return memberRepository.findById(receiverId)
                 .orElseThrow(() -> new MemberNotFoundException(receiverId));
+    }
+
+    private void validateAuthorization(Notification notification) {
+        log.info("validateAuthorization Post's memberId");
+        Long currentMemberId = SecurityUtil.getCurrentUserId();
+        if (SecurityUtil.hasRole("STUDENT") && !notification.getMember().getId().equals(currentMemberId)) {
+            throw new MemberPermissionDeniedException(currentMemberId, MemberRole.STUDENT);
+        }
     }
 }
