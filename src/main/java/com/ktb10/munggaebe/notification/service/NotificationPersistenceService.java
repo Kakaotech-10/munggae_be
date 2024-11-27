@@ -80,4 +80,17 @@ public class NotificationPersistenceService {
             throw new MemberPermissionDeniedException(currentMemberId, MemberRole.STUDENT);
         }
     }
+
+    public List<Notification> getMissingNotifications(Long userId, String lastEventId) {
+        long lastEventIdAsLong;
+        try {
+            lastEventIdAsLong = Long.parseLong(lastEventId);
+        } catch (NumberFormatException e) {
+            throw new IllegalArgumentException("잘못된 형식의 lastEventId입니다. lastEventId = " + lastEventId);
+        }
+
+        Sort sort = Sort.by(Sort.Direction.ASC, "createdAt");
+
+        return notificationRepository.findByMemberIdAndIdGreaterThan(userId, lastEventIdAsLong, sort);
+    }
 }
