@@ -36,14 +36,16 @@ public class NotificationService {
         emitter.onTimeout(() -> emitterRepository.deleteById(userId));
         emitter.onError((e) -> emitterRepository.deleteById(userId));
 
-        sendToEmitter(userId, emitter, "SSE 연결 성공 : userId = " + userId, "connect_success");
+        SseEmitter savedEmitter = emitterRepository.save(userId, emitter);
+
+        sendToEmitter(userId, savedEmitter, "SSE 연결 성공 : userId = " + userId, "connect_success");
 
         if (!lastEventId.isBlank()) {
             List<Notification> missingNotifications = notificationPersistenceService.getMissingNotifications(userId, lastEventId);
-            missingNotifications.forEach(notify -> sendToEmitter(userId, emitter, notify.getMessage(), "notification"));
+            missingNotifications.forEach(notify -> sendToEmitter(userId, savedEmitter, notify.getMessage(), "notification"));
         }
 
-        return emitterRepository.save(userId, emitter);
+        return savedEmitter;
     }
 
     public void handleNotificationEvent(NotificationEvent event) {
