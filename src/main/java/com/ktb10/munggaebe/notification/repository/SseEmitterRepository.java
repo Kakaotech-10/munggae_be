@@ -15,7 +15,13 @@ public class SseEmitterRepository {
     private final ConcurrentHashMap<Long, SseEmitter> userEmitters = new ConcurrentHashMap<>();
 
     public SseEmitter save(Long userId, SseEmitter sseEmitter) {
-        userEmitters.putIfAbsent(userId, sseEmitter);
+        SseEmitter removedEmitter = userEmitters.remove(userId);
+        if (removedEmitter != null) {
+            removedEmitter.complete();
+        }
+
+        userEmitters.put(userId, sseEmitter);
+
         return findById(userId).orElseThrow(() -> new IllegalStateException("저장 실패"));
     }
 

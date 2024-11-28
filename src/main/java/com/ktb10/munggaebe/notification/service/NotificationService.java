@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.notification.service;
 
+import com.ktb10.munggaebe.notification.domain.Notification;
 import com.ktb10.munggaebe.notification.repository.SseEmitterRepository;
 import com.ktb10.munggaebe.notification.service.dto.NotificationEvent;
 import com.ktb10.munggaebe.utils.SecurityUtil;
@@ -35,11 +36,16 @@ public class NotificationService {
         emitter.onTimeout(() -> emitterRepository.deleteById(userId));
         emitter.onError((e) -> emitterRepository.deleteById(userId));
 
-        sendToEmitter(userId, emitter, "SSE 연결 성공 : userId = " + userId, "connect_success");
+        SseEmitter savedEmitter = emitterRepository.save(userId, emitter);
 
-        //NotificationRepository에서 lastEventId 이후의 notifications를 해당 유저에게 다시 전송
+        sendToEmitter(userId, savedEmitter, "SSE 연결 성공 : userId = " + userId, "connect_success");
 
-        return emitterRepository.save(userId, emitter);
+        if (!lastEventId.isBlank()) {
+            List<Notification> missingNotifications = notificationPersistenceService.getMissingNotifications(userId, lastEventId);
+            missingNotifications.forEach(notify -> sendToEmitter(userId, savedEmitter, notify.getMessage(), "notification"));
+        }
+
+        return savedEmitter;
     }
 
     public void handleNotificationEvent(NotificationEvent event) {

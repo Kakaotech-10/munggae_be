@@ -64,6 +64,17 @@ CREATE TABLE IF NOT EXISTS member_image (
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS notification (
+    notification_id BIGINT NOT NULL AUTO_INCREMENT,
+    member_id BIGINT,
+    type VARCHAR(50) NOT NULL,
+    message VARCHAR(255) NOT NULL,
+    is_read BOOLEAN NOT NULL DEFAULT FALSE,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (notification_id),
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE SET NULL
+);
 
 -- Member 데이터 삽입
 INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_english, kakao_id, created_at, updated_at) VALUES
@@ -149,3 +160,16 @@ INSERT IGNORE INTO post_image (image_id, post_id) VALUES
 INSERT IGNORE INTO member_image (image_id, member_id) VALUES
 (4, 1),
 (5, 2);
+
+INSERT IGNORE INTO notification (notification_id, member_id, type, message, is_read, created_at, updated_at) VALUES
+(1, 1, 'MENTION', 'You have a new comment on your post.', false, NOW(), NOW()),
+(2, 2, 'MENTION', 'Your post has been liked by Kim Cheol-su.', false, DATE_ADD(NOW(), INTERVAL -1 DAY), DATE_ADD(NOW(), INTERVAL -1 DAY)),
+(3, 6, 'MENTION', 'Your post has been liked by Yoo Jae-suk.', false, DATE_ADD(NOW(), INTERVAL -4 DAY), DATE_ADD(NOW(), INTERVAL -4 DAY)),
+(4, 1, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY)),
+(5, 2, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY)),
+(6, 3, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY)),
+(7, 4, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY)),
+(8, 5, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY)),
+(9, 6, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY)),
+(10, 7, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY)),
+(11, 8, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY));
