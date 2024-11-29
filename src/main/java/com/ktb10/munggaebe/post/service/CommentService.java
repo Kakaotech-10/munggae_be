@@ -5,6 +5,9 @@ import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
+import com.ktb10.munggaebe.notification.domain.NotificationType;
+import com.ktb10.munggaebe.notification.service.NotificationEventPublisher;
+import com.ktb10.munggaebe.notification.service.dto.NotificationEvent;
 import com.ktb10.munggaebe.post.domain.Comment;
 import com.ktb10.munggaebe.post.domain.Post;
 import com.ktb10.munggaebe.post.service.dto.CommentServiceDto;
@@ -32,9 +35,12 @@ public class CommentService {
     private final PostRepository postRepository;
     private final MemberRepository memberRepository;
     private final FilteringService filteringService;
+    private final NotificationEventPublisher notificationEventPublisher;
 
     private static final int ROOT_COMMENT_DEPTH = 0;
     private static final int REPLY_DEPTH = 1;
+
+    private static final String COMMENT_NOTIFICATION_MESSAGE = "새로운 댓글이 달렸어요!";
 
     public Page<Comment> getRootComments(final long postId, final int pageNo, final int pageSize) {
 
@@ -59,6 +65,8 @@ public class CommentService {
 
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
+
+        sendNotification(currentMemberId, post.getMember().getId(), NotificationType.ADD_ROOT_COMMENT);
 
         boolean isCommentClean = isCommentClean(entity.getContent());
         log.info("isCommentClean = {}", isCommentClean);
@@ -90,6 +98,8 @@ public class CommentService {
 
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
+
+        sendNotification(currentMemberId, parent.getMember().getId(), NotificationType.ADD_REPLY_COMMENT);
 
         boolean isCommentClean = isCommentClean(entity.getContent());
         log.info("isCommentClean = {}", isCommentClean);
@@ -147,5 +157,16 @@ public class CommentService {
 
     private boolean isCommentClean(String content) {
         return filteringService.isCleanText(content);
+    }
+
+    private void sendNotification(Long senderId, Long receiverId, NotificationType type) {
+        log.info("sendNotification start : senderId = {}, receiverId = {}, NotificationType = {}", senderId, receiverId, type);
+        if (senderId.equals(receiverId)) {
+            log.info("senderId equals receiverId");
+            return;
+        }
+        log.info("publish notificationEvent");
+        NotificationEvent notificationEvent = notificationEventPublisher.createUniCastingEvent(receiverId, type, COMMENT_NOTIFICATION_MESSAGE);
+        notificationEventPublisher.publishEvent(notificationEvent);
     }
 }
