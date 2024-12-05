@@ -76,6 +76,25 @@ CREATE TABLE IF NOT EXISTS notification (
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE SET NULL
 );
 
+-- channel 생성
+CREATE TABLE IF NOT EXISTS channel (
+    channel_id BIGINT NOT NULL AUTO_INCREMENT,
+    channel_name VARCHAR(50) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (channel_id)
+);
+
+-- member_channel 생성
+CREATE TABLE IF NOT EXISTS member_channel (
+    member_channel_id BIGINT NOT NULL AUTO_INCREMENT,
+    channel_id BIGINT NOT NULL,
+    member_id BIGINT NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (member_channel_id),
+    FOREIGN KEY (channel_id) REFERENCES channel(channel_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
+);
+
 -- Member 데이터 삽입
 INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_english, kakao_id, created_at, updated_at) VALUES
 (1, 'STUDENT', 'FULLSTACK', '홍길동', 'Hong Gil-dong', 1234567891, NOW(), NOW()),
