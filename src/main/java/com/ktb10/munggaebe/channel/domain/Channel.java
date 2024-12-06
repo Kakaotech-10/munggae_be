@@ -1,6 +1,5 @@
 package com.ktb10.munggaebe.channel.domain;
 
-import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -31,8 +30,6 @@ public class Channel {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    //private List<Member> members; // 채널에 속한 멤버들
-
     // MemberChannel과 연결
     @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<MemberChannel> memberChannels = new ArrayList<>();
@@ -42,9 +39,8 @@ public class Channel {
     private List<Post> posts = new ArrayList<>();
 
     @Builder
-    public Channel(Long id, String name, LocalDateTime createdAt, List<Member> members) {
+    public Channel(Long id, String name, LocalDateTime createdAt) {
         this.id = id;
         this.name = name;
-        //this.members = members;
     }
 }
