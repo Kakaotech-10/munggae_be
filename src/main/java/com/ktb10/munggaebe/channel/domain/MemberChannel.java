@@ -31,6 +31,7 @@ public class MemberChannel {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Builder
     public MemberChannel(Long id, Channel channel, Member member) {
         this.id = id;
         this.channel = channel;
