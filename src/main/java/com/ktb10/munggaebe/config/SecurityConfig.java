@@ -32,7 +32,7 @@ public class SecurityConfig {
     @Order(1)
     public SecurityFilterChain permitAllFilterChain(HttpSecurity http) throws Exception {
         http
-                .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico", "/api/v1/auth/login/oauth2/callback/kakao", "/healthcheck")
+                .securityMatcher("/swagger-ui/**", "/v3/api-docs/**", "/favicon.ico", "/api/v1/auth/login/oauth2/callback/kakao", "/healthcheck", "/api/v1/mentions/**")
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
