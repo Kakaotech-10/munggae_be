@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 public class NotificationEventPublisher {
 
     private final ObjectMapper objectMapper;
+    private final NotificationService notificationService;
 
     @Qualifier("redisPubSubTemplate")
     private final RedisTemplate<String, Object> redisPubSubTemplate;
@@ -43,6 +44,7 @@ public class NotificationEventPublisher {
             String jsonEvent = objectMapper.writeValueAsString(event);
             Long count = redisPubSubTemplate.convertAndSend(NOTIFICATION_TOPIC, jsonEvent);
             log.info("clients count = {}", count);
+            notificationService.saveNotification(event);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("직렬화 문제 발생");
         }
