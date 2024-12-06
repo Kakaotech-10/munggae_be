@@ -33,7 +33,7 @@ public class Post {
 
     //channel 연결
     @ManyToOne
-    @JoinColumn(name = "channel_id")
+    @JoinColumn(name = "channel_id", nullable = false)
     private Channel channel;
 
     @Column(name = "post_title", nullable = false)
