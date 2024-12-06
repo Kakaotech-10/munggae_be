@@ -63,6 +63,14 @@ public class NotificationService {
         sendUniCasting(event);
     }
 
+    public void saveNotification(NotificationEvent event) {
+        if (event.getReceiverId() == null) {
+            notificationPersistenceService.saveBroadCasting(event);
+            return;
+        }
+        notificationPersistenceService.saveUnicasting(event);
+    }
+
     @Async("notificationAsyncExecutor")
     public CompletableFuture<Void> sendNotificationAsync(NotificationEvent event) {
         return CompletableFuture.runAsync(() -> {
