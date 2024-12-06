@@ -13,6 +13,7 @@ CREATE TABLE IF NOT EXISTS member (
 CREATE TABLE IF NOT EXISTS post (
     post_id BIGINT NOT NULL AUTO_INCREMENT,
     member_id BIGINT NOT NULL,
+    channel_id BIGINT NOT NULL, --channel_id 추가
     post_title VARCHAR(255) NOT NULL,
     post_content TEXT NOT NULL,
     is_clean BOOLEAN NOT NULL DEFAULT TRUE,
@@ -20,6 +21,7 @@ CREATE TABLE IF NOT EXISTS post (
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (post_id),
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
+    FOREIGN KEY (channel_id) REFERENCES channel(channel_id) ON DELETE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS comment (
