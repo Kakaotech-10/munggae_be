@@ -52,28 +52,19 @@ public class NotificationService {
         log.info("handleNotificationEvent start: event = {}", event);
         validateNotificationEvent(event);
 
-        CompletableFuture<Void> dbTask = saveNotification(event)
-                .exceptionally(e -> {
-                    log.error("DB 저장 중 오류 발생: {}", e.getMessage(), e);
-                    return null;
-                });
+        sendNotification(event);
+    }
 
-        CompletableFuture<Void> sendTask = sendNotification(event)
-                .exceptionally(e -> {
-                    log.error("알림 전송 중 오류 발생: {}", e.getMessage(), e);
-                    return null;
-                });
-
-        CompletableFuture.allOf(dbTask, sendTask)
-                .thenRun(() -> log.info("모든 병렬 처리 완료 : event = {}", event))
-                .exceptionally(e -> {
-                    log.error("Error Notification 병렬 처리: {}", e.getMessage());
-                    return null;
-                });
+    public void sendNotification(NotificationEvent event) {
+        if (event.getReceiverId() == null) {
+            sendBroadCasting(event);
+            return;
+        }
+        sendUniCasting(event);
     }
 
     @Async("notificationAsyncExecutor")
-    public CompletableFuture<Void> sendNotification(NotificationEvent event) {
+    public CompletableFuture<Void> sendNotificationAsync(NotificationEvent event) {
         return CompletableFuture.runAsync(() -> {
             if (event.getReceiverId() == null) {
                 sendBroadCasting(event);
@@ -84,7 +75,7 @@ public class NotificationService {
     }
 
     @Async("notificationAsyncExecutor")
-    public CompletableFuture<Void> saveNotification(NotificationEvent event) {
+    public CompletableFuture<Void> saveNotificationAsync(NotificationEvent event) {
         return CompletableFuture.runAsync(() -> {
             if (event.getReceiverId() == null) {
                 notificationPersistenceService.saveBroadCasting(event);
