@@ -1,6 +1,7 @@
 package com.ktb10.munggaebe.channel.domain;
 
 import com.ktb10.munggaebe.member.domain.Member;
+import com.ktb10.munggaebe.post.domain.Post;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -8,6 +9,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -27,23 +29,21 @@ public class Channel {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @Column(name = "updated_at", nullable = false)
-    private LocalDateTime updatedAt;
+    //private List<Member> members; // 채널에 속한 멤버들
 
-    @ManyToMany
-    @JoinTable(
-            name = "member_channel",
-            joinColumns = @JoinColumn(name = "channel_id"),
-            inverseJoinColumns = @JoinColumn(name = "member_id")
-    )
-    private List<Member> members; // 채널에 속한 멤버들
+    // MemberChannel과 연결
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberChannel> memberChannels = new ArrayList<>();
+
+    // Post와 연결
+    @OneToMany(mappedBy = "channel", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Post> posts = new ArrayList<>();
 
     @Builder
-    public Channel(Long id, String name, LocalDateTime createdAt, LocalDateTime updatedAt, List<Member> members) {
+    public Channel(Long id, String name, LocalDateTime createdAt, List<Member> members) {
         this.id = id;
         this.name = name;
         this.createdAt = createdAt;
-        this.updatedAt = updatedAt;
-        this.members = members;
+        //this.members = members;
     }
 }
