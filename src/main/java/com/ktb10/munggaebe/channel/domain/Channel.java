@@ -7,6 +7,7 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -26,6 +27,7 @@ public class Channel {
     @Column(name = "channel_name", nullable = false, length = 100)
     private String name;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -43,7 +45,6 @@ public class Channel {
     public Channel(Long id, String name, LocalDateTime createdAt, List<Member> members) {
         this.id = id;
         this.name = name;
-        this.createdAt = createdAt;
         //this.members = members;
     }
 }
