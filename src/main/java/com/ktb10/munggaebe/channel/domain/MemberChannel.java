@@ -2,18 +2,16 @@ package com.ktb10.munggaebe.channel.domain;
 
 import com.ktb10.munggaebe.member.domain.Member;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
+@Table(name = "member_channel")
 @Getter
-@Setter
-@NoArgsConstructor
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class MemberChannel {
 
     @Id
@@ -29,12 +27,15 @@ public class MemberChannel {
     @JoinColumn(name = "member_id")
     private Member member;
 
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
-    @PrePersist
-    public void prePersist() {
-        this.createdAt = LocalDateTime.now();
+    public MemberChannel(Long id, Channel channel, Member member) {
+        this.id = id;
+        this.channel = channel;
+        this.member = member;
     }
+
 }
 
