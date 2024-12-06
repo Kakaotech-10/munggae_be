@@ -38,11 +38,11 @@ public class NotificationService {
 
         SseEmitter savedEmitter = emitterRepository.save(userId, emitter);
 
-        sendToEmitter(userId, savedEmitter, "SSE 연결 성공 : userId = " + userId, "connect_success");
+        sendToEmitter(userId, 0L, savedEmitter, "SSE 연결 성공 : userId = " + userId, "connect_success");
 
         if (!lastEventId.isBlank()) {
             List<Notification> missingNotifications = notificationPersistenceService.getMissingNotifications(userId, lastEventId);
-            missingNotifications.forEach(notify -> sendToEmitter(userId, savedEmitter, notify.getMessage(), "notification"));
+            missingNotifications.forEach(notify -> sendToEmitter(userId, notify.getId(), savedEmitter, notify.getMessage(), "notification"));
         }
 
         return savedEmitter;
@@ -63,12 +63,11 @@ public class NotificationService {
         sendUniCasting(event);
     }
 
-    public void saveNotification(NotificationEvent event) {
+    public Long saveNotification(NotificationEvent event) {
         if (event.getReceiverId() == null) {
-            notificationPersistenceService.saveBroadCasting(event);
-            return;
+            return notificationPersistenceService.saveBroadCasting(event);
         }
-        notificationPersistenceService.saveUnicasting(event);
+        return notificationPersistenceService.saveUnicasting(event);
     }
 
     @Async("notificationAsyncExecutor")
@@ -102,18 +101,18 @@ public class NotificationService {
     private void sendBroadCasting(NotificationEvent event) {
         log.info("sendBroadCasting start");
         List<Map.Entry<Long, SseEmitter>> emitterEntries = emitterRepository.findAllEntries();
-        emitterEntries.forEach(entry -> sendToEmitter(entry.getKey(), entry.getValue(), event.getMessage(), "notification"));
+        emitterEntries.forEach(entry -> sendToEmitter(entry.getKey(), event.getLastEventId(), entry.getValue(), event.getMessage(), "notification"));
     }
 
     private void sendUniCasting(NotificationEvent event) {
         log.info("sendUniCasting start: receiverId = {}", event.getReceiverId());
         Optional<SseEmitter> emiiter = emitterRepository.findById(event.getReceiverId());
-        emiiter.ifPresent(emitter -> sendToEmitter(event.getReceiverId(), emitter, event.getMessage(), "notification"));
+        emiiter.ifPresent(emitter -> sendToEmitter(event.getReceiverId(), event.getLastEventId(), emitter, event.getMessage(), "notification"));
     }
 
-    private void sendToEmitter(long userId, SseEmitter emitter, String message, String eventName) {
+    private void sendToEmitter(long userId, long lastEventId, SseEmitter emitter, String message, String eventName) {
         try {
-            emitter.send(SseEmitter.event().name(eventName).data(message));
+            emitter.send(SseEmitter.event().name(eventName).data(message).id(String.valueOf(lastEventId)));
             log.info("sendToEmitter : userId = {}, eventName = {}, message = {}", userId, eventName, message);
         } catch (IOException e) {
             emitterRepository.deleteById(userId);

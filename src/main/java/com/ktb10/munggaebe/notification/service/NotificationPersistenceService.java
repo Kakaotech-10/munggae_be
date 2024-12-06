@@ -31,19 +31,22 @@ public class NotificationPersistenceService {
     private final MemberRepository memberRepository;
 
     @Transactional
-    public void saveBroadCasting(NotificationEvent event) {
+    public Long saveBroadCasting(NotificationEvent event) {
         log.info("saveBroadCasting start");
         List<Member> members = memberRepository.findAll();
         members.stream()
                 .filter(m -> m.getRole().equals(MemberRole.STUDENT))
                 .forEach(member -> notificationRepository.save(event.toEntity(member)));
+
+        return notificationRepository.findLastId();
     }
 
     @Transactional
-    public void saveUnicasting(NotificationEvent event) {
+    public Long saveUnicasting(NotificationEvent event) {
         log.info("saveUnicasting start: receiverId = {}", event.getReceiverId());
         Member member = findMemberByReceiverId(event.getReceiverId());
-        notificationRepository.save(event.toEntity(member));
+        Notification savedNotification = notificationRepository.save(event.toEntity(member));
+        return savedNotification.getId();
     }
 
     @Transactional

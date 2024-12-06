@@ -10,12 +10,15 @@ import lombok.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NotificationEvent {
 
+    @Setter
+    private Long lastEventId;
     private Long receiverId;
     private NotificationType type;
     private String message;
 
     @Builder
-    public NotificationEvent(Long receiverId, NotificationType type, String message) {
+    public NotificationEvent(Long lastEventId, Long receiverId, NotificationType type, String message) {
+        this.lastEventId = lastEventId;
         this.receiverId = receiverId;
         this.type = type;
         this.message = message;
