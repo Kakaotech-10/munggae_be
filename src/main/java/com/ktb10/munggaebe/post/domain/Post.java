@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.post.domain;
 
+import com.ktb10.munggaebe.channel.domain.Channel;
 import com.ktb10.munggaebe.member.domain.Member;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -29,6 +30,11 @@ public class Post {
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.REMOVE)
     private List<Comment> replies = new ArrayList<>();
+
+    //channel 연결
+    @ManyToOne
+    @JoinColumn(name = "channel_id", nullable = false)
+    private Channel channel;
 
     @Column(name = "post_title", nullable = false)
     private String title;
