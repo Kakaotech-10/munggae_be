@@ -9,6 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
@@ -38,13 +39,15 @@ public class NotificationEventPublisher {
                 .build();
     }
 
+    @Transactional
     public void publishEvent(NotificationEvent event) {
         log.info("publishEvent start : event = {}", event);
         try {
+            Long lastEventId = notificationService.saveNotification(event);
+            event.setLastEventId(lastEventId);
             String jsonEvent = objectMapper.writeValueAsString(event);
             Long count = redisPubSubTemplate.convertAndSend(NOTIFICATION_TOPIC, jsonEvent);
             log.info("clients count = {}", count);
-            notificationService.saveNotification(event);
         } catch (JsonProcessingException e) {
             throw new RuntimeException("직렬화 문제 발생");
         }
