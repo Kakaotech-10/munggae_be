@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ktb10'
-version = '0.0.4-SNAPSHOT'
+version = '0.0.5-SNAPSHOT'
 
 java {
 	toolchain {
@@ -76,6 +76,9 @@ dependencies {
 
 	//MockWebServer
 	testImplementation 'com.squareup.okhttp3:mockwebserver'
+
+	//ElasticSearch
+	implementation 'org.springframework.data:spring-data-elasticsearch'
 }
 
 tasks.named('test') {

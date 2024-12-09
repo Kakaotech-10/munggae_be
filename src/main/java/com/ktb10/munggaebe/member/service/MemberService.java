@@ -25,6 +25,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Slf4j
@@ -154,5 +155,12 @@ public class MemberService implements UserDetailsService {
             return memberImage;
         }
         throw new IllegalStateException("해당 이미지가 MemberImage 타입이 아닙니다.");
+    }
+
+    public Member findMemberByFullName(String name) {
+
+        String nameEnglish = name.split("\\(")[0];
+        return memberRepository.findByNameEnglish(nameEnglish)
+                .orElseThrow(() -> new NoSuchElementException("해당하는 맴버를 찾을 수 없습니다. name = " + name));
     }
 }
