@@ -16,10 +16,17 @@ public class MentionService {
 
     private static final String INDEX_NAME = "members";
 
-    public List<MemberSearchDto> searchMemberName(String keyword) {
+    public List<String> searchMemberName(String keyword) {
         log.info("searchMemberName start : keyword = {}", keyword);
         List<MemberSearchDto> result = elasticsearchService.search(INDEX_NAME, keyword);
         log.info("searchMemberName result = {}", result);
-        return result;
+        return result.stream()
+                .map(MentionService::toFullName)
+                .limit(5L)
+                .toList();
+    }
+
+    private static String toFullName(MemberSearchDto dto) {
+        return dto.getAlias() + "(" + dto.getName() + ")";
     }
 }

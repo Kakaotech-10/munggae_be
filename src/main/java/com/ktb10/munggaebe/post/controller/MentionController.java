@@ -2,7 +2,6 @@ package com.ktb10.munggaebe.post.controller;
 
 import com.ktb10.munggaebe.post.controller.dto.MentionDto;
 import com.ktb10.munggaebe.post.service.MentionService;
-import com.ktb10.munggaebe.post.service.dto.MemberSearchDto;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -33,9 +32,8 @@ public class MentionController {
     @ApiResponse(responseCode = "200", description = "이름 검색 성공")
     public ResponseEntity<MentionDto.MentionSearchRes> searchMemberName(@RequestParam String memberName) {
 
-        //리턴값 한글이름, 영어이름 합쳐서 보내도록 수정
-        List<MemberSearchDto> memberSearchDtos = mentionService.searchMemberName(memberName);
+        List<String> names = mentionService.searchMemberName(memberName);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new MentionDto.MentionSearchRes(names.size(), names));
     }
 }

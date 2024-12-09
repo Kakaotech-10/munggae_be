@@ -35,5 +35,10 @@ public class MentionDto {
 
         @Schema(description = "검색된 이름들", example = "[\"yohan.Kim(김요한)\", \"yozi.Kim(김요지)\"]")
         private List<String> result;
+
+        public MentionSearchRes(int count, List<String> result) {
+            this.count = count;
+            this.result = result;
+        }
     }
 }
