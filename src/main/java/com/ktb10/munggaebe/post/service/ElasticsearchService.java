@@ -24,9 +24,20 @@ public class ElasticsearchService {
             SearchResponse<MemberSearchDto> response = elasticsearchClient.search(s -> s
                     .index(indexName)
                     .query(q -> q
-                            .multiMatch(m -> m
-                                    .query(keyword)
-                                    .fields(List.of("name", "alias"))
+                            .bool(b -> b
+                                    .should(m -> m
+                                            .matchPhrase(mm -> mm
+                                                    .query(keyword)
+                                                    .field("name")
+                                            )
+                                    )
+                                    .should(m -> m
+                                            .matchPhrase(mp -> mp
+                                                    .field("alias")
+                                                    .query(keyword)
+                                            )
+                                    )
+                                    .minimumShouldMatch("1")
                             )
                     ), MemberSearchDto.class
             );
