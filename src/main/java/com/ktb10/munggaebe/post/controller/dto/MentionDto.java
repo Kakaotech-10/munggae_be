@@ -6,6 +6,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
+
 public class MentionDto {
 
     @Schema(description = "멘션 요청")
@@ -23,5 +25,15 @@ public class MentionDto {
             this.nameKorean = nameKorean;
             this.nameEnglish = nameEnglish;
         }
+    }
+
+    @Schema(description = "검색 응답")
+    @Getter
+    public static class MentionSearchRes {
+        @Schema(description = "개수", example = "2")
+        private int count;
+
+        @Schema(description = "검색된 이름들", example = "[\"yohan.Kim(김요한)\", \"yozi.Kim(김요지)\"]")
+        private List<String> result;
     }
 }
