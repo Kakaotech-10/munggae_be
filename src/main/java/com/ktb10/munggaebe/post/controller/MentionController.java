@@ -24,6 +24,8 @@ public class MentionController {
     @ApiResponse(responseCode = "200", description = "사용자 멘션 성공")
     public ResponseEntity<Void> mentioned(@RequestBody MentionDto.MentionReq request) {
 
+        mentionService.sendNotification(request.getName());
+
         return ResponseEntity.ok().build();
     }
 

@@ -1,5 +1,10 @@
 package com.ktb10.munggaebe.post.service;
 
+import com.ktb10.munggaebe.member.domain.Member;
+import com.ktb10.munggaebe.member.service.MemberService;
+import com.ktb10.munggaebe.notification.domain.NotificationType;
+import com.ktb10.munggaebe.notification.service.NotificationEventPublisher;
+import com.ktb10.munggaebe.notification.service.dto.NotificationEvent;
 import com.ktb10.munggaebe.post.service.dto.MemberSearchDto;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,6 +18,8 @@ import java.util.List;
 public class MentionService {
 
     private final ElasticsearchService elasticsearchService;
+    private final NotificationEventPublisher notificationEventPublisher;
+    private final MemberService memberService;
 
     private static final String INDEX_NAME = "members";
 
@@ -28,5 +35,19 @@ public class MentionService {
 
     private static String toFullName(MemberSearchDto dto) {
         return dto.getAlias() + "(" + dto.getName() + ")";
+    }
+
+    public void sendNotification(String name) {
+
+        if (name.equals("everyone")) {
+            //전체 전송
+            return;
+        }
+
+        Member member = memberService.findMemberByFullName(name);
+        Long receiverId = member.getId();
+
+        NotificationEvent notificationEvent = notificationEventPublisher.createUniCastingEvent(receiverId, NotificationType.MENTION, "멘션 되었습니다.");
+        notificationEventPublisher.publishEvent(notificationEvent);
     }
 }
