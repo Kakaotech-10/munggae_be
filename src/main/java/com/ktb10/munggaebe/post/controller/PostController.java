@@ -128,6 +128,13 @@ public class PostController {
         return ResponseEntity.ok(new PostDto.ImageRes(postImage));
     }
 
+    @GetMapping("/posts/announcements/near-deadline")
+    @Operation(summary = "마감되지 않은 공지사항 조회", description = "마감되지 않은 공지사항 게시물을 마감임박순으로 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "마감되지 않은 공지사항 조회 성공")
+    public ResponseEntity<Page<PostDto.PostRes>> getAnnouncementsPostsNearDeadline() {
+        return ResponseEntity.ok().build();
+    }
+
     private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {
         return PostServiceDto.UpdateReq.builder()
                 .postId(postId)
