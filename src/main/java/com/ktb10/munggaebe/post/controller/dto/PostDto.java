@@ -26,6 +26,12 @@ public class PostDto {
         @Schema(description = "게시글 내용", example = "이 글에서는 Spring Boot를 이용한 REST API를 만드는 방법을 다룹니다.")
         private String content;
 
+        @Schema(description = "게시글 예약 시간", example = "2024-12-12T10:00:00")
+        private LocalDateTime reservationTime;
+
+        @Schema(description = "게시글 마감 시간", example = "2024-12-19T23:59:59")
+        private LocalDateTime deadLine;
+
         @Builder
         public PostCreateReq(String title, String content) {
             this.title = title;
