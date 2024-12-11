@@ -36,6 +36,7 @@ public class MemberService implements UserDetailsService {
 
     private final MemberRepository memberRepository;
     private final ImageService imageService;
+    private final ElasticsearchMemberService elasticsearchMemberService;
     private final ObjectMapper objectMapper;
 
 
@@ -85,6 +86,7 @@ public class MemberService implements UserDetailsService {
         validateAuthorization(memberId);
 
         member.updateMember(updateReq.getName(), updateReq.getNameEnglish(), updateReq.getCourse());
+        elasticsearchMemberService.addMember(updateReq.getName(), updateReq.getNameEnglish());
 
         return member;
     }
