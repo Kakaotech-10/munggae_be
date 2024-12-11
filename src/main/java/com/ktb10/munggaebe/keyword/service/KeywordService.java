@@ -1,9 +1,21 @@
 package com.ktb10.munggaebe.keyword.service;
 
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+import java.util.Map;
+
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class KeywordService {
 
-    //ElasticSearch에서 keyword aggregate로 조회
+    private final ElasticsearchKeywordService elasticsearchKeywordService;
+
+    public void getKeywordRankingTopThree() {
+        List<Map.Entry<String, Long>> keywordRankings = elasticsearchKeywordService.getTopKeywords(3);
+        log.info("Top 3 keyword rankings : {}", keywordRankings);
+    }
 }
