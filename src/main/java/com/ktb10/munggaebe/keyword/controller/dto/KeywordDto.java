@@ -5,7 +5,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class KeywordDto {
 
@@ -13,7 +15,15 @@ public class KeywordDto {
     @Getter
     public static class KeywordRankingTopThreeRes {
         @Schema(description = "키워드 랭킹 리스트", example = "[{\"rank\": 1, \"keyword\": \"키워드1\"}, {\"rank\": 2, \"keyword\": \"키워드2\"}, {\"rank\": 3, \"keyword\": \"키워드3\"}]")
-        List<KeywordRanking> keywordRankings;
+        private List<KeywordRanking> keywordRankings;
+
+        public KeywordRankingTopThreeRes(List<String> keywords) {
+            this.keywordRankings = new ArrayList<>();
+            AtomicInteger index = new AtomicInteger(1);
+            keywords.stream()
+                    .map(k -> new KeywordRanking(index.getAndIncrement(), k))
+                    .forEach(this.keywordRankings::add);
+        }
     }
 
     @Schema(description = "키워드 랭킹")
