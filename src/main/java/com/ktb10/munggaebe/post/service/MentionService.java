@@ -17,7 +17,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MentionService {
 
-    private final ElasticsearchService elasticsearchService;
+    private final ElasticsearchMemberSearchService elasticsearchMemberSearchService;
     private final NotificationEventPublisher notificationEventPublisher;
     private final MemberService memberService;
 
@@ -25,7 +25,7 @@ public class MentionService {
 
     public List<String> searchMemberName(String keyword) {
         log.info("searchMemberName start : keyword = {}", keyword);
-        List<MemberSearchDto> result = elasticsearchService.search(INDEX_NAME, keyword);
+        List<MemberSearchDto> result = elasticsearchMemberSearchService.search(INDEX_NAME, keyword);
         log.info("searchMemberName result = {}", result);
         return result.stream()
                 .map(MentionService::toFullName)

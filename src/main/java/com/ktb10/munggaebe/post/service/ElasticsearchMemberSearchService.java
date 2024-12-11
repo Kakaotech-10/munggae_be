@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-public class ElasticsearchService {
+public class ElasticsearchMemberSearchService {
 
     private final ElasticsearchClient elasticsearchClient;
 
-    public ElasticsearchService(ElasticsearchClient elasticsearchClient) {
+    public ElasticsearchMemberSearchService(ElasticsearchClient elasticsearchClient) {
         this.elasticsearchClient = elasticsearchClient;
     }
 
