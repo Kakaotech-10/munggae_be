@@ -39,6 +39,8 @@ CREATE TABLE IF NOT EXISTS post (
     is_clean BOOLEAN NOT NULL DEFAULT TRUE,
     created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    reservation_time DATETIME,
+    dead_line DATETIME,
     PRIMARY KEY (post_id),
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE,
     FOREIGN KEY (channel_id) REFERENCES channel(channel_id) ON DELETE CASCADE
@@ -122,6 +124,21 @@ INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_eng
 (19, 'STUDENT', 'FULLSTACK', '차은우', 'Cha Eun-woo', 1234567909, NOW(), NOW()),
 (20, 'STUDENT', 'AI', '송혜교', 'Song Hye-kyo', 1234567910, NOW(), NOW());
 
+
+       -- 채널 데이터 삽입
+INSERT INTO channel (channel_name) VALUES
+('공지'),
+('풀스택'),
+('클라우드'),
+('인공지능');
+
+-- 채널 데이터 삽입
+INSERT INTO member_channel (channel_id, member_id, can_post) VALUES
+(1, 1, true),
+(1, 3, true),
+(2, 5, false),
+(3, 6, true);
+
 -- Post 데이터 삽입
 --INSERT IGNORE INTO post (post_id, member_id, post_title, post_content, created_at, updated_at, is_clean) VALUES
 --(1, 1, 'First Post', 'This is the content of the first post', NOW(), NOW(), true),
@@ -146,27 +163,27 @@ INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_eng
 --(20, 20, 'Twentieth Post', 'This is the content of the twentieth post', DATE_ADD(NOW(), INTERVAL 5 HOUR), DATE_ADD(NOW(), INTERVAL 5 HOUR), true);
 
 -- Post 데이터 삽입 (channel_id 추가)
-INSERT IGNORE INTO post (post_id, member_id, channel_id, post_title, post_content, created_at, updated_at, is_clean) VALUES
-(1, 1, 1, 'First Post', 'This is the content of the first post', NOW(), NOW(), true),
-(2, 2, 1, 'Second Post', 'This is the content of the second post', NOW(), NOW(), true),
-(3, 3, 2, 'Third Post', 'This is the content of the third post', NOW(), NOW(), true),
-(4, 4, 2, 'Fourth Post', 'This is the content of the fourth post', NOW(), NOW(), true),
-(5, 5, 3, 'Fifth Post', 'This is the content of the fifth post', NOW(), NOW(), true),
-(6, 6, 3, 'Sixth Post', 'This is the content of the sixth post', NOW(), NOW(), true),
-(7, 7, 4, 'Seventh Post', 'This is the content of the seventh post', NOW(), NOW(), true),
-(8, 8, 4, 'Eighth Post', 'This is the content of the eighth post', NOW(), NOW(), true),
-(9, 9, 4, 'Ninth Post', 'This is the content of the ninth post', NOW(), NOW(), true),
-(10, 10, 4, 'Tenth Post', 'This is the content of the tenth post', NOW(), NOW(), true),
-(11, 11, 4, 'Eleventh Post', 'This is the content of the eleventh post', DATE_ADD(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 1 HOUR), true),
-(12, 12, 4, 'Twelfth Post', 'This is the content of the twelfth post', DATE_ADD(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 1 HOUR), true),
-(13, 13, 4, 'Thirteenth Post', 'This is the content of the thirteenth post', DATE_ADD(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 2 HOUR), true),
-(14, 14, 4, 'Fourteenth Post', 'This is the content of the fourteenth post', DATE_ADD(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 2 HOUR), true),
-(15, 15, 4, 'Fifteenth Post', 'This is the content of the fifteenth post', DATE_ADD(NOW(), INTERVAL 1 HOUR), DATE_ADD(NOW(), INTERVAL 2 HOUR), true),
-(16, 16, 4, 'Sixteenth Post', 'This is the content of the sixteenth post', DATE_ADD(NOW(), INTERVAL 2 HOUR), DATE_ADD(NOW(), INTERVAL 2 HOUR), true),
-(17, 17, 4, 'Seventeenth Post', 'This is the content of the seventeenth post', DATE_ADD(NOW(), INTERVAL 2 HOUR), DATE_ADD(NOW(), INTERVAL 2 HOUR), true),
-(18, 18, 4, '개자식아', 'This is the content of the eighteenth post', DATE_ADD(NOW(), INTERVAL 3 HOUR), DATE_ADD(NOW(), INTERVAL 3 HOUR), false),
-(19, 19, 4, 'Nineteenth Post', '개자식아', DATE_ADD(NOW(), INTERVAL 4 HOUR), DATE_ADD(NOW(), INTERVAL 4 HOUR), false),
-(20, 20, 4, 'Twentieth Post', 'This is the content of the twentieth post', DATE_ADD(NOW(), INTERVAL 5 HOUR), DATE_ADD(NOW(), INTERVAL 5 HOUR), true);
+INSERT IGNORE INTO post (post_id, member_id, channel_id, post_title, post_content, created_at, updated_at, reservation_time, dead_line, is_clean) VALUES
+(1, 1, 1, 'First Post', 'This is the content of the first post', DATE_ADD(NOW(), INTERVAL -4 DAY), DATE_ADD(NOW(), INTERVAL -4 DAY), null, DATE_ADD(NOW(), INTERVAL 6 DAY), true),
+(2, 2, 1, 'Second Post', 'This is the content of the second post', DATE_ADD(NOW(), INTERVAL -4 DAY), DATE_ADD(NOW(), INTERVAL -4 DAY), null, DATE_ADD(NOW(), INTERVAL 5 DAY), true),
+(3, 3, 1, 'Third Post', 'This is the content of the third post', DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 4 DAY), true),
+(4, 4, 1, 'Fourth Post', 'This is the content of the fourth post', DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 3 DAY), true),
+(5, 5, 2, 'Fifth Post', 'This is the content of the fifth post', NOW(), NOW(), null, null, true),
+(6, 6, 2, 'Sixth Post', 'This is the content of the sixth post', NOW(), NOW(), null, null, true),
+(7, 7, 2, 'Seventh Post', 'This is the content of the seventh post', NOW(), NOW(), null, null, true),
+(8, 8, 2, 'Eighth Post', 'This is the content of the eighth post', NOW(), NOW(), null, null, true),
+(9, 9, 2, 'Ninth Post', 'This is the content of the ninth post', NOW(), NOW(), null, null, true),
+(10, 10, 3, 'Tenth Post', 'This is the content of the tenth post', NOW(), NOW(), null, null, true),
+(11, 11, 3, 'Eleventh Post', 'This is the content of the eleventh post', NOW(), NOW(), null, null, true),
+(12, 12, 3, 'Twelfth Post', 'This is the content of the twelfth post', NOW(), NOW(), null, null, true),
+(13, 13, 3, 'Thirteenth Post', 'This is the content of the thirteenth post', NOW(), NOW(), null, null, true),
+(14, 14, 3, 'Fourteenth Post', 'This is the content of the fourteenth post', NOW(), NOW(), null, null, true),
+(15, 15, 3, 'Fifteenth Post', 'This is the content of the fifteenth post', NOW(), NOW(), null, null, true),
+(16, 16, 4, 'Sixteenth Post', 'This is the content of the sixteenth post', NOW(), NOW(), null, null, true),
+(17, 17, 4, 'Seventeenth Post', 'This is the content of the seventeenth post', NOW(), NOW(), null, null, true),
+(18, 18, 4, '개자식아', 'This is the content of the eighteenth post', NOW(), NOW(), null, null, false),
+(19, 19, 4, 'Nineteenth Post', '개자식아', NOW(), NOW(), null, null, false),
+(20, 20, 4, 'Twentieth Post', 'This is the content of the twentieth post', NOW(), NOW(), null, null, true);
 
 -- Comment 데이터 삽입
 INSERT IGNORE INTO comment (comment_id, post_id, member_id, parent_comment_id, comment_content, depth, created_at, updated_at, is_clean) VALUES
@@ -219,17 +236,3 @@ INSERT IGNORE INTO notification (notification_id, member_id, type, message, is_r
 (9, 6, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY)),
 (10, 7, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY)),
 (11, 8, 'ANNOUNCEMENT', 'ANNOUNCEMENT1', false, DATE_ADD(NOW(), INTERVAL -2 DAY), DATE_ADD(NOW(), INTERVAL -2 DAY));
-
--- 채널 데이터 삽입
-INSERT INTO channel (channel_name) VALUES
-('공지'),
-('풀스택'),
-('클라우드'),
-('인공지능');
-
--- 채널 데이터 삽입
-INSERT INTO member_channel (channel_id, member_id, can_post) VALUES
-(1, 1, true),
-(1, 3, true),
-(2, 5, false),
-(3, 6, true);
