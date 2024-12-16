@@ -128,7 +128,8 @@ INSERT INTO channel (channel_name) VALUES
 ('공지'),
 ('풀스택'),
 ('클라우드'),
-('인공지능');
+('인공지능'),
+('학습게시판');
 
 -- 채널 데이터 삽입
 INSERT INTO member_channel (channel_id, member_id) VALUES
