@@ -1,6 +1,8 @@
 package com.ktb10.munggaebe.post.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.channel.domain.Channel;
+import com.ktb10.munggaebe.channel.repository.ChannelRepository;
 import com.ktb10.munggaebe.image.domain.Image;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.PostImage;
@@ -26,6 +28,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Slf4j
@@ -39,6 +42,7 @@ public class PostService {
     private final ImageService imageService;
     private final FilteringService filteringService;
     private final ObjectMapper objectMapper;
+    private final ChannelRepository channelRepository;
 
     public Page<Post> getPosts(final int pageNo, final int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
@@ -61,10 +65,17 @@ public class PostService {
         boolean isPostClean = isPostClean(post.getTitle(), post.getContent());
         log.info("createPost isPostClean = {}", isPostClean);
 
+        //임시 채널
+        Channel channel = channelRepository.findById(1L).orElse(null);
+
         final Post postWithMember = Post.builder()
                 .member(member)
+                .channel(channel)
                 .title(post.getTitle())
                 .content(post.getContent())
+                .createdAt(post.getReservationTime() == null ? LocalDateTime.now() : post.getReservationTime())
+                .reservationTime(post.getReservationTime())
+                .deadLine(post.getDeadLine())
                 .isClean(isPostClean)
                 .build();
 
