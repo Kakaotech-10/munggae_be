@@ -44,6 +44,8 @@ public class PostService {
     private final ObjectMapper objectMapper;
     private final ChannelRepository channelRepository;
 
+    private static final Long ANNOUNCEMENT_CHANNEL_ID = 1L;
+
     public Page<Post> getPosts(final int pageNo, final int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
         return postRepository.findByCreatedAtBefore(LocalDateTime.now(), pageable);
@@ -163,6 +165,11 @@ public class PostService {
             return postImage;
         }
         throw new IllegalStateException("해당 이미지가 PostImage 타입이 아닙니다.");
+    }
+
+    public Page<Post> getAnnouncementsPostsNearDeadline(int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("deadLine"));
+        return postRepository.findByChannelIdAndDeadLineIsNotNull(ANNOUNCEMENT_CHANNEL_ID, pageable);
     }
 
     private void validateAuthorization(Post post) {

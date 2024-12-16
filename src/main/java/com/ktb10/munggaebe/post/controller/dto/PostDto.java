@@ -96,6 +96,12 @@ public class PostDto {
         @Schema(description = "게시글 수정 시간", example = "2024-10-15T11:15:30")
         private LocalDateTime updatedAt;
 
+        @Schema(description = "게시글 예약 시간", example = "2024-12-12T10:00:00")
+        private LocalDateTime reservationTime;
+
+        @Schema(description = "게시글 마감 시간", example = "2024-12-19T23:59:59")
+        private LocalDateTime deadLine;
+
         @Schema(description = "게시물 작성자 정보", implementation = MemberDto.MemberRes.class)
         private MemberDto.MemberRes member;
 
@@ -112,6 +118,8 @@ public class PostDto {
             this.content = post.getContent();
             this.createdAt = post.getCreatedAt();
             this.updatedAt = post.getUpdatedAt();
+            this.reservationTime = post.getReservationTime();
+            this.deadLine = post.getDeadLine();
             this.member = new MemberDto.MemberRes(post.getMember());
             this.isClean = post.isClean();
         }
@@ -122,6 +130,8 @@ public class PostDto {
             this.content = post.getContent();
             this.createdAt = post.getCreatedAt();
             this.updatedAt = post.getUpdatedAt();
+            this.reservationTime = post.getReservationTime();
+            this.deadLine = post.getDeadLine();
             this.member = new MemberDto.MemberRes(post.getMember());
             this.isClean = post.isClean();
             this.imageUrls = imageUrls;
