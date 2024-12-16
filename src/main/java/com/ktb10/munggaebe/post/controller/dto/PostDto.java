@@ -42,6 +42,8 @@ public class PostDto {
             return Post.builder()
                     .title(this.title)
                     .content(this.content)
+                    .reservationTime(this.reservationTime)
+                    .deadLine(this.deadLine)
                     .build();
         }
     }
