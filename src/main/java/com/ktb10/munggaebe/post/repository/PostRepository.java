@@ -12,4 +12,6 @@ import java.time.LocalDateTime;
 public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByCreatedAtBefore(LocalDateTime time, Pageable pageable);
+
+    Page<Post> findByChannelIdAndDeadLineIsNotNull(Long channelId, Pageable pageable);
 }
