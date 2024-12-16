@@ -46,7 +46,7 @@ public class PostService {
 
     public Page<Post> getPosts(final int pageNo, final int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
-        return postRepository.findAll(pageable);
+        return postRepository.findByCreatedAtBefore(LocalDateTime.now(), pageable);
     }
 
     public Post getPost(final long postId) {
