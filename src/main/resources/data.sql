@@ -100,7 +100,10 @@ CREATE TABLE IF NOT EXISTS notification (
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE SET NULL
 );
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> 2cd88ab (fix: data.sql 충돌 수정)
 -- Member 데이터 삽입
 INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_english, kakao_id, created_at, updated_at) VALUES
 (1, 'STUDENT', 'FULLSTACK', '홍길동', 'Hong Gil-dong', 1234567891, NOW(), NOW()),
