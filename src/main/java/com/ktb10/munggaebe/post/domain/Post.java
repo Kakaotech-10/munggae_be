@@ -7,7 +7,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
@@ -46,7 +45,6 @@ public class Post {
     @Column(name = "is_clean", nullable = false)
     private boolean isClean;
 
-    @CreationTimestamp
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
@@ -54,13 +52,23 @@ public class Post {
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
+    @Column(name = "reservation_time")
+    private LocalDateTime reservationTime;
+
+    @Column(name = "dead_line")
+    private LocalDateTime deadLine;
+
     @Builder
-    public Post(Long id, Member member, String title, String content, boolean isClean) {
+    public Post(Long id, Member member, Channel channel, String title, String content, boolean isClean, LocalDateTime createdAt, LocalDateTime reservationTime, LocalDateTime deadLine) {
         this.id = id;
         this.member = member;
+        this.channel = channel;
         this.title = title;
         this.content = content;
         this.isClean = isClean;
+        this.createdAt = createdAt;
+        this.reservationTime = reservationTime;
+        this.deadLine = deadLine;
     }
 
     public void updatePost(String title, String content, boolean isClean) {

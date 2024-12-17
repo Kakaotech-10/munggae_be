@@ -131,8 +131,12 @@ public class PostController {
     @GetMapping("/posts/announcements/near-deadline")
     @Operation(summary = "마감되지 않은 공지사항 조회", description = "마감되지 않은 공지사항 게시물을 마감임박순으로 조회합니다.")
     @ApiResponse(responseCode = "200", description = "마감되지 않은 공지사항 조회 성공")
-    public ResponseEntity<Page<PostDto.PostRes>> getAnnouncementsPostsNearDeadline() {
-        return ResponseEntity.ok().build();
+    public ResponseEntity<Page<PostDto.PostRes>> getAnnouncementsPostsNearDeadline(@RequestParam(required = false, defaultValue = DEFAULT_POST_PAGE_NO) final int pageNo,
+                                                                                   @RequestParam(required = false, defaultValue = DEFAULT_POST_PAGE_SIZE) final int pageSize) {
+
+        Page<Post> posts = postService.getAnnouncementsPostsNearDeadline(pageNo, pageSize);
+
+        return ResponseEntity.ok(posts.map(this::appendCdnPaths));
     }
 
     private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {
