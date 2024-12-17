@@ -10,6 +10,14 @@ CREATE TABLE IF NOT EXISTS member (
     PRIMARY KEY (member_id)
 );
 
+-- channel 생성
+CREATE TABLE IF NOT EXISTS channel (
+    channel_id BIGINT NOT NULL AUTO_INCREMENT,
+    channel_name VARCHAR(50) NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (channel_id)
+);
+
 -- member_channel 생성
 CREATE TABLE IF NOT EXISTS member_channel (
     member_channel_id BIGINT NOT NULL AUTO_INCREMENT,
@@ -20,14 +28,6 @@ CREATE TABLE IF NOT EXISTS member_channel (
     PRIMARY KEY (member_channel_id),
     FOREIGN KEY (channel_id) REFERENCES channel(channel_id) ON DELETE CASCADE,
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
-);
-
--- channel 생성
-CREATE TABLE IF NOT EXISTS channel (
-    channel_id BIGINT NOT NULL AUTO_INCREMENT,
-    channel_name VARCHAR(50) NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (channel_id)
 );
 
 CREATE TABLE IF NOT EXISTS post (
