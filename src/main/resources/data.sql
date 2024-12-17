@@ -10,6 +10,18 @@ CREATE TABLE IF NOT EXISTS member (
     PRIMARY KEY (member_id)
 );
 
+-- member_channel 생성
+CREATE TABLE IF NOT EXISTS member_channel (
+    member_channel_id BIGINT NOT NULL AUTO_INCREMENT,
+    channel_id BIGINT NOT NULL,
+    member_id BIGINT NOT NULL,
+    can_post BOOLEAN NOT NULL,
+    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (member_channel_id),
+    FOREIGN KEY (channel_id) REFERENCES channel(channel_id) ON DELETE CASCADE,
+    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
+);
+
 -- channel 생성
 CREATE TABLE IF NOT EXISTS channel (
     channel_id BIGINT NOT NULL AUTO_INCREMENT,
@@ -86,16 +98,6 @@ CREATE TABLE IF NOT EXISTS notification (
     FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE SET NULL
 );
 
--- member_channel 생성
-CREATE TABLE IF NOT EXISTS member_channel (
-    member_channel_id BIGINT NOT NULL AUTO_INCREMENT,
-    channel_id BIGINT NOT NULL,
-    member_id BIGINT NOT NULL,
-    created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    PRIMARY KEY (member_channel_id),
-    FOREIGN KEY (channel_id) REFERENCES channel(channel_id) ON DELETE CASCADE,
-    FOREIGN KEY (member_id) REFERENCES member(member_id) ON DELETE CASCADE
-);
 
 -- Member 데이터 삽입
 INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_english, kakao_id, created_at, updated_at) VALUES
@@ -226,8 +228,8 @@ INSERT INTO channel (channel_name) VALUES
 ('인공지능');
 
 -- 채널 데이터 삽입
-INSERT INTO member_channel (channel_id, member_id) VALUES
-(1, 1),
-(1, 3),
-(2, 5),
-(3, 6);
+INSERT INTO member_channel (channel_id, member_id, can_post) VALUES
+(1, 1, true),
+(1, 3, true),
+(2, 5, false),
+(3, 6, true);
