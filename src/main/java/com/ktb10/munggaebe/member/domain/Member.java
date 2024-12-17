@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.member.domain;
 
+import com.ktb10.munggaebe.channel.domain.MemberChannel;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -12,6 +13,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -49,6 +51,9 @@ public class Member implements UserDetails {
     @UpdateTimestamp
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberChannel> memberChannels = new ArrayList<>();
 
     @Builder
     public Member(Long id, MemberRole role, MemberCourse course, String name, String nameEnglish, Long kakaoId) {
