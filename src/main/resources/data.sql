@@ -123,7 +123,6 @@ INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_eng
 (19, 'STUDENT', 'FULLSTACK', '차은우', 'Cha Eun-woo', 1234567909, NOW(), NOW()),
 (20, 'STUDENT', 'AI', '송혜교', 'Song Hye-kyo', 1234567910, NOW(), NOW());
 
-
        -- 채널 데이터 삽입
 INSERT INTO channel (channel_name) VALUES
 ('공지'),
@@ -136,8 +135,7 @@ INSERT INTO channel (channel_name) VALUES
 INSERT INTO member_channel (channel_id, member_id, can_post) VALUES
 (1, 1, true),
 (1, 3, true),
-(2, 5, false),
-(3, 6, true);
+(2, 5, false);
 
 -- Post 데이터 삽입
 --INSERT IGNORE INTO post (post_id, member_id, post_title, post_content, created_at, updated_at, is_clean) VALUES
@@ -168,22 +166,22 @@ INSERT IGNORE INTO post (post_id, member_id, channel_id, post_title, post_conten
 (2, 2, 1, 'Second Post', 'This is the content of the second post', DATE_ADD(NOW(), INTERVAL -4 DAY), DATE_ADD(NOW(), INTERVAL -4 DAY), null, DATE_ADD(NOW(), INTERVAL 5 DAY), true),
 (3, 3, 1, 'Third Post', 'This is the content of the third post', DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 1 DAY), DATE_ADD(NOW(), INTERVAL 4 DAY), true),
 (4, 4, 1, 'Fourth Post', 'This is the content of the fourth post', DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 2 DAY), DATE_ADD(NOW(), INTERVAL 3 DAY), true),
-(5, 5, 2, 'Fifth Post', 'This is the content of the fifth post', NOW(), NOW(), null, null, true),
-(6, 6, 2, 'Sixth Post', 'This is the content of the sixth post', NOW(), NOW(), null, null, true),
-(7, 7, 2, 'Seventh Post', 'This is the content of the seventh post', NOW(), NOW(), null, null, true),
-(8, 8, 2, 'Eighth Post', 'This is the content of the eighth post', NOW(), NOW(), null, null, true),
-(9, 9, 2, 'Ninth Post', 'This is the content of the ninth post', NOW(), NOW(), null, null, true),
+(5, 5, 1, 'Fifth Post', 'This is the content of the fifth post', NOW(), NOW(), null, null, true),
+(6, 6, 1, 'Sixth Post', 'This is the content of the sixth post', NOW(), NOW(), null, null, true),
+(7, 7, 1, 'Seventh Post', 'This is the content of the seventh post', NOW(), NOW(), null, null, true),
+(8, 8, 1, 'Eighth Post', 'This is the content of the eighth post', NOW(), NOW(), null, null, true),
+(9, 9, 1, 'Ninth Post', 'This is the content of the ninth post', NOW(), NOW(), null, null, true),
 (10, 10, 3, 'Tenth Post', 'This is the content of the tenth post', NOW(), NOW(), null, null, true),
 (11, 11, 3, 'Eleventh Post', 'This is the content of the eleventh post', NOW(), NOW(), null, null, true),
 (12, 12, 3, 'Twelfth Post', 'This is the content of the twelfth post', NOW(), NOW(), null, null, true),
 (13, 13, 3, 'Thirteenth Post', 'This is the content of the thirteenth post', NOW(), NOW(), null, null, true),
 (14, 14, 3, 'Fourteenth Post', 'This is the content of the fourteenth post', NOW(), NOW(), null, null, true),
 (15, 15, 3, 'Fifteenth Post', 'This is the content of the fifteenth post', NOW(), NOW(), null, null, true),
-(16, 16, 4, 'Sixteenth Post', 'This is the content of the sixteenth post', NOW(), NOW(), null, null, true),
-(17, 17, 4, 'Seventeenth Post', 'This is the content of the seventeenth post', NOW(), NOW(), null, null, true),
-(18, 18, 4, '개자식아', 'This is the content of the eighteenth post', NOW(), NOW(), null, null, false),
-(19, 19, 4, 'Nineteenth Post', '개자식아', NOW(), NOW(), null, null, false),
-(20, 20, 4, 'Twentieth Post', 'This is the content of the twentieth post', NOW(), NOW(), null, null, true);
+(16, 16, 5, 'Sixteenth Post', 'This is the content of the sixteenth post', NOW(), NOW(), null, null, true),
+(17, 17, 5, 'Seventeenth Post', 'This is the content of the seventeenth post', NOW(), NOW(), null, null, true),
+(18, 18, 5, '개자식아', 'This is the content of the eighteenth post', NOW(), NOW(), null, null, false),
+(19, 19, 5, 'Nineteenth Post', '개자식아', NOW(), NOW(), null, null, false),
+(20, 20, 5, 'Twentieth Post', 'This is the content of the twentieth post', NOW(), NOW(), null, null, true);
 
 -- Comment 데이터 삽입
 INSERT IGNORE INTO comment (comment_id, post_id, member_id, parent_comment_id, comment_content, depth, created_at, updated_at, is_clean) VALUES
