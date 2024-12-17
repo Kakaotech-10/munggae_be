@@ -6,12 +6,10 @@ import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public class MemberDto {
 
@@ -158,4 +156,28 @@ public class MemberDto {
             this.imageInfo = imageInfo;
         }
     }
+
+    //채널 기능 추가
+    @Schema(description = "채널에 멤버 추가 요청")
+    @Getter
+    @NoArgsConstructor
+    public static class MemberAddReq {
+        @Schema(description = "추가할 멤버 ID 리스트", example = "[1, 2, 3]")
+        private List<Long> memberIds;
+
+        public MemberAddReq(List<Long> memberIds) {
+            this.memberIds = memberIds;
+        }
+    }
+
+    @Getter
+    @AllArgsConstructor
+    public static class ChannelMemberResponse {
+        @Schema(description = "채널 ID", example = "1")
+        private Long channelId;
+
+        @Schema(description = "추가된 멤버 리스트")
+        private List<MemberRes> members;
+    }
+
 }

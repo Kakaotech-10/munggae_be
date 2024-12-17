@@ -39,8 +39,7 @@ public class Channel {
     private List<Post> posts = new ArrayList<>();
 
     @Builder
-    public Channel(Long id, String name, LocalDateTime createdAt) {
-        this.id = id;
+    public Channel(String name) {
         this.name = name;
     }
 }
