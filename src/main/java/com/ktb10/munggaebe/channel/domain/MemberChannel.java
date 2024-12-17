@@ -6,7 +6,6 @@ import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Entity
 @Table(name = "member_channel")
@@ -31,11 +30,14 @@ public class MemberChannel {
     @Column(name = "created_at", nullable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "can_post", nullable = false)
+    private boolean canPost; //학생 포스팅 가능 여부
+
     @Builder
-    public MemberChannel(Long id, Channel channel, Member member) {
-        this.id = id;
+    public MemberChannel(Channel channel, Member member, boolean canPost) {
         this.channel = channel;
         this.member = member;
+        this.canPost = canPost;
     }
 
 }
