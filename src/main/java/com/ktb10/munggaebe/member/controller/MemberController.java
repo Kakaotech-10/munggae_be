@@ -31,8 +31,9 @@ public class MemberController {
     @Operation(summary = "맴버 목록 조회", description = "맴버 목록을 반환합니다.")
     @ApiResponse(responseCode = "200", description = "맴버 목록 조회 성공")
     public ResponseEntity<List<MemberDto.MemberRes>> getMembers() {
-        List<MemberDto.MemberRes> students = memberService.getMembers();
-        return ResponseEntity.ok(students);
+        List<Member> members = memberService.getMembers();
+        List<MemberDto.MemberRes> memberResponses = appendCdnPaths(members);
+        return ResponseEntity.ok(memberResponses);
     }
 
     @GetMapping("/members/{memberId}")
@@ -115,5 +116,11 @@ public class MemberController {
     private MemberDto.MemberRes appendCdnPath(final Member member) {
         final MemberServiceDto.ImageCdnPathRes memberImageCdnPath = memberService.getMemberImageUrl(member.getId());
         return new MemberDto.MemberRes(member, objectMapper.convertValue(memberImageCdnPath, MemberDto.MemberImageCdnPathRes.class));
+    }
+
+    private List<MemberDto.MemberRes> appendCdnPaths(final List<Member> members) {
+        return members.stream()
+                .map(this::appendCdnPath)
+                .toList();
     }
 }

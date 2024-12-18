@@ -41,11 +41,8 @@ public class MemberService implements UserDetailsService {
     private final ObjectMapper objectMapper;
 
 
-    public List<MemberDto.MemberRes> getMembers() {
-        return memberRepository.findAll()
-                .stream()
-                .map(MemberDto.MemberRes::new)
-                .toList();
+    public List<Member> getMembers() {
+        return memberRepository.findAll();
     }
 
     @Transactional
