@@ -26,6 +26,7 @@ public class AiCommentService {
         CreateAiCommentRes res = aiCommentClient.generateAiComment(content);
         log.info("CreateAiCommentRes res = {}", res);
 
+        //아래부분 postService로 옮기기
         Member groomAi = memberRepository.findByNameEnglish("Groom AI")
                 .orElseThrow(() -> new MemberNotFoundException(100L));
 
