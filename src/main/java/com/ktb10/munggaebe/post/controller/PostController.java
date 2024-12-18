@@ -139,6 +139,17 @@ public class PostController {
         return ResponseEntity.ok(posts.map(this::appendCdnPaths));
     }
 
+    @GetMapping("/posts/education/{postId}")
+    @Operation(summary = "학습게시판 게시물 조회", description = "학습게시판 게시물을 조회합니다.")
+    @ApiResponse(responseCode = "200", description = "학습게시판 게시물 조회 성공")
+    public ResponseEntity<PostDto.EducationPostRes> getEducationPost(@PathVariable final long postId) {
+
+//        final Post post = postService.getPost(postId);
+
+        return ResponseEntity.ok().build();
+    }
+
+
     private static PostServiceDto.UpdateReq toServiceDto(final long postId, final PostDto.PostUpdateReq request) {
         return PostServiceDto.UpdateReq.builder()
                 .postId(postId)
