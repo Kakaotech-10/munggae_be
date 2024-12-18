@@ -1,6 +1,7 @@
 package com.ktb10.munggaebe.post.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.aicomment.service.AiCommentService;
 import com.ktb10.munggaebe.channel.domain.Channel;
 import com.ktb10.munggaebe.channel.repository.ChannelRepository;
 import com.ktb10.munggaebe.image.domain.Image;
@@ -43,8 +44,10 @@ public class PostService {
     private final FilteringService filteringService;
     private final ObjectMapper objectMapper;
     private final ChannelRepository channelRepository;
+    private final AiCommentService aiCommentService;
 
     private static final Long ANNOUNCEMENT_CHANNEL_ID = 1L;
+    private static final String EDUCATION_CHANNEL_NAME = "학습게시판";
 
     public Page<Post> getPosts(final int pageNo, final int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
@@ -83,7 +86,9 @@ public class PostService {
 
         Post savedPost = postRepository.save(postWithMember);
 
-//        if (savedPost.getChannel())
+        if (savedPost.getChannel().getName().equals(EDUCATION_CHANNEL_NAME)) {
+            aiCommentService.createAiComment();
+        }
 
         return savedPost;
     }
