@@ -124,7 +124,7 @@ INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_eng
 (20, 'STUDENT', 'AI', '송혜교', 'Song Hye-kyo', 1234567910, NOW(), NOW());
 
        -- 채널 데이터 삽입
-INSERT INTO channel (channel_name) VALUES
+INSERT IGNORE INTO channel (channel_name) VALUES
 ('공지'),
 ('풀스택'),
 ('클라우드'),
@@ -132,7 +132,7 @@ INSERT INTO channel (channel_name) VALUES
 ('학습게시판');
 
 -- 채널 데이터 삽입
-INSERT INTO member_channel (channel_id, member_id, can_post) VALUES
+INSERT IGNORE INTO member_channel (channel_id, member_id, can_post) VALUES
 (1, 1, true),
 (1, 3, true),
 (2, 5, false);

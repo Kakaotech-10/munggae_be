@@ -81,7 +81,11 @@ public class PostService {
                 .isClean(isPostClean)
                 .build();
 
-        return postRepository.save(postWithMember);
+        Post savedPost = postRepository.save(postWithMember);
+
+//        if (savedPost.getChannel())
+
+        return savedPost;
     }
 
     @Transactional
