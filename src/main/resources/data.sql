@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS notification (
 
 -- Member 데이터 삽입
 INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_english, kakao_id, created_at, updated_at) VALUES
+(100, 'MANAGER', 'DEFAULT', '구름이', 'Groom AI', 999999, NOW(), NOW()),
 (1, 'STUDENT', 'FULLSTACK', '홍길동', 'Hong Gil-dong', 1234567891, NOW(), NOW()),
 (2, 'STUDENT', 'CLOUD', '김철수', 'Kim Cheol-su', 1234567892, NOW(), NOW()),
 (3, 'STUDENT', 'AI', '이영희', 'Lee Young-hee', 1234567893, NOW(), NOW()),
