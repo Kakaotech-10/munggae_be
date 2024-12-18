@@ -30,17 +30,32 @@ public class ChannelService {
     public List<ChannelResponse> getChannels() {
         Long currentMemberId = SecurityUtil.getCurrentUserId();
 
+        //매니저 권한인 경우 모든 채널 조회
+        if (SecurityUtil.hasRole("MANAGER")) {
+            List<Channel> allChannels = channelRepository.findAll();
+            return allChannels.stream()
+                    .map(channel -> new ChannelResponse(
+                            channel.getId(),
+                            channel.getName(),
+                            true //모든 채널에 canPost를 true로 설정
+                    ))
+                    .collect(Collectors.toList());
+        }
+
+        //학생은 자신이 속한 채널만 조회
         Member currentMember = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new RuntimeException("Member not found"));
 
-        List<ChannelResponse> channels = currentMember.getMemberChannels().stream()
+        return currentMember.getMemberChannels().stream()
                 .map(memberChannel -> {
                     Channel channel = memberChannel.getChannel();
-                    return new ChannelResponse(channel.getId(), channel.getName(), memberChannel.isCanPost());
+                    return new ChannelResponse(
+                            channel.getId(),
+                            channel.getName(),
+                            memberChannel.isCanPost()
+                    );
                 })
                 .collect(Collectors.toList());
-
-        return channels;
     }
 
     @Transactional
