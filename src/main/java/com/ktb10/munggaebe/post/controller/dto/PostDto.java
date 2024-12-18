@@ -225,4 +225,67 @@ public class PostDto {
             this.path = path;
         }
     }
+
+    @Schema(description = "게시물 응답")
+    @Getter
+    public static class EducationPostRes {
+        @Schema(description = "게시글 ID", example = "1")
+        private Long id;
+
+        @Schema(description = "게시글 제목", example = "Spring Boot를 활용한 REST API 개발")
+        private String title;
+
+        @Schema(description = "게시글 내용", example = "이 글에서는 Spring Boot를 이용한 REST API를 만드는 방법을 다룹니다.")
+        private String content;
+
+        @Schema(description = "게시글 작성 시간", example = "2024-10-15T10:15:30")
+        private LocalDateTime createdAt;
+
+        @Schema(description = "게시글 수정 시간", example = "2024-10-15T11:15:30")
+        private LocalDateTime updatedAt;
+
+        @Schema(description = "게시글 예약 시간", example = "2024-12-12T10:00:00")
+        private LocalDateTime reservationTime;
+
+        @Schema(description = "게시글 마감 시간", example = "2024-12-19T23:59:59")
+        private LocalDateTime deadLine;
+
+        @Schema(description = "게시물 작성자 정보", implementation = MemberDto.MemberRes.class)
+        private MemberDto.MemberRes member;
+
+        @Schema(description = "게시글 클린 여부", example = "true")
+        private boolean isClean;
+
+        @Schema(description = "CDN 이미지 url", example = "[{\"imageId\": 1, \"fileName\": \"file1.jpg\", \"path\": \"http://cdn-path/123_file1.jpg\"}" +
+                ", {\"imageId\": 2, \"fileName\": \"file2.jpg\", \"path\": \"http://cdn-path/234_file2.png\"}]")
+        private List<ImageCdnPathRes> imageUrls = new ArrayList<>();
+
+        @Schema(description = "코드 영역", example = "{ System.out.println('Hellow world') }")
+        private String codeArea;
+
+        public EducationPostRes(Post post) {
+            this.id = post.getId();
+            this.title = post.getTitle();
+            this.content = post.getContent();
+            this.createdAt = post.getCreatedAt();
+            this.updatedAt = post.getUpdatedAt();
+            this.reservationTime = post.getReservationTime();
+            this.deadLine = post.getDeadLine();
+            this.member = new MemberDto.MemberRes(post.getMember());
+            this.isClean = post.isClean();
+        }
+
+        public EducationPostRes(Post post, List<ImageCdnPathRes> imageUrls) {
+            this.id = post.getId();
+            this.title = post.getTitle();
+            this.content = post.getContent();
+            this.createdAt = post.getCreatedAt();
+            this.updatedAt = post.getUpdatedAt();
+            this.reservationTime = post.getReservationTime();
+            this.deadLine = post.getDeadLine();
+            this.member = new MemberDto.MemberRes(post.getMember());
+            this.isClean = post.isClean();
+            this.imageUrls = imageUrls;
+        }
+    }
 }

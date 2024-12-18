@@ -48,6 +48,7 @@ public class PostService {
 
     private static final Long ANNOUNCEMENT_CHANNEL_ID = 1L;
     private static final String EDUCATION_CHANNEL_NAME = "학습게시판";
+    private static final String EDUCATION_POST_DELIMITER = "*****";
 
     public Page<Post> getPosts(final int pageNo, final int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
@@ -87,7 +88,10 @@ public class PostService {
         Post savedPost = postRepository.save(postWithMember);
 
         if (savedPost.getChannel().getName().equals(EDUCATION_CHANNEL_NAME)) {
-            aiCommentService.createAiComment();
+            String codeArea = duplicateCodeArea(post.getContent());
+            log.info("codeArea = {}", codeArea);
+            aiCommentService.createAiComment(codeArea); //댓글 얻어서
+            //댓글 저장
         }
 
         return savedPost;
@@ -195,5 +199,11 @@ public class PostService {
         boolean isContentClean = filteringService.isCleanText(content);
         log.info("isContentClean = {}", isContentClean);
         return isTitleClean && isContentClean;
+    }
+
+    private String duplicateCodeArea(String content) {
+        int index = content.indexOf(EDUCATION_POST_DELIMITER);
+
+        return content.substring(index + EDUCATION_POST_DELIMITER.length());
     }
 }
