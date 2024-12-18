@@ -124,18 +124,18 @@ INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_eng
 (20, 'STUDENT', 'AI', '송혜교', 'Song Hye-kyo', 1234567910, NOW(), NOW());
 
        -- 채널 데이터 삽입
-INSERT IGNORE INTO channel (channel_name) VALUES
-('공지'),
-('풀스택'),
-('클라우드'),
-('인공지능'),
-('학습게시판');
+INSERT IGNORE INTO channel (channel_id, channel_name, created_at) VALUES
+(1, '공지', NOW()),
+(2, '풀스택', NOW()),
+(3, '클라우드', NOW()),
+(4, '인공지능', NOW()),
+(5, '학습게시판', NOW());
 
 -- 채널 데이터 삽입
-INSERT IGNORE INTO member_channel (channel_id, member_id, can_post) VALUES
-(1, 1, true),
-(1, 3, true),
-(2, 5, false);
+INSERT IGNORE INTO member_channel (member_channel_id, channel_id, member_id, can_post, created_at) VALUES
+(1, 1, 1, true, NOW()),
+(2, 1, 3, true, NOW()),
+(3, 2, 5, false, NOW());
 
 -- Post 데이터 삽입
 --INSERT IGNORE INTO post (post_id, member_id, post_title, post_content, created_at, updated_at, is_clean) VALUES
