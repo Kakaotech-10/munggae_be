@@ -7,6 +7,7 @@ import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.service.ImageService;
 import com.ktb10.munggaebe.image.service.dto.ImageCdnPathDto;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
+import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
@@ -39,6 +40,13 @@ public class MemberService implements UserDetailsService {
     private final ElasticsearchMemberService elasticsearchMemberService;
     private final ObjectMapper objectMapper;
 
+
+    public List<MemberDto.MemberRes> getMembers() {
+        return memberRepository.findAll()
+                .stream()
+                .map(MemberDto.MemberRes::new)
+                .toList();
+    }
 
     @Transactional
     public MemberServiceDto.JoinOrLoginKakaoRes loginOrJoinKakao(Long kakaoId, String nickName) {

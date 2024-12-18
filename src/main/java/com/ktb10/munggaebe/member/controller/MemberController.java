@@ -27,6 +27,14 @@ public class MemberController {
     private final MemberService memberService;
     private final ObjectMapper objectMapper;
 
+    @GetMapping("/members")
+    @Operation(summary = "맴버 목록 조회", description = "맴버 목록을 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "맴버 목록 조회 성공")
+    public ResponseEntity<List<MemberDto.MemberRes>> getMembers() {
+        List<MemberDto.MemberRes> students = memberService.getMembers();
+        return ResponseEntity.ok(students);
+    }
+
     @GetMapping("/members/{memberId}")
     @Operation(summary = "단일 맴버 id로 조회", description = "맴버 id, 이름, 영어이름, 과정, 권한을 반환합니다.")
     @ApiResponse(responseCode = "200", description = "단일 맴버 정보 반환 성공")
