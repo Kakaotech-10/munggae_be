@@ -90,8 +90,7 @@ public class PostService {
         if (savedPost.getChannel().getName().equals(EDUCATION_CHANNEL_NAME)) {
             String codeArea = duplicateCodeArea(post.getContent());
             log.info("codeArea = {}", codeArea);
-            aiCommentService.createAiComment(codeArea, savedPost.getId()); //댓글 얻어서
-            //댓글 저장
+            aiCommentService.createAiComment(codeArea, savedPost.getId());
         }
 
         return savedPost;
