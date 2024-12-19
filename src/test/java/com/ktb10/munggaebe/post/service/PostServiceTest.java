@@ -1,6 +1,8 @@
 package com.ktb10.munggaebe.post.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.channel.domain.Channel;
+import com.ktb10.munggaebe.channel.repository.ChannelRepository;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.domain.PostImage;
@@ -23,16 +25,21 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -60,6 +67,9 @@ class PostServiceTest {
     @Mock
     private ObjectMapper objectMapper;
 
+    @Mock
+    private ChannelRepository channelRepository;
+
     @BeforeEach
     void setup() {
         Member member = Member.builder().id(1L).role(MemberRole.STUDENT).build();
@@ -74,20 +84,28 @@ class PostServiceTest {
     }
 
     @Test
-    @DisplayName("게시물 목록을 성공적으로 가져온다")
-    void getPosts_ShouldReturnPosts() {
+    @DisplayName("채널 ID로 게시글 목록을 성공적으로 조회한다")
+    void getPostsByChannel_ShouldReturnPosts() {
         // given
+        Long channelId = 1L;
         Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
-        Page<Post> postPage = new PageImpl<>(List.of(Post.builder().build()));
-        given(postRepository.findAll(pageable)).willReturn(postPage);
+
+        Channel testChannel = Channel.builder().name("Test Channel").build();
+        ReflectionTestUtils.setField(testChannel, "id", channelId); // ID 필드 강제 설정
+
+        Page<Post> postPage = new PageImpl<>(List.of(
+                Post.builder().id(1L).channel(testChannel).build()
+        ));
+
+        given(postRepository.findByChannelIdAndCreatedAtBefore(eq(channelId), any(), eq(pageable))).willReturn(postPage);
 
         // when
-        Page<Post> result = postService.getPosts(0, 10);
+        Page<Post> result = postService.getPosts(channelId, 0, 10);
 
         // then
-        assertThat(result).isNotNull();
-        assertThat(result.getContent().size()).isEqualTo(1);
-        verify(postRepository).findAll(pageable);
+        assertThat(result.getContent()).hasSize(1);
+        assertThat(result.getContent().get(0).getId()).isEqualTo(1L);
+        verify(postRepository).findByChannelIdAndCreatedAtBefore(eq(channelId), any(), eq(pageable));
     }
 
     @Test
@@ -124,34 +142,79 @@ class PostServiceTest {
     void createPost_ShouldCreatePost_WhenValidInput() {
         // given
         long memberId = 1L;
+        long channelId = 1L;
+
         Member member = Member.builder().id(memberId).build();
+        Channel testChannel = Channel.builder().name("Test Channel").build();
+
         Post post = Post.builder().title("Title").content("Content").build();
 
         given(memberRepository.findById(memberId)).willReturn(Optional.of(member));
+        given(channelRepository.findById(channelId)).willReturn(Optional.of(testChannel));
         given(postRepository.save(any(Post.class))).willAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        Post result = postService.createPost(post);
+        Post result = postService.createPost(channelId, post);
 
         // then
         assertThat(result).isNotNull();
         assertThat(result.getMember()).isEqualTo(member);
+        assertThat(result.getChannel()).isEqualTo(testChannel);
         assertThat(result.getTitle()).isEqualTo("Title");
+
         verify(memberRepository).findById(memberId);
+        verify(channelRepository).findById(channelId);
         verify(postRepository).save(any(Post.class));
     }
+
 
     @Test
     @DisplayName("게시물을 생성할 때 회원을 찾을 수 없으면 예외를 발생시킨다")
     void createPost_ShouldThrowException_WhenMemberNotFound() {
-        // given
-        Post post = Post.builder().title("Title").content("Content").build();
+        // Given
+        Long channelId = 1L;
+        Post post = Post.builder().title("Test Post").content("Test Content").build();
+        Channel testChannel = Channel.builder().name("Test Channel").build();
 
         given(memberRepository.findById(1L)).willReturn(Optional.empty());
+        given(channelRepository.findById(channelId)).willReturn(Optional.of(testChannel));
 
-        // when & then
-        assertThatThrownBy(() -> postService.createPost(post))
-                .isInstanceOf(MemberNotFoundException.class);
+        // When
+        Throwable thrown = catchThrowable(() -> postService.createPost(channelId, post));
+
+        // Then
+        assertThat(thrown)
+                .isInstanceOf(MemberNotFoundException.class) // 기대 예외를 MemberNotFoundException으로 변경
+                .hasMessageContaining("id 1 에 해당하는 Member가 존재하지 않습니다.");
+    }
+
+    //추가한 테스트(채널)
+    @Test
+    @DisplayName("채널 ID 없이 모든 게시글을 성공적으로 가져온다")
+    void getAllPosts_ShouldReturnAllPosts() {
+        // given
+        Pageable pageable = PageRequest.of(0, 10, Sort.by("createdAt").descending());
+        LocalDateTime now = LocalDateTime.now(); // LocalDateTime.now() 결과를 변수에 저장
+
+        Page<Post> postPage = new PageImpl<>(List.of(
+                Post.builder().id(1L).title("Post 1").build(),
+                Post.builder().id(2L).title("Post 2").build(),
+                Post.builder().id(3L).title("Post 3").build()
+        ));
+
+        given(postRepository.findByCreatedAtBefore(any(), eq(pageable))).willReturn(postPage);
+
+        // when
+        Page<Post> result = postService.getPosts(null, 0, 10);
+
+        // then
+        assertThat(result).isNotNull();
+        assertThat(result.getContent().size()).isEqualTo(3);
+        assertThat(result.getContent().get(0).getTitle()).isEqualTo("Post 1");
+        assertThat(result.getContent().get(1).getTitle()).isEqualTo("Post 2");
+        assertThat(result.getContent().get(2).getTitle()).isEqualTo("Post 3");
+
+        verify(postRepository).findByCreatedAtBefore(any(), eq(pageable));
     }
 
     @Test
