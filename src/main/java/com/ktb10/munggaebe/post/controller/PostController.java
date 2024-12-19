@@ -30,32 +30,39 @@ public class PostController {
     private static final String DEFAULT_POST_PAGE_NO = "0";
     private static final String DEFAULT_POST_PAGE_SIZE = "10";
 
+
+    //채널마다 조회 (GET /api/v1/posts)
     @GetMapping("/posts")
-    @Operation(summary = "게시글 목록 조회", description = "페이지 번호와 크기를 기준으로 게시글 목록을 조회합니다.")
+    @Operation(summary = "채널마다 게시글 조회", description = "채널 ID를 기준으로 게시글 목록을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공")
-    public ResponseEntity<Page<PostDto.PostRes>> getPosts(@RequestParam(required = false, defaultValue = DEFAULT_POST_PAGE_NO) final int pageNo,
-                                                          @RequestParam(required = false, defaultValue = DEFAULT_POST_PAGE_SIZE) final int pageSize) {
+    public ResponseEntity<Page<PostDto.PostRes>> getPosts(
+            @RequestParam Long channelId,
+            @RequestParam(defaultValue = "0") int pageNo,
+            @RequestParam(defaultValue = "10") int pageSize) {
 
-        final Page<Post> posts = postService.getPosts(pageNo, pageSize);
+        Page<Post> posts = postService.getPosts(channelId, pageNo, pageSize);
+        Page<PostDto.PostRes> postDtos = posts.map(this::appendCdnPaths);
 
-        return ResponseEntity.ok(posts.map(this::appendCdnPaths));
+        return ResponseEntity.ok(postDtos);
     }
 
-
-
+    //특정 채널에 게시글 생성 (POST /api/v1/posts)
     @PostMapping("/posts")
-    @Operation(summary = "게시글 생성", description = "새로운 게시글을 생성합니다.")
+    @Operation(summary = "채널마다 게시글 생성", description = "특정 채널에 게시글을 생성합니다.")
     @ApiResponse(responseCode = "201", description = "게시글 작성 성공")
-    public ResponseEntity<PostDto.PostRes> createPost(@RequestBody final PostDto.PostCreateReq request) {
+    public ResponseEntity<PostDto.PostRes> createPost(
+            @RequestParam Long channelId,
+            @RequestBody PostDto.PostCreateReq request) {
 
-        final Post createdPost = postService.createPost(request.toEntity());
+        Post post = request.toEntity();
+        Post createdPost = postService.createPost(channelId, post);
 
         return ResponseEntity.created(URI.create("/api/v1/posts/" + createdPost.getId()))
                 .body(new PostDto.PostRes(createdPost));
     }
 
     @GetMapping("/posts/{postId}")
-    @Operation(summary = "게시글 조회", description = "주어진 ID를 기준으로 게시글을 조회합니다.")
+    @Operation(summary = "게시글 조회", description = "주어진 Post ID를 기준으로 게시글을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 조회 성공")
     public ResponseEntity<PostDto.PostRes> getPost(@PathVariable final long postId) {
 
