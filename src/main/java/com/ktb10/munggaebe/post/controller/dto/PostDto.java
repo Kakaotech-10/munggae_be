@@ -5,10 +5,7 @@ import com.ktb10.munggaebe.image.service.dto.UrlDto;
 import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.post.domain.Post;
 import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.AccessLevel;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -228,6 +225,7 @@ public class PostDto {
 
     @Schema(description = "게시물 응답")
     @Getter
+    @Setter
     public static class EducationPostRes {
         @Schema(description = "게시글 ID", example = "1")
         private Long id;

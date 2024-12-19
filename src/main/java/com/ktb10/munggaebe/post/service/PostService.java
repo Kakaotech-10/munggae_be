@@ -184,6 +184,18 @@ public class PostService {
         return postRepository.findByChannelIdAndDeadLineIsNotNull(ANNOUNCEMENT_CHANNEL_ID, pageable);
     }
 
+    public String duplicateCodeArea(String content) {
+        int index = content.indexOf(EDUCATION_POST_DELIMITER);
+
+        return content.substring(index + EDUCATION_POST_DELIMITER.length());
+    }
+
+    public String duplicateContentArea(String content) {
+        int index = content.indexOf(EDUCATION_POST_DELIMITER);
+
+        return content.substring(0, index);
+    }
+
     private void validateAuthorization(Post post) {
         log.info("validateAuthorization Post's memberId");
         Long currentMemberId = SecurityUtil.getCurrentUserId();
@@ -198,11 +210,5 @@ public class PostService {
         boolean isContentClean = filteringService.isCleanText(content);
         log.info("isContentClean = {}", isContentClean);
         return isTitleClean && isContentClean;
-    }
-
-    private String duplicateCodeArea(String content) {
-        int index = content.indexOf(EDUCATION_POST_DELIMITER);
-
-        return content.substring(index + EDUCATION_POST_DELIMITER.length());
     }
 }

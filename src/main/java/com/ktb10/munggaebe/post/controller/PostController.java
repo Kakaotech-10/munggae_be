@@ -144,9 +144,13 @@ public class PostController {
     @ApiResponse(responseCode = "200", description = "학습게시판 게시물 조회 성공")
     public ResponseEntity<PostDto.EducationPostRes> getEducationPost(@PathVariable final long postId) {
 
-//        final Post post = postService.getPost(postId);
+        final Post post = postService.getPost(postId);
+        PostDto.EducationPostRes educationPostRes = appendCdnPathsEducation(post);
+        String content = educationPostRes.getContent();
+        educationPostRes.setContent(postService.duplicateContentArea(content));
+        educationPostRes.setCodeArea(postService.duplicateCodeArea(content));
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(educationPostRes);
     }
 
 
@@ -164,5 +168,13 @@ public class PostController {
                 .map(pi -> objectMapper.convertValue(pi, PostDto.ImageCdnPathRes.class))
                 .toList();
         return new PostDto.PostRes(p, imageCdnPathRes);
+    }
+
+    private PostDto.EducationPostRes appendCdnPathsEducation(final Post p) {
+        final List<PostServiceDto.ImageCdnPathRes> postImageCdnPaths = postService.getPostImageCdnPaths(p.getId());
+        final List<PostDto.ImageCdnPathRes> imageCdnPathRes = postImageCdnPaths.stream()
+                .map(pi -> objectMapper.convertValue(pi, PostDto.ImageCdnPathRes.class))
+                .toList();
+        return new PostDto.EducationPostRes(p, imageCdnPathRes);
     }
 }
