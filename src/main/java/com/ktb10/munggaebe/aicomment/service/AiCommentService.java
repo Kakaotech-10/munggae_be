@@ -9,6 +9,7 @@ import com.ktb10.munggaebe.post.domain.Comment;
 import com.ktb10.munggaebe.post.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
 @Slf4j
@@ -20,7 +21,7 @@ public class AiCommentService {
     private final CommentService commentService;
     private final MemberRepository memberRepository;
 
-//    @Async
+    @Async
     public void createAiComment(String content, long postId) {
         log.info("createAiComment start : content = {}", content);
         CreateAiCommentRes res = aiCommentClient.generateAiComment(content);
