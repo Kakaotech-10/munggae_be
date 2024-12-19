@@ -7,7 +7,6 @@ import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.service.ImageService;
 import com.ktb10.munggaebe.image.service.dto.ImageCdnPathDto;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
-import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
@@ -42,6 +41,9 @@ public class MemberService implements UserDetailsService {
 
 
     public List<Member> getMembers() {
+
+        //student 목록만 볼 수 있게 변경
+        //이미 채널에 추가된 학생은 목록에서 안보이게 변경
         return memberRepository.findAll();
     }
 

@@ -28,12 +28,12 @@ public class MemberController {
     private final ObjectMapper objectMapper;
 
     @GetMapping("/members")
-    @Operation(summary = "맴버 목록 조회", description = "맴버 목록을 반환합니다.")
-    @ApiResponse(responseCode = "200", description = "맴버 목록 조회 성공")
-    public ResponseEntity<List<MemberDto.MemberRes>> getMembers() {
+    @Operation(summary = "채널에 없는 Student 맴버 목록 조회", description = "채널에 없는 Student 맴버 목록을 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "채널에 없는 Student 맴버 목록 조회 성공")
+    public ResponseEntity<MemberDto.MembersRes> getStudentMembers(@RequestParam Long channelId) {
         List<Member> members = memberService.getMembers();
-        List<MemberDto.MemberRes> memberResponses = appendCdnPaths(members);
-        return ResponseEntity.ok(memberResponses);
+
+        return ResponseEntity.ok().build();
     }
 
     @GetMapping("/members/{memberId}")
