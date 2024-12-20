@@ -25,8 +25,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.TestEntityManager;
 import org.springframework.data.domain.*;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -94,10 +92,10 @@ class PostServiceTest {
         ReflectionTestUtils.setField(testChannel, "id", channelId); // ID 필드 강제 설정
 
         Page<Post> postPage = new PageImpl<>(List.of(
-                Post.builder().id(1L).channel(testChannel).build()
+                Post.builder().id(1L).channel(testChannel).createdAt(LocalDateTime.now()).build()
         ));
 
-        given(postRepository.findByChannelIdAndCreatedAtBefore(eq(channelId), any(), eq(pageable))).willReturn(postPage);
+        given(postRepository.findByChannelId(eq(channelId), eq(pageable))).willReturn(postPage);
 
         // when
         Page<Post> result = postService.getPosts(channelId, 0, 10);
@@ -105,7 +103,7 @@ class PostServiceTest {
         // then
         assertThat(result.getContent()).hasSize(1);
         assertThat(result.getContent().get(0).getId()).isEqualTo(1L);
-        verify(postRepository).findByChannelIdAndCreatedAtBefore(eq(channelId), any(), eq(pageable));
+        verify(postRepository).findByChannelId(eq(channelId), eq(pageable));
     }
 
     @Test

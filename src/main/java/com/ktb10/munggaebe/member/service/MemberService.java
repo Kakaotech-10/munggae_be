@@ -1,13 +1,14 @@
 package com.ktb10.munggaebe.member.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.channel.domain.MemberChannel;
+import com.ktb10.munggaebe.channel.repository.MemberChannelRepository;
 import com.ktb10.munggaebe.image.domain.Image;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.MemberImage;
 import com.ktb10.munggaebe.image.service.ImageService;
 import com.ktb10.munggaebe.image.service.dto.ImageCdnPathDto;
 import com.ktb10.munggaebe.image.service.dto.UrlDto;
-import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.member.domain.Member;
 import com.ktb10.munggaebe.member.domain.MemberCourse;
 import com.ktb10.munggaebe.member.domain.MemberRole;
@@ -24,10 +25,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -38,11 +37,23 @@ public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository;
     private final ImageService imageService;
     private final ElasticsearchMemberService elasticsearchMemberService;
+    private final MemberChannelRepository memberChannelRepository;
     private final ObjectMapper objectMapper;
 
 
-    public List<Member> getMembers() {
-        return memberRepository.findAll();
+    public List<Member> getStudentsExcludingChannel(long channelId) {
+
+        log.info("getStudentsExcludingChannel start: channelId = {}", channelId);
+        List<MemberChannel> memberChannels = memberChannelRepository.findByChannelId(channelId);
+        Set<Member> channelMembers = memberChannels.stream()
+                .map(MemberChannel::getMember)
+                .collect(Collectors.toSet());
+        log.info("channelMembers = {}", channelMembers);
+
+        return memberRepository.findAll().stream()
+                .filter(m -> m.getRole() == MemberRole.STUDENT)
+                .filter(m -> !channelMembers.contains(m))
+                .toList();
     }
 
     @Transactional

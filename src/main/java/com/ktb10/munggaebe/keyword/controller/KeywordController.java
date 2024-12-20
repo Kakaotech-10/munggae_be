@@ -1,6 +1,5 @@
 package com.ktb10.munggaebe.keyword.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.keyword.controller.dto.KeywordDto;
 import com.ktb10.munggaebe.keyword.service.KeywordService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -21,7 +20,6 @@ import java.util.List;
 public class KeywordController {
 
     private final KeywordService keywordService;
-    private final ObjectMapper objectMapper;
 
     @GetMapping("/ranking")
     @Operation(summary = "키워드 랭킹 탑3", description = "키워드 랭킹 탑3 조회해 반환합니다.")

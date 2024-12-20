@@ -15,5 +15,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByChannelIdAndDeadLineIsNotNull(Long channelId, Pageable pageable);
 
-    Page<Post> findByChannelIdAndCreatedAtBefore(Long channelId, LocalDateTime time, Pageable pageable); //channelId 조건을 포함한 게시글 조회 쿼리
+    Page<Post> findByChannelId(Long channelId, Pageable pageable);
 }

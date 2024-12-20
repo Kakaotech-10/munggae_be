@@ -58,15 +58,20 @@ public class CommentService {
     public Comment createRootComment(final Comment entity, final long postId) {
 
         log.info("createRootComment start : postId = {}, content = {}", postId, entity.getContent());
-        Long currentMemberId = SecurityUtil.getCurrentUserId();
 
         final Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
-        final Member member = memberRepository.findById(currentMemberId)
-                .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
+        final Member member;
+        if (entity.getMember() == null) {
+            Long currentMemberId = SecurityUtil.getCurrentUserId();
+            member = memberRepository.findById(currentMemberId)
+                    .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
 
-        sendNotification(currentMemberId, post.getMember().getId(), NotificationType.ADD_ROOT_COMMENT);
+            sendNotification(currentMemberId, post.getMember().getId(), NotificationType.ADD_ROOT_COMMENT);
+        } else {
+            member = entity.getMember();
+        }
 
         boolean isCommentClean = isCommentClean(entity.getContent());
         log.info("isCommentClean = {}", isCommentClean);
