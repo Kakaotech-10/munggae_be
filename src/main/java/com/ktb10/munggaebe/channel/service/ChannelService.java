@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import static com.ktb10.munggaebe.member.domain.MemberRole.MANAGER;
+
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -36,8 +38,7 @@ public class ChannelService {
             return allChannels.stream()
                     .map(channel -> new ChannelResponse(
                             channel.getId(),
-                            channel.getName(),
-                            true //모든 채널에 canPost를 true로 설정
+                            channel.getName()
                     ))
                     .collect(Collectors.toList());
         }
@@ -51,8 +52,7 @@ public class ChannelService {
                     Channel channel = memberChannel.getChannel();
                     return new ChannelResponse(
                             channel.getId(),
-                            channel.getName(),
-                            memberChannel.isCanPost()
+                            channel.getName()
                     );
                 })
                 .collect(Collectors.toList());
@@ -60,25 +60,33 @@ public class ChannelService {
 
     @Transactional
     public ChannelResponse createChannel(ChannelRequest channelRequest) {
+        if (!SecurityUtil.hasRole("MANAGER")) {
+            throw new RuntimeException("Only managers can create channels.");
+        }
+
         Channel channel = channelRepository.save(new Channel(channelRequest.getName()));
+        List<Member> managers = memberRepository.findAllByRole(MANAGER);
 
-        Long currentMemberId = SecurityUtil.getCurrentUserId();
-        Member creator = memberRepository.findById(currentMemberId)
-                .orElseThrow(() -> new RuntimeException("Member not found"));
+        // 모든 매니저를 해당 채널에 추가
+        managers.forEach(manager -> {
+            memberChannelRepository.save(new MemberChannel(channel, manager, true)); // 매니저는 canPost를 항상 true로 설정
+        });
 
-        boolean canPost = channelRequest.getCanPost() != null ? channelRequest.getCanPost() : true;
-
-        memberChannelRepository.save(new MemberChannel(channel, creator, canPost));
-
-        return new ChannelResponse(channel.getId(), channel.getName(), canPost);
+        return new ChannelResponse(channel.getId(), channel.getName());
     }
 
     @Transactional
-    public MemberDto.ChannelMemberResponse addMembers(Long channelId, List<Long> memberIds) {
+    public MemberDto.ChannelMemberResponse addMembers(Long channelId, MemberDto.MemberAddReq memberAddReq) {
+        if (!SecurityUtil.hasRole("MANAGER")) {
+            throw new RuntimeException("Only managers can add members to a channel.");
+        }
+
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new RuntimeException("Channel not found"));
 
-        List<MemberDto.MemberRes> addedMembers = memberIds.stream().map(memberId -> {
+        boolean canPost = memberAddReq.getCanPost();
+
+        List<MemberDto.MemberRes> addedMembers = memberAddReq.getMemberIds().stream().map(memberId -> {
             Member member = memberRepository.findById(memberId)
                     .orElseThrow(() -> new RuntimeException("Member not found"));
 
@@ -89,13 +97,14 @@ public class ChannelService {
             MemberChannel memberChannel = MemberChannel.builder()
                     .channel(channel)
                     .member(member)
-                    .canPost(false)
+                    .canPost(canPost)
                     .build();
             memberChannelRepository.save(memberChannel);
 
             return new MemberDto.MemberRes(member);
         }).collect(Collectors.toList());
 
-        return new MemberDto.ChannelMemberResponse(channelId, addedMembers);
+        return new MemberDto.ChannelMemberResponse(canPost, channelId, addedMembers);
     }
+
 }

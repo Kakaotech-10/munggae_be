@@ -38,12 +38,12 @@ public class ChannelController {
     }
 
     @PostMapping("/channels/{channelId}/members")
-    @Operation(summary = "채널에 멤버 추가", description = "특정 채널에 멤버를 추가합니다.")
+    @Operation(summary = "채널에 멤버 추가", description = "매니저가 특정 채널에 멤버를 추가합니다.")
     @ApiResponse(responseCode = "202", description = "채널에 멤버 추가 성공")
     public ResponseEntity<MemberDto.ChannelMemberResponse> addMembersToChannel(
             @PathVariable Long channelId,
             @RequestBody MemberDto.MemberAddReq memberAddReq) {
-        MemberDto.ChannelMemberResponse response = channelService.addMembers(channelId, memberAddReq.getMemberIds());
+        MemberDto.ChannelMemberResponse response = channelService.addMembers(channelId, memberAddReq);
         return ResponseEntity.accepted().body(response);
     }
 }
