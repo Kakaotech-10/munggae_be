@@ -1,6 +1,7 @@
 package com.ktb10.munggaebe.post.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.aicomment.service.AiCommentService;
 import com.ktb10.munggaebe.channel.domain.Channel;
 import com.ktb10.munggaebe.channel.repository.ChannelRepository;
 import com.ktb10.munggaebe.image.domain.Image;
@@ -44,8 +45,11 @@ public class PostService {
     private final FilteringService filteringService;
     private final ObjectMapper objectMapper;
     private final ChannelRepository channelRepository;
+    private final AiCommentService aiCommentService;
 
     private static final Long ANNOUNCEMENT_CHANNEL_ID = 1L;
+    private static final String EDUCATION_CHANNEL_NAME = "학습게시판";
+    private static final String EDUCATION_POST_DELIMITER = "*****";
 
 
     //channelId 조회, 게시글 조회 (GET /api/v1/posts)
@@ -100,7 +104,15 @@ public class PostService {
                 .isClean(isPostClean)
                 .build();
 
-        return postRepository.save(postWithMember);
+        Post savedPost = postRepository.save(postWithMember);
+
+        if (savedPost.getChannel().getName().equals(EDUCATION_CHANNEL_NAME)) {
+            String codeArea = duplicateCodeArea(post.getContent());
+            log.info("codeArea = {}", codeArea);
+            aiCommentService.createAiComment(codeArea, savedPost.getId());
+        }
+
+        return savedPost;
     }
 
 
@@ -190,6 +202,18 @@ public class PostService {
     public Page<Post> getAnnouncementsPostsNearDeadline(int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("deadLine"));
         return postRepository.findByChannelIdAndDeadLineIsNotNull(ANNOUNCEMENT_CHANNEL_ID, pageable);
+    }
+
+    public String duplicateCodeArea(String content) {
+        int index = content.indexOf(EDUCATION_POST_DELIMITER);
+
+        return content.substring(index + EDUCATION_POST_DELIMITER.length());
+    }
+
+    public String duplicateContentArea(String content) {
+        int index = content.indexOf(EDUCATION_POST_DELIMITER);
+
+        return content.substring(0, index);
     }
 
     private void validateAuthorization(Post post) {

@@ -102,6 +102,7 @@ CREATE TABLE IF NOT EXISTS notification (
 
 -- Member 데이터 삽입
 INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_english, kakao_id, created_at, updated_at) VALUES
+(100, 'MANAGER', 'DEFAULT', '구름이', 'Groom AI', 999999, NOW(), NOW()),
 (1, 'STUDENT', 'FULLSTACK', '홍길동', 'Hong Gil-dong', 1234567891, NOW(), NOW()),
 (2, 'STUDENT', 'CLOUD', '김철수', 'Kim Cheol-su', 1234567892, NOW(), NOW()),
 (3, 'STUDENT', 'AI', '이영희', 'Lee Young-hee', 1234567893, NOW(), NOW()),
@@ -124,18 +125,18 @@ INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_eng
 (20, 'STUDENT', 'AI', '송혜교', 'Song Hye-kyo', 1234567910, NOW(), NOW());
 
        -- 채널 데이터 삽입
-INSERT IGNORE INTO channel (channel_id, channel_name) VALUES
-(1, '공지'),
-(2, '풀스택'),
-(3, '클라우드'),
-(4, '인공지능'),
-(5, '학습게시판');
+INSERT IGNORE INTO channel (channel_id, channel_name, created_at) VALUES
+(1, '공지', NOW()),
+(2, '풀스택', NOW()),
+(3, '클라우드', NOW()),
+(4, '인공지능', NOW()),
+(5, '학습게시판', NOW());
 
 -- 채널 데이터 삽입
-INSERT IGNORE INTO member_channel (member_channel_id, channel_id, member_id, can_post) VALUES
-(1, 1, 1, true),
-(2, 1, 3, true),
-(3, 2, 5, false);
+INSERT IGNORE INTO member_channel (member_channel_id, channel_id, member_id, can_post, created_at) VALUES
+(1, 1, 1, true, NOW()),
+(2, 1, 3, true, NOW()),
+(3, 2, 5, false, NOW());
 
 -- Post 데이터 삽입
 --INSERT IGNORE INTO post (post_id, member_id, post_title, post_content, created_at, updated_at, is_clean) VALUES
