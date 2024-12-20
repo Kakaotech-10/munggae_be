@@ -17,6 +17,7 @@ import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.post.domain.Post;
+import com.ktb10.munggaebe.post.exception.PermissionException;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.PostRepository;
 import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
@@ -92,7 +93,7 @@ public class PostService {
         //멤버 canPost 권한 확인
         Boolean canPost = memberChannelRepository.findCanPostByChannelIdAndMemberId(channelId, currentMemberId);
         if (canPost == null || !canPost) {
-            throw new RuntimeException("You do not have permission to create a post in this channel.");
+            throw new PermissionException();
         }
 
         final Member member = memberRepository.findById(currentMemberId)
