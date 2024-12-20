@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.aicomment.service.AiCommentService;
 import com.ktb10.munggaebe.channel.domain.Channel;
 import com.ktb10.munggaebe.channel.repository.ChannelRepository;
+import com.ktb10.munggaebe.channel.repository.MemberChannelRepository;
 import com.ktb10.munggaebe.image.domain.Image;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.PostImage;
@@ -46,6 +47,7 @@ public class PostService {
     private final ObjectMapper objectMapper;
     private final ChannelRepository channelRepository;
     private final AiCommentService aiCommentService;
+    private final MemberChannelRepository memberChannelRepository;
 
     private static final Long ANNOUNCEMENT_CHANNEL_ID = 1L;
     private static final String EDUCATION_CHANNEL_NAME = "학습게시판";
@@ -86,6 +88,12 @@ public class PostService {
 
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new IllegalArgumentException("Channel not found with id: " + channelId));
+
+        //멤버 canPost 권한 확인
+        Boolean canPost = memberChannelRepository.findCanPostByChannelIdAndMemberId(channelId, currentMemberId);
+        if (canPost == null || !canPost) {
+            throw new RuntimeException("You do not have permission to create a post in this channel.");
+        }
 
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
