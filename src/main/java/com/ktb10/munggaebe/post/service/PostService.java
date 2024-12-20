@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ktb10.munggaebe.aicomment.service.AiCommentService;
 import com.ktb10.munggaebe.channel.domain.Channel;
 import com.ktb10.munggaebe.channel.repository.ChannelRepository;
+import com.ktb10.munggaebe.channel.repository.MemberChannelRepository;
 import com.ktb10.munggaebe.image.domain.Image;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.PostImage;
@@ -16,6 +17,7 @@ import com.ktb10.munggaebe.member.exception.MemberNotFoundException;
 import com.ktb10.munggaebe.member.exception.MemberPermissionDeniedException;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.post.domain.Post;
+import com.ktb10.munggaebe.post.exception.PermissionException;
 import com.ktb10.munggaebe.post.exception.PostNotFoundException;
 import com.ktb10.munggaebe.post.repository.PostRepository;
 import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
@@ -46,6 +48,7 @@ public class PostService {
     private final ObjectMapper objectMapper;
     private final ChannelRepository channelRepository;
     private final AiCommentService aiCommentService;
+    private final MemberChannelRepository memberChannelRepository;
 
     private static final Long ANNOUNCEMENT_CHANNEL_ID = 1L;
     private static final String EDUCATION_CHANNEL_NAME = "학습게시판";
@@ -86,6 +89,12 @@ public class PostService {
 
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new IllegalArgumentException("Channel not found with id: " + channelId));
+
+        //멤버 canPost 권한 확인
+        Boolean canPost = memberChannelRepository.findCanPostByChannelIdAndMemberId(channelId, currentMemberId);
+        if (canPost == null || !canPost) {
+            throw new PermissionException();
+        }
 
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
