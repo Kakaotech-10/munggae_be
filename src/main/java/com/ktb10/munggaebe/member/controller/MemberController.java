@@ -31,9 +31,9 @@ public class MemberController {
     @Operation(summary = "채널에 없는 Student 맴버 목록 조회", description = "채널에 없는 Student 맴버 목록을 반환합니다.")
     @ApiResponse(responseCode = "200", description = "채널에 없는 Student 맴버 목록 조회 성공")
     public ResponseEntity<MemberDto.MembersRes> getStudentMembers(@RequestParam Long channelId) {
-        List<Member> members = memberService.getMembers();
+        List<Member> members = memberService.getStudentsExcludingChannel(channelId);
 
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(new MemberDto.MembersRes(members));
     }
 
     @GetMapping("/members/{memberId}")

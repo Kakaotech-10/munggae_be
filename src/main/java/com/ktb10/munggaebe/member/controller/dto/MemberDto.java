@@ -19,6 +19,13 @@ public class MemberDto {
         @Schema(description = "맴버 수", example = "1")
         private int count;
         private List<MemberRes> members;
+
+        public MembersRes(List<Member> members) {
+            this.count = members.size();
+            this.members = members.stream()
+                    .map(MemberRes::new)
+                    .toList();
+        }
     }
 
     @Schema(description = "맴버 수정 요청")

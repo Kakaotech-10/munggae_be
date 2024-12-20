@@ -1,6 +1,8 @@
 package com.ktb10.munggaebe.member.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.ktb10.munggaebe.channel.domain.MemberChannel;
+import com.ktb10.munggaebe.channel.repository.MemberChannelRepository;
 import com.ktb10.munggaebe.image.domain.Image;
 import com.ktb10.munggaebe.image.domain.ImageType;
 import com.ktb10.munggaebe.image.domain.MemberImage;
@@ -23,10 +25,8 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.NoSuchElementException;
-import java.util.Optional;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -37,14 +37,23 @@ public class MemberService implements UserDetailsService {
     private final MemberRepository memberRepository;
     private final ImageService imageService;
     private final ElasticsearchMemberService elasticsearchMemberService;
+    private final MemberChannelRepository memberChannelRepository;
     private final ObjectMapper objectMapper;
 
 
-    public List<Member> getMembers() {
+    public List<Member> getStudentsExcludingChannel(long channelId) {
 
-        //student 목록만 볼 수 있게 변경
-        //이미 채널에 추가된 학생은 목록에서 안보이게 변경
-        return memberRepository.findAll();
+        log.info("getStudentsExcludingChannel start: channelId = {}", channelId);
+        List<MemberChannel> memberChannels = memberChannelRepository.findByChannelId(channelId);
+        Set<Member> channelMembers = memberChannels.stream()
+                .map(MemberChannel::getMember)
+                .collect(Collectors.toSet());
+        log.info("channelMembers = {}", channelMembers);
+
+        return memberRepository.findAll().stream()
+                .filter(m -> m.getRole() == MemberRole.STUDENT)
+                .filter(m -> !channelMembers.contains(m))
+                .toList();
     }
 
     @Transactional
