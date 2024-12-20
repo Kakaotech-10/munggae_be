@@ -177,6 +177,9 @@ public class MemberDto {
     @Getter
     @NoArgsConstructor
     public static class MemberAddReq {
+        @Schema(description = "게시글 작성 권한", example = "true")
+        private Boolean canPost;
+
         @Schema(description = "추가할 멤버 ID 리스트", example = "[1, 2, 3]")
         private List<Long> memberIds;
 
@@ -188,6 +191,9 @@ public class MemberDto {
     @Getter
     @AllArgsConstructor
     public static class ChannelMemberResponse {
+        @Schema(description = "게시글 작성 권한", example = "true")
+        private Boolean canPost;
+
         @Schema(description = "채널 ID", example = "1")
         private Long channelId;
 
