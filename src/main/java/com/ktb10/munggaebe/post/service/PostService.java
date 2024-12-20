@@ -46,9 +46,16 @@ public class PostService {
 
     private static final Long ANNOUNCEMENT_CHANNEL_ID = 1L;
 
-    public Page<Post> getPosts(final int pageNo, final int pageSize) {
+
+    //channelId 조회, 게시글 조회 (GET /api/v1/posts)
+    public Page<Post> getPosts(Long channelId, final int pageNo, final int pageSize) {
+        LocalDateTime now = LocalDateTime.now();
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
-        return postRepository.findByCreatedAtBefore(LocalDateTime.now(), pageable);
+
+        if (channelId != null) {
+            return postRepository.findByChannelIdAndCreatedAtBefore(channelId, now, pageable);
+        }
+        return postRepository.findByCreatedAtBefore(now, pageable);
     }
 
     public Post getPost(final long postId) {
@@ -56,10 +63,14 @@ public class PostService {
                 .orElseThrow(() -> new PostNotFoundException(postId));
     }
 
+    //channelId 조회, 게시글 생성 (POST /api/v1/posts)
     @Transactional
-    public Post createPost(final Post post) {
+    public Post createPost(Long channelId, final Post post) {
         log.info("createPost start : title = {}, content = {}", post.getTitle(), post.getContent());
         Long currentMemberId = SecurityUtil.getCurrentUserId();
+
+        Channel channel = channelRepository.findById(channelId)
+                .orElseThrow(() -> new IllegalArgumentException("Channel not found with id: " + channelId));
 
         final Member member = memberRepository.findById(currentMemberId)
                 .orElseThrow(() -> new MemberNotFoundException(currentMemberId));
@@ -67,12 +78,9 @@ public class PostService {
         boolean isPostClean = isPostClean(post.getTitle(), post.getContent());
         log.info("createPost isPostClean = {}", isPostClean);
 
-        //임시 채널
-        Channel channel = channelRepository.findById(1L).orElse(null);
-
-        final Post postWithMember = Post.builder()
+        Post postWithMember = Post.builder()
                 .member(member)
-                .channel(channel)
+                .channel(channel) //channelId 추가
                 .title(post.getTitle())
                 .content(post.getContent())
                 .createdAt(post.getReservationTime() == null ? LocalDateTime.now() : post.getReservationTime())
@@ -83,6 +91,7 @@ public class PostService {
 
         return postRepository.save(postWithMember);
     }
+
 
     @Transactional
     public Post updatePost(final PostServiceDto.UpdateReq updateReq) {
