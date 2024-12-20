@@ -30,6 +30,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import org.springframework.data.domain.PageImpl;
 
 @Slf4j
 @Service
@@ -49,11 +50,21 @@ public class PostService {
 
     //channelId 조회, 게시글 조회 (GET /api/v1/posts)
     public Page<Post> getPosts(Long channelId, final int pageNo, final int pageSize) {
+        log.info("getPosts start : channelId = {}", channelId);
         LocalDateTime now = LocalDateTime.now();
         Pageable pageable = PageRequest.of(pageNo, pageSize, Sort.by("createdAt").descending());
 
         if (channelId != null) {
-            return postRepository.findByChannelIdAndCreatedAtBefore(channelId, now, pageable);
+            log.info("channelId is not null");
+            Page<Post> results = postRepository.findByChannelId(channelId, pageable);
+
+            List<Post> filteredPosts = results.getContent().stream()
+                    .filter(post -> post.getCreatedAt().isBefore(now))
+                    .toList();
+
+            log.info("results.size() = {}", results.getContent().size());
+            return new PageImpl<>(filteredPosts, pageable, results.getTotalElements());
+
         }
         return postRepository.findByCreatedAtBefore(now, pageable);
     }
