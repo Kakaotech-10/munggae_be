@@ -8,6 +8,7 @@ import com.ktb10.munggaebe.member.controller.dto.MemberDto;
 import com.ktb10.munggaebe.channel.repository.ChannelRepository;
 import com.ktb10.munggaebe.channel.domain.Channel;
 import com.ktb10.munggaebe.member.domain.Member;
+import com.ktb10.munggaebe.member.domain.MemberRole;
 import com.ktb10.munggaebe.member.repository.MemberRepository;
 import com.ktb10.munggaebe.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +34,7 @@ public class ChannelService {
         Long currentMemberId = SecurityUtil.getCurrentUserId();
 
         //매니저 권한인 경우 모든 채널 조회
-        if (SecurityUtil.hasRole("MANAGER")) {
+        if (SecurityUtil.hasRole(MemberRole.MANAGER.name())) {
             List<Channel> allChannels = channelRepository.findAll();
             return allChannels.stream()
                     .map(channel -> new ChannelResponse(
@@ -60,7 +61,7 @@ public class ChannelService {
 
     @Transactional
     public ChannelResponse createChannel(ChannelRequest channelRequest) {
-        if (!SecurityUtil.hasRole("MANAGER")) {
+        if (!SecurityUtil.hasRole(MemberRole.MANAGER.name())) {
             throw new RuntimeException("Only managers can create channels.");
         }
 
@@ -77,7 +78,7 @@ public class ChannelService {
 
     @Transactional
     public MemberDto.ChannelMemberResponse addMembers(Long channelId, MemberDto.MemberAddReq memberAddReq) {
-        if (!SecurityUtil.hasRole("MANAGER")) {
+        if (!SecurityUtil.hasRole(MemberRole.MANAGER.name())) {
             throw new RuntimeException("Only managers can add members to a channel.");
         }
 
