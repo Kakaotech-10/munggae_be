@@ -31,12 +31,12 @@ public class PostController {
     private static final String DEFAULT_POST_PAGE_SIZE = "10";
 
 
-    //채널마다 조회 (GET /api/v1/posts)
+    //채널마다 게시글 조회 (GET /api/v1/posts)
     @GetMapping("/posts")
-    @Operation(summary = "채널마다 게시글 조회", description = "채널 ID를 기준으로 게시글 목록을 조회합니다.")
+    @Operation(summary = "채널마다 게시글 목록 조회", description = "채널 ID를 기준으로 게시글 목록을 조회합니다.")
     @ApiResponse(responseCode = "200", description = "게시글 목록 조회 성공")
     public ResponseEntity<Page<PostDto.PostRes>> getPosts(
-            @RequestParam Long channelId,
+            @RequestParam(defaultValue = "1") Long channelId,
             @RequestParam(defaultValue = "0") int pageNo,
             @RequestParam(defaultValue = "10") int pageSize) {
 

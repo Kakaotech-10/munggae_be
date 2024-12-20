@@ -80,7 +80,7 @@ public class PostService {
 
         Post postWithMember = Post.builder()
                 .member(member)
-                .channel(channel) // 전달받은 channelId에 해당하는 Channel 객체
+                .channel(channel) //channelId 추가
                 .title(post.getTitle())
                 .content(post.getContent())
                 .createdAt(post.getReservationTime() == null ? LocalDateTime.now() : post.getReservationTime())
