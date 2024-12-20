@@ -14,7 +14,4 @@ import lombok.Setter;
 public class ChannelRequest {
     @Schema(description = "채널 이름", example = "스터디 그룹 A")
     private String name;
-
-    @Schema(description = "게시글 작성 권한", example = "true")
-    private Boolean canPost;
 }

@@ -17,7 +17,4 @@ public class ChannelResponse {
 
     @Schema(description = "채널 이름", example = "스터디 그룹 A")
     private String name;
-
-    @Schema(description = "해당 채널에 게시물 업로드 가능 여부", example = "true")
-    private Boolean canPost;
 }
