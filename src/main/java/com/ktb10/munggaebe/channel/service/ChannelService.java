@@ -108,4 +108,10 @@ public class ChannelService {
         return new MemberDto.ChannelMemberResponse(canPost, channelId, addedMembers);
     }
 
+    @Transactional(readOnly = true)
+    public Channel getChannelById(Long channelId) {
+        return channelRepository.findById(channelId)
+                .orElseThrow(() -> new RuntimeException("Channel not found with id: " + channelId));
+    }
+
 }
