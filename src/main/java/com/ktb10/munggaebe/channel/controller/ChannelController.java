@@ -1,5 +1,6 @@
 package com.ktb10.munggaebe.channel.controller;
 
+import com.ktb10.munggaebe.channel.domain.Channel;
 import com.ktb10.munggaebe.channel.dto.ChannelRequest;
 import com.ktb10.munggaebe.channel.dto.ChannelResponse;
 import com.ktb10.munggaebe.channel.service.ChannelService;
@@ -45,5 +46,14 @@ public class ChannelController {
             @RequestBody MemberDto.MemberAddReq memberAddReq) {
         MemberDto.ChannelMemberResponse response = channelService.addMembers(channelId, memberAddReq);
         return ResponseEntity.accepted().body(response);
+    }
+
+    @GetMapping("/channels/{channelId}")
+    @Operation(summary = "채널 상세 조회", description = "특정 채널의 상세 정보를 반환합니다.")
+    @ApiResponse(responseCode = "200", description = "채널 상세 조회 성공")
+    public ResponseEntity<ChannelResponse> getChannel(@PathVariable Long channelId) {
+        Channel channel = channelService.getChannelById(channelId);
+        ChannelResponse response = new ChannelResponse(channel.getId(), channel.getName());
+        return ResponseEntity.ok(response);
     }
 }
