@@ -86,10 +86,12 @@ public class PostService {
         Channel channel = channelRepository.findById(channelId)
                 .orElseThrow(() -> new IllegalArgumentException("Channel not found with id: " + channelId));
 
-        //멤버 canPost 권한 확인
-        Boolean canPost = memberChannelRepository.findCanPostByChannelIdAndMemberId(channelId, currentMemberId);
-        if (canPost == null || !canPost) {
-            throw new PermissionException();
+        if (!SecurityUtil.hasRole(MemberRole.MANAGER.name())) {
+            // 매니저가 아닌 경우만 canPost 권한 확인
+            Boolean canPost = memberChannelRepository.findCanPostByChannelIdAndMemberId(channelId, currentMemberId);
+            if (canPost == null || !canPost) {
+                throw new PermissionException();
+            }
         }
 
         final Member member = memberRepository.findById(currentMemberId)
