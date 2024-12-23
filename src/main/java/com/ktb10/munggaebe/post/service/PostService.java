@@ -24,16 +24,12 @@ import com.ktb10.munggaebe.post.service.dto.PostServiceDto;
 import com.ktb10.munggaebe.utils.SecurityUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import org.springframework.data.domain.PageImpl;
 
 @Slf4j
 @Service
@@ -115,7 +111,7 @@ public class PostService {
 
         Post savedPost = postRepository.save(postWithMember);
 
-        if (savedPost.getChannel().getName().equals(EDUCATION_CHANNEL_NAME)) {
+        if (savedPost.getChannel().getName().equals(EDUCATION_CHANNEL_NAME) && containsCodeArea(post.getContent())) {
             String codeArea = duplicateCodeArea(post.getContent());
             log.info("codeArea = {}", codeArea);
             aiCommentService.createAiComment(codeArea, savedPost.getId());
@@ -123,6 +119,7 @@ public class PostService {
 
         return savedPost;
     }
+
 
 
     @Transactional
@@ -142,7 +139,6 @@ public class PostService {
 
         return post;
     }
-
     @Transactional
     public void deletePost(final long postId) {
 
@@ -150,7 +146,7 @@ public class PostService {
                 .orElseThrow(() -> new PostNotFoundException(postId));
 
         validateAuthorization(post);
-        
+
         postRepository.deleteById(postId);
     }
 
@@ -223,6 +219,10 @@ public class PostService {
         int index = content.indexOf(EDUCATION_POST_DELIMITER);
 
         return content.substring(0, index);
+    }
+
+    private boolean containsCodeArea(String content) {
+        return content.contains(EDUCATION_POST_DELIMITER);
     }
 
     private void validateAuthorization(Post post) {
