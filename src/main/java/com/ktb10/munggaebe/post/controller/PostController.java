@@ -154,8 +154,11 @@ public class PostController {
         final Post post = postService.getPost(postId);
         PostDto.EducationPostRes educationPostRes = appendCdnPathsEducation(post);
         String content = educationPostRes.getContent();
-        educationPostRes.setContent(postService.duplicateContentArea(content));
-        educationPostRes.setCodeArea(postService.duplicateCodeArea(content));
+
+        if (postService.containsCodeArea(content)) {
+            educationPostRes.setContent(postService.duplicateContentArea(content));
+            educationPostRes.setCodeArea(postService.duplicateCodeArea(content));
+        }
 
         return ResponseEntity.ok(educationPostRes);
     }
