@@ -124,7 +124,7 @@ INSERT IGNORE INTO member (member_id, role, course, member_name, member_name_eng
 (19, 'STUDENT', 'FULLSTACK', '차은우', 'Cha Eun-woo', 1234567909, NOW(), NOW()),
 (20, 'STUDENT', 'AI', '송혜교', 'Song Hye-kyo', 1234567910, NOW(), NOW());
 
-       -- 채널 데이터 삽입
+-- 채널 데이터 삽입
 INSERT IGNORE INTO channel (channel_id, channel_name, created_at) VALUES
 (1, '공지', NOW()),
 (2, '풀스택', NOW()),
@@ -132,11 +132,23 @@ INSERT IGNORE INTO channel (channel_id, channel_name, created_at) VALUES
 (4, '인공지능', NOW()),
 (5, '학습게시판', NOW());
 
--- 채널 데이터 삽입
+-- 기존 채널에 매니저 추가
 INSERT IGNORE INTO member_channel (member_channel_id, channel_id, member_id, can_post, created_at) VALUES
-(1, 1, 1, true, NOW()),
-(2, 1, 3, true, NOW()),
-(3, 2, 5, false, NOW());
+(1, 1, 4, true, NOW()),
+(2, 1, 100, true, NOW()),
+(3, 1, 14, true, NOW()),
+(4, 2, 4, true, NOW()),
+(5, 2, 100, true, NOW()),
+(6, 2, 14, true, NOW()),
+(7, 3, 4, true, NOW()),
+(8, 3, 100, true, NOW()),
+(9, 3, 14, true, NOW()),
+(10, 4, 4, true, NOW()),
+(11, 4, 100, true, NOW()),
+(12, 4, 14, true, NOW()),
+(13, 5, 4, true, NOW()),
+(14, 5, 100, true, NOW()),
+(15, 5, 14, true, NOW());
 
 -- Post 데이터 삽입
 --INSERT IGNORE INTO post (post_id, member_id, post_title, post_content, created_at, updated_at, is_clean) VALUES
