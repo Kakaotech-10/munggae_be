@@ -221,7 +221,7 @@ public class PostService {
         return content.substring(0, index);
     }
 
-    private boolean containsCodeArea(String content) {
+    public boolean containsCodeArea(String content) {
         return content.contains(EDUCATION_POST_DELIMITER);
     }
 
