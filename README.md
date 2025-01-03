@@ -30,10 +30,16 @@
     - 채널 기능
 
 
+<br>
+
+
 ## 📚 Stack
 <img src="https://img.shields.io/badge/java-007396?style=for-the-badge&logo=java&logoColor=white">  <img src="https://img.shields.io/badge/spring-6DB33F?style=for-the-badge&logo=spring&logoColor=white"> <img src="https://img.shields.io/badge/springboot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white"> <img src="https://img.shields.io/badge/JPA-6DB33F?style=for-the-badge&logoColor=white"> <img src="https://img.shields.io/badge/mysql-4479A1?style=for-the-badge&logo=mysql&logoColor=white"> 
 <img src="https://img.shields.io/badge/Elasticsearch-005571?style=for-the-badge&logo=Elasticsearch&logoColor=white">
 <img src="https://img.shields.io/badge/redis-FF4438?style=for-the-badge&logo=redis&logoColor=white">
+
+
+<br>
 
 
 ## 🔧 주요 기능
@@ -63,3 +69,17 @@
 - 학습게시판 AI 댓글 기능
   - AI 팀 api 활용
   - 비동기 처리
+
+
+<br>
+
+
+## 🥳 개인 회고
+- 김요한
+  - 👍 새로운 기술 도입에 대한 두려움이 사라짐. 기술 선택 시, 장단점 비교 후 합리적인 선택 경험을 할 수 있었다.
+  - 👍 서버 분산 처리 환경에서 발생한 문제 해결 경험
+  - 👎 많은 기능 구현보다 하나의 기능을 기술적으로 딥하게 파는 경험이 더 좋았을 것 같다.
+- 오지영
+  - 👍 백엔드와 프론트엔드의 협업 방법 익힘
+  - 👍 API 명세화로 협업 효율성 증가
+  - 👎 권한 관리와 ERD 설계 경험 부족으로 인해 데이터 구조 최적화와 사용자 권한 관리가 미흡했다. 추후, 구체적인 권한 설계로 보완 예정.
