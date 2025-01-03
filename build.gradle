@@ -5,7 +5,7 @@ plugins {
 }
 
 group = 'com.ktb10'
-version = '0.0.1-SNAPSHOT'
+version = '0.0.5-SNAPSHOT'
 
 java {
 	toolchain {
@@ -23,6 +23,16 @@ repositories {
 	mavenCentral()
 }
 
+ext {
+	set('springCloudVersion', "2023.0.2")
+}
+
+dependencyManagement {
+	imports {
+		mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+	}
+}
+
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
@@ -31,6 +41,44 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+	//swagger
+	implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.6.0'
+
+	//test
+	testRuntimeOnly 'com.h2database:h2'
+
+	//jwt
+	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-impl:0.11.5'
+	implementation 'io.jsonwebtoken:jjwt-jackson:0.11.5'
+
+	//open feign
+	implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
+
+	//Spring Security
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+
+	//OAuth2 Client
+	implementation 'org.springframework.boot:spring-boot-starter-oauth2-client'
+
+	//s3
+	implementation 'org.springframework.cloud:spring-cloud-starter-aws:2.2.6.RELEASE'
+	implementation 'com.amazonaws:aws-java-sdk-s3:1.12.261'
+
+	//Web Client
+	implementation 'org.springframework.boot:spring-boot-starter-webflux'
+	//Unable to load io.netty.resolver.dns.macos.MacOSDnsServerAddressStreamProvider, fallback to system defaults. 문제로 추가
+	implementation 'io.netty:netty-resolver-dns-native-macos:4.1.94.Final'
+
+	//Redis
+	implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
+	//MockWebServer
+	testImplementation 'com.squareup.okhttp3:mockwebserver'
+
+	//ElasticSearch
+	implementation 'org.springframework.data:spring-data-elasticsearch'
 }
 
 tasks.named('test') {
